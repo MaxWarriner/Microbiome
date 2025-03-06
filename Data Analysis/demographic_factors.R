@@ -40,12 +40,20 @@ a_diversity_factor_age<- plot_richness(ps, x="Age", color="Age", measures=c("Cha
 a_diversity_factor_age$layers[[2]] = NULL 
 a_diversity_factor_age <- a_diversity_factor_age  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_age)
+ggsave(a_diversity_factor_age, 
+       filename = "age_boxplot.pdf",
+       device = "pdf",
+       height = 6, width = 5, units = "in")
 
 #Sex
 a_diversity_factor_sex <- plot_richness(ps, x="Sex", color="Sex", measures=c("Chao1", "Shannon"))
 a_diversity_factor_sex$layers[[2]] = NULL 
 a_diversity_factor_sex <- a_diversity_factor_sex  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_sex)
+ggsave(a_diversity_factor_sex, 
+       filename = "sex_boxplot.pdf",
+       device = "pdf",
+       height = 6, width = 5, units = "in")
 
 #Weight
 a_diversity_factor_weight <- plot_richness(ps, x="weight", color="weight", measures=c("Chao1", "Shannon"))
@@ -108,63 +116,10 @@ a_diversity_factor_deworming <- a_diversity_factor_deworming  + geom_boxplot() +
 print(a_diversity_factor_deworming)
 
 
-##Calculations of Significance:
-#Wilcoxon Rank Sum Tests for FactorA
-
-rich = estimate_richness(ps, measures = c("Chao1", "Shannon"))
-# Standard Wilcoxon test for Chao1
-wilcox.chao1 <- wilcox.test(rich$Chao1 ~ sample_data(ps)$FactorA)
-tab.chao1 <- data.frame(
-  group1 = "Negative",
-  group2 = "Positive",
-  W = wilcox.chao1$statistic,
-  p.adj = wilcox.chao1$p.value
-)
-
-# Standard Wilcoxon test for Shannon
-wilcox.shannon <- wilcox.test(rich$Shannon ~ sample_data(ps)$FactorA)
-tab.shannon <- data.frame(
-  group1 = "Negative",
-  group2 = "Positive",
-  W = wilcox.shannon$statistic,
-  p.adj = wilcox.shannon$p.value
-)
-
-# Print the results
-print(tab.chao1)
-print(tab.shannon)
-```
-
-#Wilcoxon Rank Sum Tests for FactorB
-```{r}
-rich = estimate_richness(ps, measures = c("Chao1", "Shannon"))
-# Standard Wilcoxon test for Chao1
-wilcox.chao1 <- wilcox.test(rich$Chao1 ~ sample_data(ps)$FactorB)
-tab.chao1 <- data.frame(
-  group1 = "Negative",
-  group2 = "Positive",
-  W = wilcox.chao1$statistic,
-  p.adj = wilcox.chao1$p.value
-)
-
-# Standard Wilcoxon test for Shannon
-wilcox.shannon <- wilcox.test(rich$Shannon ~ sample_data(ps)$FactorB)
-tab.shannon <- data.frame(
-  group1 = "Negative",
-  group2 = "Positive",
-  W = wilcox.shannon$statistic,
-  p.adj = wilcox.shannon$p.value
-)
-
-# Print the results
-print(tab.chao1)
-print(tab.shannon)
-```
-
 ##Part II
 ##(a) Beta diversity using Bray distance
 #PCoA plots for FactorA and FactorB
-```{r}
+
 library(MicrobiotaProcess)
 # Define the function to create PCoA plots
 create_pcoa_plot <- function(variable) {
@@ -173,27 +128,51 @@ create_pcoa_plot <- function(variable) {
   
   # Create PCoA plot
   pcoaplot <- ggordpoint(obj = pcoares, biplot = FALSE, speciesannot = TRUE,
-                         factorNames = c(variable), ellipse = TRUE) +
-    scale_color_manual(values = c("#00AED7", "#FD9347")) +
-    scale_fill_manual(values = c("#00AED7", "#FD9347"))
+                         factorNames = c(variable), ellipse = TRUE, linesize = 1.5)
   
   return(pcoaplot)
 }
 
 # Create plots for each variable
-pcoa_FactorA <- create_pcoa_plot("FactorA")
-pcoa_FactorB <- create_pcoa_plot("FactorB")
+pcoa_Factor_age <- create_pcoa_plot("Age")
+print(pcoa_Factor_age)
 
-# Combine all plots into a panel
-combined_pcoa_plot <- (pcoa_FactorA | pcoa_FactorB)
+pcoa_Factor_sex <- create_pcoa_plot("Sex")
+print(pcoa_Factor_sex)
 
-# Display the combined plot
-print(combined_pcoa_plot)
-```
+pcoa_Factor_weight <- create_pcoa_plot("weight")
+print(pcoa_Factor_weight)
+
+pcoa_Factor_height <- create_pcoa_plot("Height")
+print(pcoa_Factor_height)
+
+pcoa_Factor_delivery <- create_pcoa_plot("Modeofdelivery")
+print(pcoa_Factor_delivery)
+
+pcoa_Factor_vaccine <- create_pcoa_plot("Everhadvaccinated")
+print(pcoa_Factor_vaccine)
+
+pcoa_Factor_BCG <- create_pcoa_plot("BCGscar")
+print(pcoa_Factor_BCG)
+
+pcoa_Factor_trimmed <- create_pcoa_plot("Childsfingernailtrimmed")
+print(pcoa_Factor_trimmed)
+
+pcoa_Factor_nailsdirty <- create_pcoa_plot("Arechildsfingernailsdirty")
+print(pcoa_Factor_nailsdirty)
+
+pcoa_Factor_nailsoften <- create_pcoa_plot("Howoftendoyoutrimyourfingernails")
+print(pcoa_Factor_nailsoften)
+
+pcoa_Factor_antibiotics <- create_pcoa_plot("Didyourparentsorhealthprofessionalsgaveyouotherantibiotics")
+print(pcoa_Factor_antibiotics)
+
+pcoa_Factor_deworming <- create_pcoa_plot("Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill")
+print(pcoa_Factor_deworming)
+
 ##Calculations of Significance:
 
 #PERMANOVA for FactorA
-```{r}
 library(vegan)
 distme1 <- get_dist(ps, distmethod ="bray")
 sampleda <- data.frame(sample_data(ps), check.names=FALSE)
