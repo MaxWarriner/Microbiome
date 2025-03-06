@@ -1,0 +1,534 @@
+\documentclass[4pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[margin=0.1in]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{setspace}
+\usepackage{multirow}
+\usepackage{multicol}
+
+\usepackage{floatrow}
+\DeclareFloatFont{tiny}{\tiny}% "scriptsize" is defined by floatrow, "tiny" not
+\floatsetup[table]{font=tiny}
+
+
+\begin{document}
+
+% Reduce line spacing
+\setstretch{0.9}
+
+% Begin multi-column environment
+\begin{multicols}{2}
+
+% ================== Table 1: Demographic and Personal Health (Part 1) ==================
+\begin{center}
+\begin{tabular}{p{5cm}r}
+\toprule
+\textbf{Demographic/Health Factor} & \textbf{Overall: N = 138} \\
+\midrule
+\textbf{Age} & \\
+6-9 years & 45 (32.6\%) \\
+10-13 years & 71 (51.4\%) \\
+14-17 years & 22 (15.9\%) \\
+\midrule
+\textbf{Sex} & \\
+Male & 57 (41.3\%) \\
+Female & 81 (58.7\%) \\
+\midrule
+\textbf{Weight (kg)} & \\
+15-35 & 87 (63.0\%) \\
+35-55 & 49 (35.5\%) \\
+\textgreater 55 & 2 (1.4\%) \\
+\midrule
+\textbf{Underweight} & \\
+Not Underweight & 62 (44.9\%) \\
+Underweight & 76 (55.1\%) \\
+\midrule
+\textbf{Height (m)} & \\
+\textless 1.15 & 7 (5.1\%) \\
+1.15-1.35 & 60 (43.5\%) \\
+1.35-1.55 & 59 (42.8\%) \\
+\textgreater 1.55 & 12 (8.7\%) \\
+\midrule
+\textbf{Growth Stunted} & \\
+Not Stunted & 107 (77.5\%) \\
+Stunted & 31 (22.5\%) \\
+\midrule
+\textbf{Mode of Delivery} & \\
+Vaginal & 126 (91.3\%) \\
+C-Section & 12 (8.7\%) \\
+\midrule
+\textbf{Ever Had Vaccination} & \\
+Yes & 45 (32.6\%) \\
+No & 93 (67.4\%) \\
+\midrule
+\textbf{BCG Scar} & \\
+Yes & 81 (58.7\%) \\
+No & 57 (41.3\%) \\
+\midrule
+\textbf{Deworming Pill} & \\
+Yes & 90 (65.2\%) \\
+No & 45 (32.6\%) \\
+NA/Don't Know & 3 (2.2\%) \\
+\midrule
+\textbf{Last Deworming Pill} & \\
+1-3 months & 15 (16.9\%) \\
+4-6 months & 5 (5.6\%) \\
+7-9 months & 62 (69.7\%) \\
+\textgreater 9 months & 1 (1.1\%) \\
+\midrule
+\textbf{Antibiotics Given} & \\
+Yes & 17 (12.3\%) \\
+No & 115 (83.3\%) \\
+NA/Don't Know & 6 (4.3\%) \\
+\midrule
+\textbf{Currently Prescribed Drug} & \\
+Yes & 6 (4.3\%) \\
+No & 128 (92.8\%) \\
+NA/Don't Know & 4 (2.9\%) \\
+\midrule
+\textbf{Anti-Malaria Drug in Last 3 Months} & \\
+Yes & 2 (1.4\%) \\
+No & 132 (95.6\%) \\
+NA/Don't Know & 4 (2.9\%) \\
+\midrule
+\textbf{Child Had Fever in Last 2 Weeks} & \\
+Yes & 26 (18.8\%) \\
+No & 110 (79.7\%) \\
+NA & 2 (1.4\%) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ================== Table 1: Demographic and Personal Health (Part 2) ==================
+\begin{center}
+\begin{tabular}{p{5cm}r}
+\toprule
+\textbf{Demographic/Health Factor} & \textbf{Overall: N = 138} \\
+\midrule
+\textbf{Currently Prescribed Drug} & \\
+Yes & 6 (4.3\%) \\
+No & 128 (92.8\%) \\
+NA/Don't Know & 4 (2.9\%) \\
+\midrule
+\textbf{Anti-Malaria Drug in Last 3 Months} & \\
+Yes & 2 (1.4\%) \\
+No & 132 (95.6\%) \\
+NA/Don't Know & 4 (2.9\%) \\
+\midrule
+\textbf{Child Had Fever in Last 2 Weeks} & \\
+Yes & 26 (18.8\%) \\
+No & 110 (79.7\%) \\
+NA & 2 (1.4\%) \\
+\midrule
+\textbf{Child Had Diarrhea in Last 2 Weeks} & \\
+Yes & 19 (13.8\%) \\
+No & 118 (85.5\%) \\
+\midrule
+\textbf{Child Had Cough in Last 2 Weeks} & \\
+Yes & 24 (17.4\%) \\
+No & 113 (81.9\%) \\
+NA & 1 (0.7\%) \\
+\midrule
+\textbf{Child's Fingernails Trimmed} & \\
+Yes & 79 (57.2\%) \\
+No & 59 (42.8\%) \\
+\midrule
+\textbf{Child Had Wheezing or Whistling in Chest} & \\
+Yes & 0 (0.0\%) \\
+No & 138 (100.0\%) \\
+\midrule
+\textbf{Wheezing Attacks in Last Year} & \\
+0 & 97 (70.3\%) \\
+1-3 & 41 (29.7\%) \\
+\midrule
+\textbf{Child Ever Had Asthma} & \\
+Yes & 0 (0.0\%) \\
+No & 138 (100.0\%) \\
+\midrule
+\textbf{Child Had Hay Fever or Persistent Sneezing} & \\
+Yes & 0 (0.0\%) \\
+No & 138 (100.0\%) \\
+\midrule
+\textbf{Child Ever Had Itchy Skin or Rash} & \\
+Yes & 6 (4.3\%) \\
+No & 132 (95.7\%) \\
+\midrule
+\textbf{Body Part Affected by Rash} & \\
+Elbow Folds & 14 (10.1\%) \\
+Behind the Knees & 6 (4.3\%) \\
+Under the Buttocks & 6 (4.3\%) \\
+Around the Neck & 6 (4.3\%) \\
+Front of the Ankles & 3 (2.2\%) \\
+Around the Eyes/Ears & 0 (0.0\%) \\
+\midrule
+\textbf{Child's Fingernails Dirty} & \\
+Yes & 59 (42.8\%) \\
+No & 79 (57.2\%) \\
+\midrule
+\textbf{Frequency of Trimming Child's Fingernails} & \\
+Once Per Week & 64 (46.4\%) \\
+Once Per Two Weeks & 57 (41.3\%) \\
+Less Than Once/Month & 11 (8.0\%) \\
+Don't Know & 6 (4.3\%) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ================== Table 2: Socioeconomic Factors (Part 1) ==================
+\begin{center}
+\begin{tabular}{p{5cm}r}
+\toprule
+\textbf{Socioeconomic Factors} & \textbf{Overall: N = 138} \\
+\midrule
+\textbf{Household Size} & \\
+2-3 & 6(4.3\%) \\
+4-6 & 91(65.9\%) \\
+7-9 & 37(26.8\%) \\
+\textgreater 9 & 4(2.9\%) \\
+\midrule
+\textbf{Older Siblings} & \\
+0 & 34(24.6\%) \\
+1-2 & 68(49.3\%) \\
+3-4 & 30(21.7\%) \\
+\textgreater 4 & 6(4.3\%) \\
+\midrule
+\textbf{Siblings Younger Than 12 Years Old} & \\
+0 & 28(20.3\%) \\
+1-2 & 87(63\%) \\
+3-4 & 22(15.9\%) \\
+\textgreater 4 & 1(0.7\%) \\
+\midrule
+\textbf{Knowledge of Intestinal Worm Transmission} & \\
+Yes & 61(44.2\%) \\
+No & 64(46.4\%) \\
+Don't Know & 13(9.4\%) \\
+\midrule
+\textbf{Knowledge of Why Worms Are Bad} & \\
+Yes & 68(49.3\%) \\
+No & 58(42\%) \\
+Don't Know & 12(8.7\%) \\
+\midrule
+\textbf{Knowledge of How to Avoid Worms} & \\
+Yes & 61(44.2\%) \\
+No & 65(47.1\%) \\
+Don't Know & 12(8.7\%) \\
+\midrule
+\textbf{Heard of Disease} & \\
+Ascharis & 83(60.1\%) \\
+Trichuris & 1(0.7\%) \\
+Hookworms & 2(1.4\%) \\
+HIV/AIDS & 94(68.1\%) \\
+Intestinal Worms & 91(65.9\%) \\
+Malaria & 98(71\%) \\
+Tuberculosis & 27(19.6\%) \\
+Schistosoma/Bilharzia & 11(8\%) \\
+None & 18(13\%) \\
+\midrule
+\textbf{Source of Disease Information} & \\
+Family & 76(55.1\%) \\
+Health Professional & 2(1.4\%) \\
+Teacher & 51(37\%) \\
+Media & 50(36.2\%) \\
+Don't Know & 17(12.3\%) \\
+\midrule
+\textbf{Residence} & \\
+Rural & 35(25.4\%) \\
+Urban & 103(74.6\%) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ================== Table 2: Socioeconomic Factors (Part 2) ==================
+\begin{center}
+\begin{tabular}{p{5cm}r}
+\toprule
+\textbf{Socioeconomic Factors} & \textbf{Overall: N = 138} \\
+\midrule
+\textbf{Family Occupation} & \\
+Police & 4(2.9\%) \\
+Teacher & 5(3.6\%) \\
+Carpenter & 9(6.5\%) \\
+Daily Labor & 9(6.5\%) \\
+Security & 9(6.5\%) \\
+Farmer & 15(10.9\%) \\
+Government Employee & 18(13\%) \\
+Merchant & 25(18.1\%) \\
+Other & 44(31.9\%) \\
+\midrule
+\textbf{Maternal Education Status} & \\
+Illiterate & 40(29\%) \\
+Primary School & 55(39.9\%) \\
+High School & 31(22.5\%) \\
+Higher Education & 8(5.8\%) \\
+Don't Know & 4(2.9\%) \\
+\midrule
+\textbf{Technology in Household} & \\
+Electricity & 129(93.5\%) \\
+Radio & 70(50.7\%) \\
+TV & 108(78.3\%) \\
+Family Member with Phone & 131(94.9\%) \\
+\midrule
+\textbf{Purpose of Phone Use} & \\
+Call/Radio/Internet & 74(53.6\%) \\
+Call Only & 58(42\%) \\
+Don't Know & 6(4.3\%) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ================== Table 3: Environmental Factors (Part 1) ==================
+\begin{center}
+\begin{tabular}{p{5cm}r}
+\toprule
+\textbf{Environmental Factors} & \textbf{Overall: N = 138} \\
+\midrule
+\textbf{Latrine in School} & \\
+Yes & 138(100\%) \\
+\midrule
+\textbf{Latrine Has Doors} & \\
+Yes & 78(56.5\%) \\
+No & 60(43.5\%) \\
+\midrule
+\textbf{Latrine Has Flies Around It} & \\
+Yes & 137(99.3\%) \\
+No & 1(0.7\%) \\
+\midrule
+\textbf{Latrine Has Visible Stool Around It} & \\
+Yes & 136(98.6\%) \\
+No & 1(0.07\%) \\
+Don't Know & 1(0.7\%) \\
+\midrule
+\textbf{Use of School's Latrine} & \\
+Never & 23(16.7\%) \\
+Sometimes & 108(78.3\%) \\
+Always & 5(3.6\%) \\
+NA/Don't Know & 2(1.4\%) \\
+\midrule
+\textbf{Family Owns a Latrine} & \\
+Yes & 136(98.6\%) \\
+No & 2(1.4\%) \\
+\midrule
+\textbf{Latrine Location} & \\
+Outside & 133(96.4\%) \\
+Inside & 1(0.7\%) \\
+NA/Don't Know & 4(2.9\%) \\
+\midrule
+\textbf{Distance from House to Latrine (m)} & \\
+0-5 & 21(15.2\%) \\
+5-10 & 54(39.1\%) \\
+10-20 & 56(40.6\%) \\
+\textgreater 20 & 1(0.7\%) \\
+NA/Don't Know & 6(4.3\%) \\
+\midrule
+\textbf{Distance from Kitchen to Latrine (m)} & \\
+0-5 & 30(21.7\%) \\
+5-10 & 59(42.8\%) \\
+10-20 & 40(29\%) \\
+\textgreater 20 & 1(0.7\%) \\
+NA/Don't Know & 8(5.8\%) \\
+\midrule
+\textbf{Latrine Connected To} & \\
+Well & 69(50\%) \\
+Ditch & 7(5.1\%) \\
+River & 5(3.6\%) \\
+Sewage & 1(0.7\%) \\
+NA/Don't Know & 56(40.6\%) \\
+\midrule
+\textbf{House Floor Material} & \\
+Dust & 51(37\%) \\
+Cement & 47(34.1\%) \\
+Plastic Covered & 6(4.3\%) \\
+Don't Know & 43(24.6\%) \\
+\midrule
+\textbf{Kitchen Location} & \\
+Separated & 126(91.3\%) \\
+Within House & 8(5.8\%) \\
+Don't Know & 4(2.9\%) \\
+\midrule
+\textbf{Kitchen Floor Material if Separated} & \\
+Dust & 113(81.9\%) \\
+Cement & 18(13\%) \\
+Don't Know & 7(5.1\%) \\
+\midrule
+\textbf{Kitchen Structures} & \\
+Roof & 124(89.9\%) \\
+Walls & 118(85.5\%) \\
+None & 5(3.6\%) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ================== Table 3: Environmental Factors (Part 2) ==================
+\begin{center}
+\begin{tabular}{p{5cm}r}
+\toprule
+\textbf{Environmental Factors} & \textbf{Overall: N = 138} \\
+\midrule
+\textbf{Cooking Fuel Use} & \\
+Coal & 114(82.6\%) \\
+Wood & 98(71\%) \\
+Electric & 58(42\%) \\
+Kerosene & 3(2.2\%) \\
+Gas & 1(0.7\%) \\
+\midrule
+\textbf{Animals in House/Compound} & \\
+Pets & 50(36.2\%) \\
+Chickens & 42(30.4\%) \\
+Sheep/Goats & 12(8.7\%) \\
+Cattle & 10(7.2\%) \\
+None & 59(42.8\%) \\
+\midrule
+\textbf{Portable Water} & \\
+Yes & 87(63\%) \\
+No & 48(34.8\%) \\
+Don't Know & 3(2.2\%) \\
+\midrule
+\textbf{Source of Water if Not Portable} & \\
+River & 21(30\%) \\
+Tap Water & 18(25.7\%) \\
+Neighbor & 17(24.3\%) \\
+Tank & 6(8.6\%) \\
+Well & 6(8.6\%) \\
+Truck & 1(1.4\%) \\
+\midrule
+\textbf{Water Treatment} & \\
+Yes & 21(15.2\%) \\
+No & 115(83.3\%) \\
+Don't Know & 2(1.4\%) \\
+\midrule
+\textbf{Method of Water Treatment} & \\
+Filter & 17(77.3\%) \\
+Boil & 2(9.1\%) \\
+Chemical & 2(9.1\%) \\
+Don't Know & 1(4.5\%) \\
+\midrule
+\textbf{Frequency of Bathing in River} & \\
+Never & 93(67.4\%) \\
+Sometimes & 41(29.7\%) \\
+Always & 3(2.2\%) \\
+NA/Don't Know & 1(0.7\%) \\
+\midrule
+\textbf{Frequency of Washing Clothes in River} & \\
+Never & 80(58\%) \\
+Sometimes & 49(35.5\%) \\
+Always & 9(6.5\%) \\
+\midrule
+\textbf{Frequency of Defecating in Open Field} & \\
+Never & 110(79.7\%) \\
+Sometimes & 27(19.6\%) \\
+Always & 0(0\%) \\
+NA/Don't Know & 1(0.7\%) \\
+\midrule
+\textbf{Use of Toilet Paper After Defecating} & \\
+Never & 13(9.4\%) \\
+Sometimes & 92(66.7\%) \\
+Always & 30(21.7\%) \\
+NA/Don't Know & 3(2.2\%) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ================== Table 3: Environmental Factors (Part 3) ==================
+\begin{center}
+\begin{tabular}{p{5cm}r}
+\toprule
+\textbf{Environmental Factors} & \textbf{Overall: N = 138} \\
+\midrule
+\textbf{Washing Hands After Using Toilet} & \\
+Never & 2(1.4\%) \\
+Sometimes & 67(48.6\%) \\
+Always & 69(50\%) \\
+\midrule
+\textbf{Method of Washing Hands After Toilet} & \\
+Water & 29(21\%) \\
+Soap and Water & 108(78.3\%) \\
+NA/Don't Know & 1(0.7\%) \\
+\midrule
+\textbf{Frequency of Using Soap After Toilet} & \\
+Never & 1(0.7\%) \\
+Sometimes & 104(75.4\%) \\
+Always & 23(16.7\%) \\
+NA/Don't Know & 10(7.2\%) \\
+\midrule
+\textbf{Washing Hands Before Eating} & \\
+Never & 1(0.7\%) \\
+Sometimes & 21(15.2\%) \\
+Always & 115(83.3\%) \\
+NA/Don't Know & 1(0.7\%) \\
+\midrule
+\textbf{Method of Washing Hands Before Eating} & \\
+Water & 19(13.8\%) \\
+Soap and Water & 117(84.8\%) \\
+NA/Don't Know & 2(1.4\%) \\
+\midrule
+\textbf{Frequency of Using Soap Before Eating} & \\
+Never & 0(0\%) \\
+Sometimes & 87(63\%) \\
+Always & 43(31.2\%) \\
+NA/Don't Know & 8(5.8\%) \\
+\midrule
+\textbf{Eating Soil} & \\
+Never & 124(89.9\%) \\
+Sometimes & 13(9.4\%) \\
+Always & 0(0\%) \\
+NA/Don't Know & 1(0.7\%) \\
+\midrule
+\textbf{Washing Fruit} & \\
+Never & 48(34.8\%) \\
+Sometimes & 81(58.7\%) \\
+Always & 8(5.8\%) \\
+NA/Don't Know & 1(0.7\%) \\
+\midrule
+\textbf{Favorite Fruit} & \\
+Mango & 53(38.4\%) \\
+Banana & 15(10.9\%) \\
+Avocado & 12(8.7\%) \\
+Apple & 7(5.1\%) \\
+Pineapple & 6(4.3\%) \\
+Other & 45(32.6\%) \\
+\midrule
+\textbf{Eating Raw or Under-cooked Vegetables} & \\
+Never & 1(0.7\%) \\
+Sometimes & 98(71\%) \\
+Always & 37(26.8\%) \\
+NA/Don't Know & 2(1.4\%) \\
+\midrule
+\textbf{Frequency of Washing Vegetables} & \\
+Never & 60(43.5\%) \\
+Sometimes & 44(31.9\%) \\
+Always & 7(5.1\%) \\
+NA/Don't Know & 27(19.6\%) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ================== Table 3: Environmental Factors (Part 4) ==================
+\begin{center}
+\begin{tabular}{p{5cm}r}
+\toprule
+\textbf{Environmental Factors} & \textbf{Overall: N = 138} \\
+\midrule
+\textbf{Walking Barefoot} & \\
+Never & 7(5.1\%) \\
+Sometimes & 61(44.2\%) \\
+Always & 69(50\%) \\
+NA/Don't Know & 1(0.7\%) \\
+\midrule
+\textbf{Preferred Footwear at Home} & \\
+Barefoot & 59(42.8\%) \\
+Sandals & 74(53.6\%) \\
+Shoes & 3(2.2\%) \\
+NA/Don't Know & 2(1.4\%) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+\end{multicols} % End multi-column environment
+
+\end{document}
