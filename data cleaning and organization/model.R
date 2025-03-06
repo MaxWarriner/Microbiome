@@ -57,24 +57,27 @@ summary(Chao1)
 
 #perform stepwise regression
 library(MASS)
-Shannon = stepAIC(Shannon, direction = "both", trace = FALSE) # Stepwise regression model
+Shannon = stepAIC(Shannon, direction = "both", trace = FALSE) # Stepwise regression model with shannon measure
 Shannon_summary <- summary(Shannon)
 shannon_coeffs <- data.frame(Shannon_summary$coefficients)
 
-Chao1 = stepAIC(Chao1, direction = "both", trace = FALSE)
+Chao1 = stepAIC(Chao1, direction = "both", trace = FALSE) #stepwise regression model with chao1 measure
 Chao1_summary <- summary(Chao1)
 Chao1_coeffs <- data.frame(Chao1_summary$coefficients)
 
 round_df <- function(df, digits) {
-  nums <- vapply(df, is.numeric, FUN.VALUE = logical(1))
+  nums <- vapply(df, is.numeric, FUN.VALUE = logical(1)) #function that rounds all the numbers in the dataframe
   
   df[,nums] <- round(df[,nums], digits = digits)
   
   (df)
 }
 
-shannon_coeffs <- round_df(shannon_coeffs, 4)
+shannon_coeffs <- round_df(shannon_coeffs, 4) #round each data frame to four decimal places
 Chao1_coeffs <- round_df(Chao1_coeffs, 4)
+
+
+#separate data frames based on which factor group they're apart of
 
 demographic_shannon <- shannon_coeffs[c("Age", "weight", "Height", "ModeofdeliveryVaginal", "EverhadvaccinatedYes", "BCGscarYES", "ChildsfingernailtrimmedYes", "ArechildsfingernailsdirtyYes", "HowoftendoyoutrimyourfingernailsOnce per Week", "HowoftendoyoutrimyourfingernailsOnce per two weeks", "HowoftendoyoutrimyourfingernailsDon't Know", "DidyourparentsteachersorhealthprofessionalsgaveyouadewormingpillNo", "DidyourparentsteachersorhealthprofessionalsgaveyouadewormingpillYes", "DidyourparentsorhealthprofessionalsgaveyouotherantibioticsNo", "DidyourparentsorhealthprofessionalsgaveyouotherantibioticsYes"),]
 socioeconomic_shannon <- shannon_coeffs[c("Household.Number","Siblings.Younger.than.12", "HeardALnamebefore", "HeardHIVnamebefore", "HeardInWormnamebefore", "HeardMalanamebefore","HeardTBnamebefore", "HeardSChnamebefore", "familytold", "HPtold", "Teachertold", "Mediatold", "DoyouknowhowintestinalwomstransmittedNo", "DoyouknowhowintestinalwomstransmittedYes", "DoyouknowwhywormsarebadforyourhealthNo", "DoyouknowwhywormsarebadforyourhealthYes", "YourlivingaddressHermata mentina", "YourlivingaddressJiren", "YourlivingaddressMentina", "YourlivingaddressOther", "YourlivingaddressSeto semero", "YourlivingaddressWelda", "FamilyoccupationDailly labor", "FamilyoccupationFarmer", "FamilyoccupationGovernment employee", "FamilyoccupationMerchant", "FamilyoccupationOther", "FamilyoccupationPolice man", "FamilyoccupationSecurity", "FamilyoccupationTeacher", "MaternaleducationalstatusPrimary School", "MaternaleducationalstatusHigh School", "MaternaleducationalstatusHigher Education", "MaternaleducationalstatusDon't Know", "DoyouhaveelectricityinyourhaouseNo", "DoyouhaveelectricityinyourhaouseYes", "DoesyourfamillyownradioNo", "DoesyourfamillyownradioYes", "DoesyourfamillymemberownaphoneNo", "DoesyourfamillymemberownaphoneYes"),]

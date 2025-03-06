@@ -83,12 +83,6 @@ a_diversity_factor_trimmed$layers[[2]] = NULL
 a_diversity_factor_trimmed <- a_diversity_factor_trimmed  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_trimmed)
 
-#fingernails trimmed
-a_diversity_factor_trimmed <- plot_richness(ps, x="Childsfingernailtrimmed", color="Childsfingernailtrimmed", measures=c("Chao1", "Shannon"))
-a_diversity_factor_trimmed$layers[[2]] = NULL 
-a_diversity_factor_trimmed <- a_diversity_factor_trimmed  + geom_boxplot() + theme_bw()
-print(a_diversity_factor_trimmed)
-
 #fingernails dirty
 a_diversity_factor_dirtynails <- plot_richness(ps, x="Arechildsfingernailsdirty", color="Arechildsfingernailsdirty", measures=c("Chao1", "Shannon"))
 a_diversity_factor_dirtynails$layers[[2]] = NULL 
@@ -100,6 +94,19 @@ a_diversity_factor_nailsoften <- plot_richness(ps, x="Howoftendoyoutrimyourfinge
 a_diversity_factor_nailsoften$layers[[2]] = NULL 
 a_diversity_factor_nailsoften <- a_diversity_factor_nailsoften  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_nailsoften)
+
+#antibiotic
+a_diversity_factor_antibiotic <- plot_richness(ps, x="Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", color="Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", measures=c("Chao1", "Shannon"))
+a_diversity_factor_antibiotic$layers[[2]] = NULL 
+a_diversity_factor_antibiotic <- a_diversity_factor_antibiotic  + geom_boxplot() + theme_bw()
+print(a_diversity_factor_antibiotic)
+
+#deworming
+a_diversity_factor_deworming <- plot_richness(ps, x="Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", color="Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", measures=c("Chao1", "Shannon"))
+a_diversity_factor_deworming$layers[[2]] = NULL 
+a_diversity_factor_deworming <- a_diversity_factor_deworming  + geom_boxplot() + theme_bw()
+print(a_diversity_factor_deworming)
+
 
 ##Calculations of Significance:
 #Wilcoxon Rank Sum Tests for FactorA
