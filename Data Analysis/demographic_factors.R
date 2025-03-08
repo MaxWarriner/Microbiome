@@ -60,30 +60,50 @@ a_diversity_factor_weight <- plot_richness(ps, x="weight", color="weight", measu
 a_diversity_factor_weight$layers[[2]] = NULL 
 a_diversity_factor_weight <- a_diversity_factor_weight  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_weight)
+ggsave(a_diversity_factor_sex, 
+       filename = "weight_boxplot.pdf",
+       device = "pdf",
+       height = 6, width = 5, units = "in")
 
 #Height
 a_diversity_factor_height <- plot_richness(ps, x="Height", color="Height", measures=c("Chao1", "Shannon"))
 a_diversity_factor_height$layers[[2]] = NULL 
 a_diversity_factor_height <- a_diversity_factor_height  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_height)
+ggsave(a_diversity_factor_height, 
+       filename = "height_boxplot.pdf",
+       device = "pdf",
+       height = 6, width = 5, units = "in")
 
 #Mode of delivery
 a_diversity_factor_Modeofdelivery <- plot_richness(ps, x="Modeofdelivery", color="Modeofdelivery", measures=c("Chao1", "Shannon"))
 a_diversity_factor_Modeofdelivery$layers[[2]] = NULL 
 a_diversity_factor_Modeofdelivery <- a_diversity_factor_Modeofdelivery  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_Modeofdelivery)
+ggsave(a_diversity_factor_Modeofdelivery, 
+       filename = "delivery_boxplot.pdf",
+       device = "pdf",
+       height = 6, width = 5, units = "in")
 
 #Vaccination
 a_diversity_factor_vaccine <- plot_richness(ps, x="Everhadvaccinated", color="Everhadvaccinated", measures=c("Chao1", "Shannon"))
 a_diversity_factor_vaccine$layers[[2]] = NULL 
 a_diversity_factor_vaccine <- a_diversity_factor_vaccine  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_vaccine)
+ggsave(a_diversity_factor_vaccine, 
+       filename = "vaccine_boxplot.pdf",
+       device = "pdf",
+       height = 6, width = 5, units = "in")
 
 #BCG scar
 a_diversity_factor_BCG <- plot_richness(ps, x="BCGscar", color="BCGscar", measures=c("Chao1", "Shannon"))
 a_diversity_factor_BCG$layers[[2]] = NULL 
 a_diversity_factor_BCG <- a_diversity_factor_BCG  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_BCG)
+ggsave(a_diversity_factor_BCG, 
+       filename = "BCG_boxplot.pdf",
+       device = "pdf",
+       height = 6, width = 5, units = "in")
 
 #fingernails trimmed
 a_diversity_factor_trimmed <- plot_richness(ps, x="Childsfingernailtrimmed", color="Childsfingernailtrimmed", measures=c("Chao1", "Shannon"))
@@ -96,29 +116,44 @@ a_diversity_factor_dirtynails <- plot_richness(ps, x="Arechildsfingernailsdirty"
 a_diversity_factor_dirtynails$layers[[2]] = NULL 
 a_diversity_factor_dirtynails <- a_diversity_factor_dirtynails  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_dirtynails)
+ggsave(a_diversity_factor_dirtynails, 
+       filename = "dirtynails_boxplot.pdf",
+       device = "pdf",
+       height = 6, width = 5, units = "in")
 
 #How often do you trim your fingernails
 a_diversity_factor_nailsoften <- plot_richness(ps, x="Howoftendoyoutrimyourfingernails", color="Howoftendoyoutrimyourfingernails", measures=c("Chao1", "Shannon"))
 a_diversity_factor_nailsoften$layers[[2]] = NULL 
 a_diversity_factor_nailsoften <- a_diversity_factor_nailsoften  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_nailsoften)
+ggsave(a_diversity_factor_nailsoften, 
+       filename = "nailsoften_boxplot.pdf",
+       device = "pdf",
+       height = 6, width = 5, units = "in")
 
 #antibiotic
 a_diversity_factor_antibiotic <- plot_richness(ps, x="Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", color="Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", measures=c("Chao1", "Shannon"))
 a_diversity_factor_antibiotic$layers[[2]] = NULL 
 a_diversity_factor_antibiotic <- a_diversity_factor_antibiotic  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_antibiotic)
+ggsave(a_diversity_factor_antibiotic, 
+       filename = "antibiotic_boxplot.pdf",
+       device = "pdf",
+       height = 6, width = 5, units = "in")
 
 #deworming
 a_diversity_factor_deworming <- plot_richness(ps, x="Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", color="Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", measures=c("Chao1", "Shannon"))
 a_diversity_factor_deworming$layers[[2]] = NULL 
 a_diversity_factor_deworming <- a_diversity_factor_deworming  + geom_boxplot() + theme_bw()
 print(a_diversity_factor_deworming)
+ggsave(a_diversity_factor_deworming, 
+       filename = "deworming_boxplot.pdf",
+       device = "pdf",
+       height = 6, width = 5, units = "in")
 
 
 ##Part II
 ##(a) Beta diversity using Bray distance
-#PCoA plots for FactorA and FactorB
 
 library(MicrobiotaProcess)
 # Define the function to create PCoA plots
@@ -129,6 +164,11 @@ create_pcoa_plot <- function(variable) {
   # Create PCoA plot
   pcoaplot <- ggordpoint(obj = pcoares, biplot = FALSE, speciesannot = TRUE,
                          factorNames = c(variable), ellipse = TRUE, linesize = 1.5)
+  
+  ggsave(pcoaplot, 
+         filename = paste(variable, "_pcoa_bray.pdf", sep = ""),
+         device = "pdf",
+         height = 6, width = 8, units = "in")
   
   return(pcoaplot)
 }
@@ -172,29 +212,52 @@ print(pcoa_Factor_deworming)
 
 ##Calculations of Significance:
 
-#PERMANOVA for FactorA
 library(vegan)
-distme1 <- get_dist(ps, distmethod ="bray")
-sampleda <- data.frame(sample_data(ps), check.names=FALSE)
-sampleda <- sampleda[match(colnames(as.matrix(distme1)),rownames(sampleda)),,drop=FALSE]
-set.seed(1024)
-adores1 <- adonis2(distme1 ~ FactorA, data=sampleda, permutations=999)
-adores1
-```
 
-#PERMANOVA for FactorB
-```{r}
-distme1 <- get_dist(ps, distmethod ="bray")
+distme <- get_dist(ps, distmethod ="bray")
 sampleda <- data.frame(sample_data(ps), check.names=FALSE)
-sampleda <- sampleda[match(colnames(as.matrix(distme1)),rownames(sampleda)),,drop=FALSE]
+sampleda <- sampleda[match(colnames(as.matrix(distme)),rownames(sampleda)),,drop=FALSE]
 set.seed(1024)
-adores1 <- adonis2(distme1 ~ FactorB, data=sampleda, permutations=999)
-adores1
-```
+
+adores_age <- adonis2(distme ~ Age, data=sampleda, permutations=999) #p-value = 0.655
+adores_age
+
+adores_sex <- adonis2(distme ~ Sex, data=sampleda, permutations=999) #p-value = 0.34
+adores_sex
+
+adores_weight <- adonis2(distme ~ weight, data=sampleda, permutations=999) #p-value = 0.102
+adores_weight
+
+adores_height <- adonis2(distme ~ Height, data=sampleda, permutations=999) #p-value = 0.494
+adores_height
+
+adores_delivery <- adonis2(distme ~ Modeofdelivery, data=sampleda, permutations=999) #p-value = 0.683
+adores_delivery
+
+adores_vaccine <- adonis2(distme ~ Everhadvaccinated, data=sampleda, permutations=999) #p-value = 0.567
+adores_vaccine
+
+adores_BCG <- adonis2(distme ~ BCGscar, data=sampleda, permutations=999) #p-value = 0.546
+adores_BCG
+
+adores_trimmed <- adonis2(distme ~ Childsfingernailtrimmed, data=sampleda, permutations=999) #p-value = 0.503
+adores_trimmed
+
+adores_dirtynails <- adonis2(distme ~ Arechildsfingernailsdirty, data=sampleda, permutations=999) #p-value = 0.641
+adores_dirtynails
+
+adores_nailsoften <- adonis2(distme ~ Howoftendoyoutrimyourfingernails, data=sampleda, permutations=999) #p-value = 0.708
+adores_nailsoften
+
+adores_antibiotics <- adonis2(distme ~ Didyourparentsorhealthprofessionalsgaveyouotherantibiotics, data=sampleda, permutations=999) #p-value = 0.842
+adores_antibiotics
+
+adores_deworming <- adonis2(distme ~ Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill, data=sampleda, permutations=999) #p-value = 0.214
+adores_deworming
+
 
 ##(b) Beta diversity using Jaccard distance
-#PCoA plots for FactorA and FactorB
-```{r}
+
 library(MicrobiotaProcess)
 # Define the function to create PCoA plots
 create_pcoa_plot <- function(variable) {
@@ -203,51 +266,109 @@ create_pcoa_plot <- function(variable) {
   
   # Create PCoA plot
   pcoaplot <- ggordpoint(obj = pcoares, biplot = FALSE, speciesannot = TRUE,
-                         factorNames = c(variable), ellipse = TRUE) +
-    scale_color_manual(values = c("#00AED7", "#FD9347")) +
-    scale_fill_manual(values = c("#00AED7", "#FD9347"))
+                         factorNames = c(variable), ellipse = TRUE)
+  
+  ggsave(pcoaplot, 
+         filename = paste(variable, "_pcoa_jaccard.pdf", sep = ""),
+         device = "pdf",
+         height = 6, width = 8, units = "in")
   
   return(pcoaplot)
 }
 
 # Create plots for each variable
-pcoa_FactorA <- create_pcoa_plot("FactorA")
-pcoa_FactorB <- create_pcoa_plot("FactorB")
+pcoa_Factor_age <- create_pcoa_plot("Age")
+print(pcoa_Factor_age)
 
-# Combine all plots into a panel
-combined_pcoa_plot <- (pcoa_FactorA | pcoa_FactorB)
+pcoa_Factor_sex <- create_pcoa_plot("Sex")
+print(pcoa_Factor_sex)
 
-# Display the combined plot
-print(combined_pcoa_plot)
-```
+pcoa_Factor_weight <- create_pcoa_plot("weight")
+print(pcoa_Factor_weight)
+
+pcoa_Factor_height <- create_pcoa_plot("Height")
+print(pcoa_Factor_height)
+
+pcoa_Factor_delivery <- create_pcoa_plot("Modeofdelivery")
+print(pcoa_Factor_delivery)
+
+pcoa_Factor_vaccine <- create_pcoa_plot("Everhadvaccinated")
+print(pcoa_Factor_vaccine)
+
+pcoa_Factor_BCG <- create_pcoa_plot("BCGscar")
+print(pcoa_Factor_BCG)
+
+pcoa_Factor_trimmed <- create_pcoa_plot("Childsfingernailtrimmed")
+print(pcoa_Factor_trimmed)
+
+pcoa_Factor_nailsdirty <- create_pcoa_plot("Arechildsfingernailsdirty")
+print(pcoa_Factor_nailsdirty)
+
+pcoa_Factor_nailsoften <- create_pcoa_plot("Howoftendoyoutrimyourfingernails")
+print(pcoa_Factor_nailsoften)
+
+pcoa_Factor_antibiotics <- create_pcoa_plot("Didyourparentsorhealthprofessionalsgaveyouotherantibiotics")
+print(pcoa_Factor_antibiotics)
+
+pcoa_Factor_deworming <- create_pcoa_plot("Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill")
+print(pcoa_Factor_deworming)
+
+
 
 ##Calculations of significance:
 
-#PERMANOVA for FactorA
-```{r}
-library(vegan)
-distme1 <- get_dist(ps, distmethod ="jaccard")
-sampleda <- data.frame(sample_data(ps), check.names=FALSE)
-sampleda <- sampleda[match(colnames(as.matrix(distme1)),rownames(sampleda)),,drop=FALSE]
-set.seed(1024)
-adores1 <- adonis2(distme1 ~ FactorA, data=sampleda, permutations=999)
-adores1
-```
+#PERMANOVA: Jaccard's distance
 
-#PERMANOVA for FactorB
-```{r}
-distme1 <- get_dist(ps, distmethod ="jaccard")
+library(vegan)
+distme <- get_dist(ps, distmethod ="jaccard")
 sampleda <- data.frame(sample_data(ps), check.names=FALSE)
-sampleda <- sampleda[match(colnames(as.matrix(distme1)),rownames(sampleda)),,drop=FALSE]
+sampleda <- sampleda[match(colnames(as.matrix(distme)),rownames(sampleda)),,drop=FALSE]
 set.seed(1024)
-adores1 <- adonis2(distme1 ~ FactorB, data=sampleda, permutations=999)
-adores1
-```
+
+adores_age <- adonis2(distme ~ Age, data=sampleda, permutations=999) #p-value = 0.49
+adores_age
+
+adores_sex <- adonis2(distme ~ Sex, data=sampleda, permutations=999) #p-value = 0.272
+adores_sex
+
+adores_weight <- adonis2(distme ~ weight, data=sampleda, permutations=999) #p-value = 0.094 
+adores_weight
+
+adores_height <- adonis2(distme ~ Height, data=sampleda, permutations=999) #p-value = 0.466
+adores_height
+
+adores_delivery <- adonis2(distme ~ Modeofdelivery, data=sampleda, permutations=999) #p-value = 0.673
+adores_delivery
+
+adores_vaccine <- adonis2(distme ~ Everhadvaccinated, data=sampleda, permutations=999) #p-value = 0.526
+adores_vaccine
+
+adores_BCG <- adonis2(distme ~ BCGscar, data=sampleda, permutations=999) #p-value = 0.601
+adores_BCG
+
+adores_trimmed <- adonis2(distme ~ Childsfingernailtrimmed, data=sampleda, permutations=999) #p-value = 0.474
+adores_trimmed
+
+adores_dirtynails <- adonis2(distme ~ Arechildsfingernailsdirty, data=sampleda, permutations=999) #p-value = 0.653
+adores_dirtynails
+
+adores_nailsoften <- adonis2(distme ~ Howoftendoyoutrimyourfingernails, data=sampleda, permutations=999) #p-value = 0.689
+adores_nailsoften
+
+adores_antibiotics <- adonis2(distme ~ Didyourparentsorhealthprofessionalsgaveyouotherantibiotics, data=sampleda, permutations=999) #p-value = 0.879
+adores_antibiotics
+
+adores_deworming <- adonis2(distme ~ Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill, data=sampleda, permutations=999) #p-value = 0.213
+adores_deworming
+
+
+
+
 
 ##Part III
 ##Overall microbial abundance "at the Phylum level" across different conditions (in one panel)
 
-```{r}
+
 # Define the function to create bar plots with titles
 create_phylum_barplot <- function(variable) {
   phylumtaxa <- get_taxadf(obj = ps, taxlevel = 2)
@@ -257,28 +378,61 @@ create_phylum_barplot <- function(variable) {
     labs(title = variable) +  # Add variable name as the title
     scale_fill_manual(values = c(colorRampPalette(RColorBrewer::brewer.pal(12, "Set3"))(31))) +
     guides(fill = guide_legend(keywidth = 0.5, keyheight = 0.5, ncol = 2))
+  
+  ggsave(barplot, 
+         filename = paste(variable, "_phylum_barplot.pdf", sep = ""),
+         device = "pdf",
+         height = 6, width = 8, units = "in")
+  
   return(barplot)
 }
 
 # Create plots for each variable
-barplot_phylum_FactorA <- create_phylum_barplot("FactorA")
-barplot_phylum_FactorB <- create_phylum_barplot("FactorB")
+phylum_Factor_age <- create_phylum_barplot("Age")
+print(phylum_Factor_age)
 
-# Combine all plots into a panel
-combined_phylum_barplot <- (barplot_phylum_FactorA | barplot_phylum_FactorB)
+phylum_Factor_sex <- create_phylum_barplot("Sex")
+print(phylum_Factor_sex)
 
-# Display the combined plot
-print(combined_phylum_barplot)
+phylum_Factor_weight <- create_phylum_barplot("weight")
+print(phylum_Factor_weight)
 
-```
+phylum_Factor_height <- create_phylum_barplot("Height")
+print(phylum_Factor_height)
 
-Microbial Abundance by Phylum Across Different Conditions
+phylum_Factor_delivery <- create_phylum_barplot("Modeofdelivery")
+print(phylum_Factor_delivery)
 
-Stacked bar plots showing the relative abundance of microbial phyla in all samples, grouped by a) FactorA and b) FactorB. Each bar represents the average relative abundance of the top five phyla, with "Others" representing the remaining phyla.
+phylum_Factor_vaccine <- create_phylum_barplot("Everhadvaccinated")
+print(phylum_Factor_vaccine)
+
+phylum_Factor_BCG <- create_phylum_barplot("BCGscar")
+print(phylum_Factor_BCG)
+
+phylum_Factor_trimmed <- create_phylum_barplot("Childsfingernailtrimmed")
+print(phylum_Factor_trimmed)
+
+phylum_Factor_nailsdirty <- create_phylum_barplot("Arechildsfingernailsdirty")
+print(phylum_Factor_nailsdirty)
+
+phylum_Factor_nailsoften <- create_phylum_barplot("Howoftendoyoutrimyourfingernails")
+print(phylum_Factor_nailsoften)
+
+phylum_Factor_antibiotics <- create_phylum_barplot("Didyourparentsorhealthprofessionalsgaveyouotherantibiotics")
+print(phylum_Factor_antibiotics)
+
+phylum_Factor_deworming <- create_phylum_barplot("Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill")
+print(phylum_Factor_deworming)
+
+
+
+#Microbial Abundance by Phylum Across Different Conditions
+
+#Stacked bar plots showing the relative abundance of microbial phyla in all samples, grouped by a) FactorA and b) FactorB. Each bar represents the average relative abundance of the top five phyla, with "Others" representing the remaining phyla.
 
 ##Overall microbial abundance "at the Family level" across different conditions (in one panel)
 
-```{r}
+
 # Define the function to create bar plots at the family level
 create_family_barplot <- function(variable) {
   familytaxa <- get_taxadf(obj = ps, taxlevel = 5)
@@ -288,28 +442,62 @@ create_family_barplot <- function(variable) {
     labs(title = variable) +  # Add variable name as the title
     scale_fill_manual(values = c(colorRampPalette(RColorBrewer::brewer.pal(12, "Set3"))(31))) +
     guides(fill = guide_legend(keywidth = 0.5, keyheight = 0.5, ncol = 2))
+  
+  ggsave(barplot, 
+         filename = paste(variable, "_family_barplot.pdf", sep = ""),
+         device = "pdf",
+         height = 6, width = 8, units = "in")
+  
   return(barplot)
 }
 
-# Create plots for each variable
-barplot_family_FactorA <- create_family_barplot("FactorA")
-barplot_family_FactorB <- create_family_barplot("FactorB")
+# Create plots for each variable 
+family_Factor_age <- create_family_barplot("Age")
+print(family_Factor_age)
 
-# Combine all plots into a panel
-combined_family_barplot <- (barplot_family_FactorA | barplot_family_FactorB) 
+family_Factor_sex <- create_family_barplot("Sex")
+print(family_Factor_sex)
 
-# Display the combined plot
-print(combined_family_barplot)
-```
+family_Factor_weight <- create_family_barplot("weight")
+print(family_Factor_weight)
+
+family_Factor_height <- create_family_barplot("Height")
+print(family_Factor_height)
+
+family_Factor_delivery <- create_family_barplot("Modeofdelivery")
+print(family_Factor_delivery)
+
+family_Factor_vaccine <- create_family_barplot("Everhadvaccinated")
+print(family_Factor_vaccine)
+
+family_Factor_BCG <- create_family_barplot("BCGscar")
+print(family_Factor_BCG)
+
+family_Factor_trimmed <- create_family_barplot("Childsfingernailtrimmed")
+print(family_Factor_trimmed)
+
+family_Factor_nailsdirty <- create_family_barplot("Arechildsfingernailsdirty")
+print(family_Factor_nailsdirty)
+
+family_Factor_nailsoften <- create_family_barplot("Howoftendoyoutrimyourfingernails")
+print(family_Factor_nailsoften)
+
+family_Factor_antibiotics <- create_family_barplot("Didyourparentsorhealthprofessionalsgaveyouotherantibiotics")
+print(family_Factor_antibiotics)
+
+family_Factor_deworming <- create_family_barplot("Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill")
+print(family_Factor_deworming)
 
 
-Microbial Abundance by Family Across Different Conditions
 
-Stacked bar plots showing the relative abundance of microbial families in all samples, grouped by a) FactorA and b) FactorB. Each bar represents the average relative abundance of the top ten families, with "Others" representing the remaining families. 
+
+#Microbial Abundance by Family Across Different Conditions
+
+#Stacked bar plots showing the relative abundance of microbial families in all samples, grouped by a) FactorA and b) FactorB. Each bar represents the average relative abundance of the top ten families, with "Others" representing the remaining families. 
 
 ##Overall microbial abundance "at the Genus level" across different conditions (in one panel)
 
-```{r}
+
 # Define the function to create bar plots at the genus level
 create_genus_barplot <- function(variable) {
   genustaxa <- get_taxadf(obj = ps, taxlevel = 6)
@@ -321,31 +509,64 @@ create_genus_barplot <- function(variable) {
     guides(fill = guide_legend(keywidth = 0.5, keyheight = 0.5, ncol = 2)) +
     theme_classic() +
     theme(strip.background = element_blank(), axis.text.x.bottom = element_text(angle = -90))
+  
+  ggsave(barplot, 
+         filename = paste(variable, "_genus_barplot.pdf", sep = ""),
+         device = "pdf",
+         height = 6, width = 8, units = "in")
+  
   return(barplot)
 }
 
-# Create plots for each variable
-barplot_genus_FactorA <- create_genus_barplot("FactorA")
-barplot_genus_FactorB <- create_genus_barplot("FactorB")
+# Create plots for each variable 
+genus_Factor_age <- create_genus_barplot("Age")
+print(genus_Factor_age)
 
-# Combine all plots into a panel
-combined_genus_barplot <- (barplot_genus_FactorA | barplot_genus_FactorB )
+genus_Factor_sex <- create_genus_barplot("Sex")
+print(genus_Factor_sex)
 
-# Display the combined plot
-print(combined_genus_barplot)
-```
+genus_Factor_weight <- create_genus_barplot("weight")
+print(genus_Factor_weight)
+
+genus_Factor_height <- create_genus_barplot("Height")
+print(genus_Factor_height)
+
+genus_Factor_delivery <- create_genus_barplot("Modeofdelivery")
+print(genus_Factor_delivery)
+
+genus_Factor_vaccine <- create_genus_barplot("Everhadvaccinated")
+print(genus_Factor_vaccine)
+
+genus_Factor_BCG <- create_genus_barplot("BCGscar")
+print(genus_Factor_BCG)
+
+genus_Factor_trimmed <- create_genus_barplot("Childsfingernailtrimmed")
+print(genus_Factor_trimmed)
+
+genus_Factor_nailsdirty <- create_genus_barplot("Arechildsfingernailsdirty")
+print(genus_Factor_nailsdirty)
+
+genus_Factor_nailsoften <- create_genus_barplot("Howoftendoyoutrimyourfingernails")
+print(genus_Factor_nailsoften)
+
+genus_Factor_antibiotics <- create_genus_barplot("Didyourparentsorhealthprofessionalsgaveyouotherantibiotics")
+print(genus_Factor_antibiotics)
+
+genus_Factor_deworming <- create_genus_barplot("Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill")
+print(genus_Factor_deworming)
 
 
-Microbial Abundance by Genus Across Different Conditions
 
-Stacked bar plots showing the relative abundance of microbial genera in all samples, grouped by a) FactorA and b) FactorB. Each bar represents the average relative abundance of the top fifteen genera, with "Others" representing the remaining genera. 
+#Microbial Abundance by Genus Across Different Conditions
+
+#Stacked bar plots showing the relative abundance of microbial genera in all samples, grouped by a) FactorA and b) FactorB. Each bar represents the average relative abundance of the top fifteen genera, with "Others" representing the remaining genera. 
 
 ##Part IV: Differential Abundance Analysis using ALDEx2 and Volcano plots
 
 ##FactorA, BEFORE multiple testing correction
 #Volcano plots of differentially abundant taxa according to ALEDX2 results between "FactorA" positive and "FactorA" negative at the phylum, family, and genus levels (BEFORE multiple testing correction)
 
-```{r}
+
 library(ALDEx2)
 # Function to create volcano plots for taxonomic levels
 create_volcano_plot <- function(ps_obj, taxlevel, condition_col) {
@@ -400,24 +621,25 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col) {
     xlab("log2(fold change)") +
     ylab("-log10(P-value)") +
     theme(legend.position = "none") +
-    scale_color_manual(values = c("black", "red")) +
     ggtitle(paste("Taxonomic Level:", tax_col))
   
   return(p)
 }
 
 # Create volcano plots for each taxonomic level
-volcano_plot_phylum <- create_volcano_plot(ps, 2, "FactorA")
-volcano_plot_family <- create_volcano_plot(ps, 5, "FactorA")
-volcano_plot_genus <- create_volcano_plot(ps, 6, "FactorA")
-
-# Combine all plots into a panel
-combined_volcano_plot <- (volcano_plot_phylum | volcano_plot_family) / (volcano_plot_genus)
-
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Age")
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Age")
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Age")
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
 # Display the combined plot
-print(combined_volcano_plot)
+print(combined_volcano_plot_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "age_volcano.pdf",
+       device = "pdf",
+       height = 6, width = 8, units = "in")
 
-```
+
+
 Differentially Abundant Taxa Between FactorA Positive and Negative Groups (Before multiple testing correction)
 
 Volcano plots displaying differentially abundant taxa according to ALDEx2 results at various taxonomic levels: A) Phylum, B) Family, and C) Genus. Taxa with P-values (we.ep) less than 0.05, before multiple testing correction, are highlighted in red. 
