@@ -5,7 +5,10 @@ date: "2025-02-06"
 ---
 #If there's any questions, feel free to ask me in lab or email me: ybi@colgate.edu! --Christine
 
-##Part 0: data/phyloseq preprocessing
+
+# ## Part 0: data/phyloseq preprocessing -----------------------------------
+
+
 
 #Import the phyloseq object 
 #Assume your R code, biom file, tree file, and new columns (csv) file are all in the same folder
@@ -28,8 +31,8 @@ new_tax_labels <- c("Kingdom", "Phylum", "Class", "Order", "Family", "Genus", "S
 tax_table(ps) <- tax_table_ps
 ##Microbiome analysis:
 
-## Part I
-## Alpha Diversity (Chao1 and Shannon indices)
+
+# ## Part I : Alpha Diversity (Chao1 and Shannon indices) -----------------
 
 library(ggrepel)
 library(patchwork)
@@ -152,8 +155,8 @@ ggsave(a_diversity_factor_deworming,
        height = 6, width = 5, units = "in")
 
 
-##Part II
-##(a) Beta diversity using Bray distance
+
+# ## Part II (a) Beta diversity using Bray distance ----------------------
 
 library(MicrobiotaProcess)
 # Define the function to create PCoA plots
@@ -362,12 +365,7 @@ adores_deworming <- adonis2(distme ~ Didyourparentsteachersorhealthprofessionals
 adores_deworming
 
 
-
-
-
-##Part III
-##Overall microbial abundance "at the Phylum level" across different conditions (in one panel)
-
+# ## Part III ##Overall microbial abundance "at the Phylum, Genus and Family Level --------
 
 # Define the function to create bar plots with titles
 create_phylum_barplot <- function(variable) {
@@ -557,11 +555,8 @@ print(genus_Factor_deworming)
 
 
 
-#Microbial Abundance by Genus Across Different Conditions
+# ## Part IV: Differential Abundance Analysis using ALDEx2 and Volc --------
 
-#Stacked bar plots showing the relative abundance of microbial genera in all samples, grouped by a) FactorA and b) FactorB. Each bar represents the average relative abundance of the top fifteen genera, with "Others" representing the remaining genera. 
-
-##Part IV: Differential Abundance Analysis using ALDEx2 and Volcano plots
 
 ##FactorA, BEFORE multiple testing correction
 #Volcano plots of differentially abundant taxa according to ALEDX2 results between "FactorA" positive and "FactorA" negative at the phylum, family, and genus levels (BEFORE multiple testing correction)
@@ -569,10 +564,13 @@ print(genus_Factor_deworming)
 
 library(ALDEx2)
 # Function to create volcano plots for taxonomic levels
-create_volcano_plot <- function(ps_obj, taxlevel, condition_col) {
-  metadata <- as.data.frame(sample_data(ps_obj))  # Extract metadata
-  SVs <- as.data.frame(otu_table(ps_obj))         # Extract OTU table
-  taxonomy <- as.data.frame(phyloseq::tax_table(ps_obj))    # Extract taxonomy
+
+metadata <- as.data.frame(sample_data(ps))  # Extract metadata
+SVs <- as.data.frame(otu_table(ps))         # Extract OTU table
+SVs <- data.frame(t(SVs))
+taxonomy <- as.data.frame(phyloseq::tax_table(ps))    # Extract taxonomy
+
+create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, taxonomy) {
   
   # Ensure that taxonomy contains the specified level
   tax_col <- colnames(taxonomy)[taxlevel]
@@ -583,24 +581,31 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col) {
   
   # Combine SVs with taxonomy to match the specified level
   SVs_with_taxonomy <- as.data.frame(SVs) %>%
-    rownames_to_column(var = "OTU_name") %>%
+    rownames_to_column(var = "OTU_name")
+  
+  SVs_with_taxonomy <- SVs_with_taxonomy |>
     left_join(taxonomy, by = "OTU_name")
   
   # Aggregate the SVs data to the specified taxonomic level
   tax_level_SVs <- SVs_with_taxonomy %>%
     dplyr::select(-OTU_name) %>%
-    group_by(!!sym(tax_col)) %>%
-    summarise(across(everything(), ~sum(.x, na.rm = TRUE)))%>%
+    group_by(!!sym(tax_col))
+  
+  tax_level_SVs <- tax_level_SVs |>
+    summarise(across(everything(), ~sum(.x, na.rm = TRUE)))
+    
+  tax_level_SVs <- tax_level_SVs |>
     filter(!!sym(tax_col) != "none") %>%
     column_to_rownames(var = tax_col)
   
   # Convert to matrix for ALDEx2 analysis
   tax_level_SVs <- as.matrix(tax_level_SVs)
   
-  condition <- as.character(as.factor(metadata[[condition_col]]))
+  condition <- as.character(as.factor(metadata[[condition_col]])) |>
+    
   
   # Run ALDEx2 analysis
-  aldex_data <- aldex(tax_level_SVs, conditions = condition, mc.samples = 128, test = "t", effect = TRUE)
+  aldex_data <- aldex(tax_level_SVs, conditions = condition, mc.samples = 138, test = "t", effect = TRUE)
   
   # Combine t-test and effect size results
   results <- data.frame(aldex_data)
@@ -613,66 +618,117 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col) {
   p <- results %>%
     mutate(Significant = if_else(we.ep < 0.05, TRUE, FALSE)) %>%
     mutate(Taxon = as.character(!!sym(tax_col))) %>%
-    mutate(TaxonToPrint = if_else(we.ep < 0.05, Taxon, "")) %>%
+    mutate(TaxonToPrint = if_else(we.ep < 0.05, paste(Taxon, "(", round(we.ep,3) , ")", sep = ""), "")) |>
     ggplot(aes(x = diff.btw, y = -log10(we.ep), color = Significant, label = TaxonToPrint)) +
-    geom_text_repel(size = 2, nudge_y = 0.05, max.overlaps = Inf) +  # Increase max.overlaps
+    geom_text_repel(size = 4, nudge_y = 0.05, max.overlaps = Inf) +  # Increase max.overlaps
     geom_point(alpha = 0.6, shape = 16) +
     theme_minimal() +  
     xlab("log2(fold change)") +
     ylab("-log10(P-value)") +
     theme(legend.position = "none") +
-    ggtitle(paste("Taxonomic Level:", tax_col))
+    ggtitle(paste("Factor:", condition_col,"-- Taxonomic Level:", tax_col))
+  
   
   return(p)
 }
 
 # Create volcano plots for each taxonomic level
-volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Age")
-volcano_plot_family_age <- create_volcano_plot(ps, 5, "Age")
-volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Age")
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Sex", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Sex", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Sex", metadata, SVs, taxonomy)
 combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
-# Display the combined plot
-print(combined_volcano_plot_age)
 ggsave(combined_volcano_plot_age, 
-       filename = "age_volcano.pdf",
+       filename = "sex_volcano.pdf",
        device = "pdf",
-       height = 6, width = 8, units = "in")
+       height = 8, width = 12, units = "in")
 
 
-
-Differentially Abundant Taxa Between FactorA Positive and Negative Groups (Before multiple testing correction)
-
-Volcano plots displaying differentially abundant taxa according to ALDEx2 results at various taxonomic levels: A) Phylum, B) Family, and C) Genus. Taxa with P-values (we.ep) less than 0.05, before multiple testing correction, are highlighted in red. 
-
-##FactorB, BEFORE multiple testing correction
-#Volcano plots of differentially abundant taxa according to ALEDX2 results between "FactorB" positive and "FactorB" negative at the phylum, family, and genus levels (BEFORE multiple testing correction)
-
-```{r}
-#After running the chunk above, run this.
 # Create volcano plots for each taxonomic level
-volcano_plot_phylum <- create_volcano_plot(ps, 2, "FactorB")
-volcano_plot_family <- create_volcano_plot(ps, 5, "FactorB")
-volcano_plot_genus <- create_volcano_plot(ps, 6, "FactorB")
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Modeofdelivery", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Modeofdelivery", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Modeofdelivery", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "delivery_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
 
-# Combine all plots into a panel
-combined_volcano_plot <- (volcano_plot_phylum | volcano_plot_family) / (volcano_plot_genus)
 
-# Display the combined plot
-print(combined_volcano_plot)
-```
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Everhadvaccinated", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Everhadvaccinated", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Everhadvaccinated", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "vaccine_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
 
-Differentially Abundant Taxa Between FactorB Positive and Negative Groups (Before multiple testing correction)
 
-Volcano plots displaying differentially abundant taxa according to ALDEx2 results at various taxonomic levels: A) Phylum, B) Family, and C) Genus. Taxa with P-values (we.ep) less than 0.05, before multiple testing correction, are highlighted in red.
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Childsfingernailtrimmed", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Childsfingernailtrimmed", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Childsfingernailtrimmed", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "trimmednails_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
+
+
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "BCGscar", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "BCGscar", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "BCGscar", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "BCG_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
+
+
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Arechildsfingernailsdirty", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Arechildsfingernailsdirty", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Arechildsfingernailsdirty", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "dirtynails_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
+
+
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "antibiotics_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
+
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "deworming_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
 
 
 ##FactorA, AFTER multiple testing correction
-```{r}
+
+
 # Function to create volcano plots for taxonomic levels
-create_volcano_plot <- function(ps_obj, taxlevel, condition_col) {
-  metadata <- as.data.frame(sample_data(ps_obj))  # Extract metadata
-  SVs <- as.data.frame(otu_table(ps_obj))         # Extract OTU table
-  taxonomy <- as.data.frame(phyloseq::tax_table(ps_obj))    # Extract taxonomy
+create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, taxonomy) {
   
   # Ensure that taxonomy contains the specified level
   tax_col <- colnames(taxonomy)[taxlevel]
@@ -713,7 +769,7 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col) {
   p <- results %>%
     mutate(Significant = if_else(wi.eBH < 0.1, TRUE, FALSE)) %>%
     mutate(Taxon = as.character(!!sym(tax_col))) %>%
-    mutate(TaxonToPrint = if_else(wi.eBH < 0.1, Taxon, "")) %>%
+    mutate(TaxonToPrint = if_else(wi.eBH < 0.05, paste(Taxon, "(", round(wi.eBH,3) , ")", sep = ""), "")) |>
     ggplot(aes(x = diff.btw, y = -log10(we.ep), color = Significant, label = TaxonToPrint)) +
     geom_text_repel(size = 2, nudge_y = 0.05, max.overlaps = Inf) +  # Increase max.overlaps
     geom_point(alpha = 0.6, shape = 16) +
@@ -727,17 +783,98 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col) {
   return(p)
 }
 
+
 # Create volcano plots for each taxonomic level
-volcano_plot_phylum <- create_volcano_plot(ps, 2, "FactorA")
-volcano_plot_family <- create_volcano_plot(ps, 5, "FactorA")
-volcano_plot_genus <- create_volcano_plot(ps, 6, "FactorA")
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Sex", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Sex", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Sex", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "sex_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
 
-# Combine all plots into a panel
-combined_volcano_plot <- (volcano_plot_phylum | volcano_plot_family) / (volcano_plot_genus)
 
-# Display the combined plot
-print(combined_volcano_plot)
-```
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Modeofdelivery", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Modeofdelivery", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Modeofdelivery", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "delivery_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
+
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Everhadvaccinated", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Everhadvaccinated", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Everhadvaccinated", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "vaccine_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
+
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Childsfingernailtrimmed", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Childsfingernailtrimmed", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Childsfingernailtrimmed", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "trimmednails_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
+
+
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "BCGscar", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "BCGscar", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "BCGscar", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "BCG_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
+
+
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Arechildsfingernailsdirty", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Arechildsfingernailsdirty", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Arechildsfingernailsdirty", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "dirtynails_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
+
+
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "antibiotics_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
+
+# Create volcano plots for each taxonomic level
+volcano_plot_phylum_age <- create_volcano_plot(ps, 2, "Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", metadata, SVs, taxonomy)
+volcano_plot_family_age <- create_volcano_plot(ps, 5, "Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", metadata, SVs, taxonomy)
+volcano_plot_genus_age <- create_volcano_plot(ps, 6, "Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", metadata, SVs, taxonomy)
+combined_volcano_plot_age <- (volcano_plot_phylum_age | volcano_plot_family_age) / (volcano_plot_genus_age)
+ggsave(combined_volcano_plot_age, 
+       filename = "deworming_volcano.pdf",
+       device = "pdf",
+       height = 8, width = 12, units = "in")
+
+
 
 Differentially Abundant Taxa Between FactorA Positive and Negative Groups (After multiple testing correction)
 

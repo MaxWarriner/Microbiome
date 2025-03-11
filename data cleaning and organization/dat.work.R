@@ -1215,10 +1215,9 @@ hay_fever_sneezing <- sample_data |>
 ##########################################################################################
 
 cleaned <- sample_data |>
-  mutate(Age = case_when(Age >= 6 & Age <= 9 ~ "6-9", 
-                         Age >= 10 & Age <= 13 ~ "10-13", 
-                         Age >= 14 & Age <= 17 ~ "14-17")) |>
-  mutate(Age = factor(Age, levels = c("6-9", "10-13", "14-17"))) |>
+  mutate(Age = case_when(Age >= 6 & Age <= 12 ~ "6-12", 
+                         Age >= 13 & Age <= 17 ~ "13-17")) |>
+  mutate(Age = factor(Age, levels = c("6-12", "13-17"))) |>
   mutate(weight = case_when(weight < 35 ~ "15-35", 
                             weight >= 35 & weight < 55 ~ "35-55", 
                             weight >= 55 ~ ">55")) |>
