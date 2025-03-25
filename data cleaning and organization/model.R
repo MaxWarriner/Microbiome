@@ -5,6 +5,10 @@ library(dplyr)
 
 ps <- readRDS("continuous_data.rds") # read in ps file
 
+#Rarefy Data
+set.seed(13)
+ps <- rarefy_even_depth(ps, 1e+05)
+
 a_diversity <- estimate_richness(ps) # calculate alpha diversity of each sample
 
 sample_data <- ps@sam_data #extract sample data

@@ -1,4 +1,4 @@
-#Demographic Factor Analysis
+#Socioeconomic Factor Analysis
 
 #Modified Code from Christine Bi by Max Warriner
 
@@ -29,6 +29,32 @@ tax_table_ps <- tax_table(ps)[,1:7]
 # Assign the modified taxonomy table back to the phyloseq object
 tax_table(ps) <- tax_table_ps
 
+sam_data <- sam_data(ps)
+
+convert_binary_to_yesno <- function(df, skip_non_numeric = TRUE) {
+  for (col_name in names(df)) {
+    col_data <- df[[col_name]]
+    
+    # Skip if not numeric (when skip_non_numeric = TRUE)
+    if (skip_non_numeric && !is.numeric(col_data)) next
+    
+    # Get unique non-NA values
+    unique_vals <- unique(na.omit(col_data))
+    
+    # Check if binary (0/1)
+    if (all(unique_vals %in% c(0, 1)) && length(unique_vals) <= 2) {
+      df[[col_name]] <- factor(col_data,
+                               levels = c(0, 1),
+                               labels = c("no", "yes"))
+    }
+  }
+  return(df)
+}
+
+sam_data <- convert_binary_to_yesno(sam_data)
+
+sam_data(ps) <- sam_data
+
 # ## Part I : Alpha Diversity (Chao1 and Shannon indices) -----------------
 
 library(ggrepel)
@@ -50,18 +76,22 @@ ggsave(a_diversity_factor,
 
 }
 
-create_a_diversity_plot(ps, "Age")
-create_a_diversity_plot(ps, "Sex")
-create_a_diversity_plot(ps, "weight")
-create_a_diversity_plot(ps, "Height")
-create_a_diversity_plot(ps, "Modeofdelivery")
-create_a_diversity_plot(ps, "Everhadvaccinated")
-create_a_diversity_plot(ps, "BCGscar")
-create_a_diversity_plot(ps, "Childsfingernailtrimmed")
-create_a_diversity_plot(ps, "Arechildsfingernailsdirty")
-create_a_diversity_plot(ps, "Howoftendoyoutrimyourfingernails")
-create_a_diversity_plot(ps, "Didyourparentsorhealthprofessionalsgaveyouotherantibiotics")
-create_a_diversity_plot(ps, "Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill")
+create_a_diversity_plot(ps, "Household.Number")
+create_a_diversity_plot(ps, "Siblings.Younger.than.12")
+create_a_diversity_plot(ps, "HeardALnamebefore")
+create_a_diversity_plot(ps, "HeardTTnamebefore")
+create_a_diversity_plot(ps, "HeardHWnamebefore")
+create_a_diversity_plot(ps, "HeardInWormnamebefore")
+create_a_diversity_plot(ps, "HeardMalanamebefore")
+create_a_diversity_plot(ps, "HeardTBnamebefore")
+create_a_diversity_plot(ps, "HeardSChnamebefore")
+create_a_diversity_plot(ps, "HPtold")
+create_a_diversity_plot(ps, "Teachertold")
+create_a_diversity_plot(ps, "Mediatold")
+create_a_diversity_plot(ps, "Doyouknowhowintestinalwomstransmitted")
+create_a_diversity_plot(ps, "Yourlivingaddress")
+create_a_diversity_plot(ps, "Familyoccupation")
+create_a_diversity_plot(ps, "Maternaleducationalstatus")
 
 
 # ## Part II (a) Beta diversity using Bray distance ----------------------
@@ -76,6 +106,8 @@ create_pcoa_plot <- function(variable) {
   pcoaplot <- ggordpoint(obj = pcoares, biplot = FALSE, speciesannot = TRUE,
                          factorNames = c(variable), ellipse = TRUE, linesize = 1.5)
   
+  print(pcoaplot)
+  
   ggsave(pcoaplot, 
          filename = paste(variable, "_pcoa_bray.pdf", sep = ""),
          device = "pdf",
@@ -85,41 +117,22 @@ create_pcoa_plot <- function(variable) {
 }
 
 # Create plots for each variable
-pcoa_Factor_age <- create_pcoa_plot("Age")
-print(pcoa_Factor_age)
-
-pcoa_Factor_sex <- create_pcoa_plot("Sex")
-print(pcoa_Factor_sex)
-
-pcoa_Factor_weight <- create_pcoa_plot("weight")
-print(pcoa_Factor_weight)
-
-pcoa_Factor_height <- create_pcoa_plot("Height")
-print(pcoa_Factor_height)
-
-pcoa_Factor_delivery <- create_pcoa_plot("Modeofdelivery")
-print(pcoa_Factor_delivery)
-
-pcoa_Factor_vaccine <- create_pcoa_plot("Everhadvaccinated")
-print(pcoa_Factor_vaccine)
-
-pcoa_Factor_BCG <- create_pcoa_plot("BCGscar")
-print(pcoa_Factor_BCG)
-
-pcoa_Factor_trimmed <- create_pcoa_plot("Childsfingernailtrimmed")
-print(pcoa_Factor_trimmed)
-
-pcoa_Factor_nailsdirty <- create_pcoa_plot("Arechildsfingernailsdirty")
-print(pcoa_Factor_nailsdirty)
-
-pcoa_Factor_nailsoften <- create_pcoa_plot("Howoftendoyoutrimyourfingernails")
-print(pcoa_Factor_nailsoften)
-
-pcoa_Factor_antibiotics <- create_pcoa_plot("Didyourparentsorhealthprofessionalsgaveyouotherantibiotics")
-print(pcoa_Factor_antibiotics)
-
-pcoa_Factor_deworming <- create_pcoa_plot("Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill")
-print(pcoa_Factor_deworming)
+create_pcoa_plot("Household.Number")
+create_pcoa_plot("Siblings.Younger.than.12")
+create_pcoa_plot("HeardALnamebefore")
+create_pcoa_plot("HeardTTnamebefore")
+create_pcoa_plot("HeardHWnamebefore")
+create_pcoa_plot("HeardInWormnamebefore")
+create_pcoa_plot("HeardMalanamebefore")
+create_pcoa_plot("HeardTBnamebefore")
+create_pcoa_plot("HeardSChnamebefore")
+create_pcoa_plot("HPtold")
+create_pcoa_plot("Teachertold")
+create_pcoa_plot("Mediatold")
+create_pcoa_plot("Doyouknowhowintestinalwomstransmitted")
+create_pcoa_plot("Yourlivingaddress")
+create_pcoa_plot("Familyoccupation")
+create_pcoa_plot("Maternaleducationalstatus")
 
 ##Calculations of Significance:
 
@@ -130,40 +143,55 @@ sampleda <- data.frame(sample_data(ps), check.names=FALSE)
 sampleda <- sampleda[match(colnames(as.matrix(distme)),rownames(sampleda)),,drop=FALSE]
 set.seed(1024)
 
-adores_age <- adonis2(distme ~ Age, data=sampleda, permutations=999) #p-value = 0.655
-adores_age
+factors <- c("Household.Number", "Siblings.Younger.than.12", "HeardALnamebefore", "HeardTTnamebefore", "HeardHWnamebefore", "HeardInWormnamebefore", "HeardMalanamebefore", "HeardTBnamebefore", "HeardSChnamebefore", "HPtold", "Teachertold", "Mediatold", "Doyouknowhowintestinalwomstransmitted", "Yourlivingaddress", "Familyoccupation", "Maternaleducationalstatus")
 
-adores_sex <- adonis2(distme ~ Sex, data=sampleda, permutations=999) #p-value = 0.34
+adores_summary <- data.frame(factor = factors, 
+                             p = rep(NA, length(factors)))
+
+run_adores <- function(factors){
+  
+  for (x in 1:length(factors)){
+    adores_summary[x,"p"] <- adonis2(distme ~ factors[x], data = sampleda, permutations = 999)
+  }
+  
+}
+run_adores(factors)
+
+
+adores <- adonis2(distme ~ Household.Number, data=sampleda, permutations=999) #p-value = 
+summary <- as.data.frame(summary(adores))
+
+adores_sex <- adonis2(distme ~ Sex, data=sampleda, permutations=999) #p-value = 
 adores_sex
 
-adores_weight <- adonis2(distme ~ weight, data=sampleda, permutations=999) #p-value = 0.102
+adores_weight <- adonis2(distme ~ weight, data=sampleda, permutations=999) #p-value = 
 adores_weight
 
-adores_height <- adonis2(distme ~ Height, data=sampleda, permutations=999) #p-value = 0.494
+adores_height <- adonis2(distme ~ Height, data=sampleda, permutations=999) #p-value = 
 adores_height
 
-adores_delivery <- adonis2(distme ~ Modeofdelivery, data=sampleda, permutations=999) #p-value = 0.683
+adores_delivery <- adonis2(distme ~ Modeofdelivery, data=sampleda, permutations=999) #p-value = 
 adores_delivery
 
-adores_vaccine <- adonis2(distme ~ Everhadvaccinated, data=sampleda, permutations=999) #p-value = 0.567
+adores_vaccine <- adonis2(distme ~ Everhadvaccinated, data=sampleda, permutations=999) #p-value = 
 adores_vaccine
 
-adores_BCG <- adonis2(distme ~ BCGscar, data=sampleda, permutations=999) #p-value = 0.546
+adores_BCG <- adonis2(distme ~ BCGscar, data=sampleda, permutations=999) #p-value = 
 adores_BCG
 
-adores_trimmed <- adonis2(distme ~ Childsfingernailtrimmed, data=sampleda, permutations=999) #p-value = 0.503
+adores_trimmed <- adonis2(distme ~ Childsfingernailtrimmed, data=sampleda, permutations=999) #p-value = 
 adores_trimmed
 
-adores_dirtynails <- adonis2(distme ~ Arechildsfingernailsdirty, data=sampleda, permutations=999) #p-value = 0.641
+adores_dirtynails <- adonis2(distme ~ Arechildsfingernailsdirty, data=sampleda, permutations=999) #p-value = 
 adores_dirtynails
 
-adores_nailsoften <- adonis2(distme ~ Howoftendoyoutrimyourfingernails, data=sampleda, permutations=999) #p-value = 0.708
+adores_nailsoften <- adonis2(distme ~ Howoftendoyoutrimyourfingernails, data=sampleda, permutations=999) #p-value = 
 adores_nailsoften
 
-adores_antibiotics <- adonis2(distme ~ Didyourparentsorhealthprofessionalsgaveyouotherantibiotics, data=sampleda, permutations=999) #p-value = 0.842
+adores_antibiotics <- adonis2(distme ~ Didyourparentsorhealthprofessionalsgaveyouotherantibiotics, data=sampleda, permutations=999) #p-value = 
 adores_antibiotics
 
-adores_deworming <- adonis2(distme ~ Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill, data=sampleda, permutations=999) #p-value = 0.214
+adores_deworming <- adonis2(distme ~ Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill, data=sampleda, permutations=999) #p-value = 
 adores_deworming
 
 
