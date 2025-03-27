@@ -29,16 +29,20 @@ tax_table_ps <- tax_table(ps)[,1:7]
 # Assign the modified taxonomy table back to the phyloseq object
 tax_table(ps) <- tax_table_ps
 
+#define list of factors to be tested
+factors <- colnames(ps@sam_data)
+
 # ## Part I : Alpha Diversity (Chao1 and Shannon indices) -----------------
 
 library(ggrepel)
 library(patchwork)
 library(RColorBrewer)
+library(rlang)
 
-create_a_diversity_plot <- function(ps, factor){
-
+create_a_diversity_plot <- function(ps,factor){
 a_diversity_factor<- plot_richness(ps, x=factor, color=factor, measures=c("Chao1", "Shannon"))
 a_diversity_factor$layers[[2]] = NULL 
+a_diversity_factor |> na.omit()
 a_diversity_factor <- a_diversity_factor  + geom_boxplot() + theme_bw()
 
 print(a_diversity_factor)
@@ -50,18 +54,9 @@ ggsave(a_diversity_factor,
 
 }
 
-create_a_diversity_plot(ps, "Age")
-create_a_diversity_plot(ps, "Sex")
-create_a_diversity_plot(ps, "weight")
-create_a_diversity_plot(ps, "Height")
-create_a_diversity_plot(ps, "Modeofdelivery")
-create_a_diversity_plot(ps, "Everhadvaccinated")
-create_a_diversity_plot(ps, "BCGscar")
-create_a_diversity_plot(ps, "Childsfingernailtrimmed")
-create_a_diversity_plot(ps, "Arechildsfingernailsdirty")
-create_a_diversity_plot(ps, "Howoftendoyoutrimyourfingernails")
-create_a_diversity_plot(ps, "Didyourparentsorhealthprofessionalsgaveyouotherantibiotics")
-create_a_diversity_plot(ps, "Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill")
+for (var in factors){
+  try(create_a_diversity_plot(ps,var))
+}
 
 
 # ## Part II (a) Beta diversity using Bray distance ----------------------

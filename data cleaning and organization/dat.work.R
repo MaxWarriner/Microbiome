@@ -30,7 +30,6 @@ age_categories_table <- sample_data |>
 
 ggplot(data = age_categories_table) +
   geom_col(aes(x = Age, y = n), color = "black") +
-  scale_x_continuous(breaks = seq(6, 17)) +
   theme_minimal() +
   geom_hline(yintercept = 0) +
   ggtitle("Distribution of Ages") +
@@ -63,9 +62,8 @@ ggplot(data = sample_data, aes(x = Sex)) +
 weight_mean_sd <- c(mean(sample_data$weight), sd(sample_data$weight))
 
 weight_table <- sample_data |>
-  mutate(weight = case_when(weight < 35 ~ "15-35", 
-                            weight >= 35 & weight < 55 ~ "35-55", 
-                            weight >= 55 ~ ">55")) |>
+  mutate(weight = case_when(weight < 40 ~ "< 40", 
+                            weight >= 40 ~ ">= 40")) |>
   group_by(weight) |>
   summarise(n = n()) |>
   mutate(frequency = round(n/138, 3)) |>
@@ -1215,19 +1213,17 @@ hay_fever_sneezing <- sample_data |>
 ##########################################################################################
 
 cleaned <- sample_data |>
-  mutate(Age = case_when(Age >= 6 & Age <= 12 ~ "6-12", 
-                         Age >= 13 & Age <= 17 ~ "13-17")) |>
-  mutate(Age = factor(Age, levels = c("6-12", "13-17"))) |>
-  mutate(weight = case_when(weight < 35 ~ "15-35", 
-                            weight >= 35 & weight < 55 ~ "35-55", 
-                            weight >= 55 ~ ">55")) |>
-  mutate(weight = factor(weight, levels = c("15-35","35-55", ">55"))) |>
+  mutate(Age = case_when(Age <= 12 ~ "<=12", 
+                         Age > 12 ~ ">12")) |>
+  mutate(Age = factor(Age, levels = c("<=12", ">12"))) |>
+  mutate(weight = case_when(weight < 40 ~ "<40",
+                            weight >= 40 ~ ">=40")) |>
+  mutate(weight = factor(weight, levels = c("<40",">=40"))) |>
   mutate(Underweight = ifelse(Underweight == 1, "Underweight", "Not Underweight")) |>
   mutate(Householdno = case_when(Householdno >= 2 & Householdno <= 3 ~ "2-3", 
                                  Householdno >= 4 & Householdno <= 6 ~ "4-6", 
-                                 Householdno >= 7 & Householdno <= 9 ~ "7-9", 
-                                 Householdno > 9 ~ ">9"), 
-         Householdno = factor(Householdno, levels = c("2-3", "4-6", "7-9", ">9"))) |>
+                                 Householdno >6 ~ ">6"), 
+         Householdno = factor(Householdno, levels = c("2-3", "4-6", ">6"))) |>
   rename("Household Number" = Householdno) |>
   mutate(HeardALnamebefore = ifelse(HeardALnamebefore == 0, 1, 0), 
          HeardTTnamebefore = ifelse(HeardTTnamebefore == 1, 1, 0), 
@@ -1529,7 +1525,29 @@ cleaned <- sample_data |>
                             Height >= 1.15 & Height < 1.35 ~ "1.15-1.35", 
                             Height >= 1.35 & Height < 1.55 ~ "1.35-1.55", 
                             Height >= 1.55 ~ ">1.55")) |>
-  mutate(Height = factor(Height, levels = c("< 1.15", "1.15-1.35", "1.35-1.55", ">1.55")))
+  mutate(Height = factor(Height, levels = c("< 1.15", "1.15-1.35", "1.35-1.55", ">1.55"))) |>
+  mutate(HeardALnamebefore = ifelse(HeardALnamebefore == 1, "yes", "no"),
+         HeardTTnamebefore = ifelse(HeardTTnamebefore == 1, "yes", "no"), 
+         HeardHWnamebefore = ifelse(HeardHWnamebefore == 1, "yes", "no"), 
+         HeardHIVnamebefore = ifelse(HeardHIVnamebefore == 1, "yes", "no"), 
+         HeardMalanamebefore = ifelse(HeardMalanamebefore == 1, "yes", "no"), 
+         HeardTBnamebefore = ifelse(HeardTBnamebefore == 1, "yes", "no"), 
+         HeardSChnamebefore = ifelse(HeardSChnamebefore == 1, "yes", "no"), 
+         familytold = ifelse(familytold == 1, "yes", "no"), 
+         HPtold = ifelse(HPtold == 1, "yes", "no"), 
+         Teachertold = ifelse(Teachertold == 1, "yes", "no"), 
+         Mediatold = ifelse(Mediatold == 1, "yes", "no"), 
+         wheezilingorwhistlinginthelast2years = ifelse(wheezilingorwhistlinginthelast2years == 2, "no", "yes"), 
+         wheezilingorwhistlinginthelast1year = ifelse(wheezilingorwhistlinginthelast1year == 2, "no", "yes"), 
+         Ifyeshasthisrashaffectedtheelbowfolds = ifelse(Ifyeshasthisrashaffectedtheelbowfolds == 1, "yes", "no"), 
+         Ifyeshasthisrashaffectedbehindtheknees = ifelse(Ifyeshasthisrashaffectedbehindtheknees == 1, "yes", "no"), 
+         Ifyeshasthisrashaffectedinfrontoftheankls = ifelse(Ifyeshasthisrashaffectedinfrontoftheankls == 1, "yes", "no"), 
+         Ifyeshasthisrashaffectedunderthebuttucks = ifelse(Ifyeshasthisrashaffectedunderthebuttucks == 1, "yes", "no"), 
+         Ifyeshasthisrashaffectedaroundtheneck = ifelse(Ifyeshasthisrashaffectedaroundtheneck == 1, "yes", "no"), 
+         Ifyeshasthisrashaffectedaroundtheeyesears = ifelse(Ifyeshasthisrashaffectedaroundtheeyesears == 1, "yes", "no"), 
+         Stunted = ifelse(Stunted == 1, "yes", "no"), 
+         Thinned = ifelse(Thinned == 1, "yes", "no"), 
+         HeardInWormnamebefore = ifelse(HeardInWormnamebefore == 1, "yes", "no"))
   
 
 
