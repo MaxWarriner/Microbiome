@@ -80,7 +80,8 @@ for (var in factors){
 }
 
 
-# ## Part II (a) Beta diversity using Bray distance ----------------------
+# ## Part II (a) Beta diversity (Jaccard and Bray Distance) ----------------------
+
 
 library(MicrobiotaProcess)
 # Define the function to create PCoA plots
@@ -275,7 +276,9 @@ calculate_permanova <- function(ps) {
 permanova_results <- calculate_permanova(ps)
 
 permanova_results <- permanova_results |>
-  arrange_("p_value")
+  arrange("p_value")
+
+write.csv(permanova_results, "PERMANOVA_results.csv")
 
 
 # ## Part III Overall microbial abundance "at the Phylum, Genus and Family Level --------
@@ -330,7 +333,28 @@ for (variable in factors){
 
 # Define the function to create bar plots at the family level
 create_family_barplot <- function(variable) {
-  familytaxa <- get_taxadf(obj = ps, taxlevel = 5)
+  
+  # Convert sample data to data frame
+  sam_data <- as(sample_data(ps), "data.frame")
+  
+  # First remove NAs
+  keep_samples <- !is.na(sam_data[[variable]])
+  ps_filtered <- prune_samples(keep_samples, ps)
+  
+  # Get updated sample data after NA removal
+  sam_data_filtered <- as(sample_data(ps_filtered), "data.frame")
+  
+  # Count occurrences of each value in the variable
+  value_counts <- table(sam_data_filtered[[variable]])
+  
+  # Identify values that appear at least 5 times
+  valid_values <- names(value_counts)[value_counts >= 5]
+  
+  # Filter samples to only include those with valid values
+  final_keep_samples <- sam_data_filtered[[variable]] %in% valid_values
+  ps_final <- prune_samples(final_keep_samples, ps_filtered)
+  
+  familytaxa <- get_taxadf(obj = ps_final, taxlevel = 5)
   barplot <- ggbartax(obj = familytaxa, facetNames = variable, plotgroup = TRUE, topn = 10) +
     xlab(NULL) +
     ylab("Relative Abundance (%)") +
@@ -346,43 +370,9 @@ create_family_barplot <- function(variable) {
   return(barplot)
 }
 
-# Create plots for each variable 
-family_Factor_age <- create_family_barplot("Age")
-print(family_Factor_age)
-
-family_Factor_sex <- create_family_barplot("Sex")
-print(family_Factor_sex)
-
-family_Factor_weight <- create_family_barplot("weight")
-print(family_Factor_weight)
-
-family_Factor_height <- create_family_barplot("Height")
-print(family_Factor_height)
-
-family_Factor_delivery <- create_family_barplot("Modeofdelivery")
-print(family_Factor_delivery)
-
-family_Factor_vaccine <- create_family_barplot("Everhadvaccinated")
-print(family_Factor_vaccine)
-
-family_Factor_BCG <- create_family_barplot("BCGscar")
-print(family_Factor_BCG)
-
-family_Factor_trimmed <- create_family_barplot("Childsfingernailtrimmed")
-print(family_Factor_trimmed)
-
-family_Factor_nailsdirty <- create_family_barplot("Arechildsfingernailsdirty")
-print(family_Factor_nailsdirty)
-
-family_Factor_nailsoften <- create_family_barplot("Howoftendoyoutrimyourfingernails")
-print(family_Factor_nailsoften)
-
-family_Factor_antibiotics <- create_family_barplot("Didyourparentsorhealthprofessionalsgaveyouotherantibiotics")
-print(family_Factor_antibiotics)
-
-family_Factor_deworming <- create_family_barplot("Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill")
-print(family_Factor_deworming)
-
+for (variable in factors){
+  try(create_family_barplot(variable))
+}
 
 
 ##Overall microbial abundance "at the Genus level" across different conditions (in one panel)
@@ -390,7 +380,28 @@ print(family_Factor_deworming)
 
 # Define the function to create bar plots at the genus level
 create_genus_barplot <- function(variable) {
-  genustaxa <- get_taxadf(obj = ps, taxlevel = 6)
+  
+  # Convert sample data to data frame
+  sam_data <- as(sample_data(ps), "data.frame")
+  
+  # First remove NAs
+  keep_samples <- !is.na(sam_data[[variable]])
+  ps_filtered <- prune_samples(keep_samples, ps)
+  
+  # Get updated sample data after NA removal
+  sam_data_filtered <- as(sample_data(ps_filtered), "data.frame")
+  
+  # Count occurrences of each value in the variable
+  value_counts <- table(sam_data_filtered[[variable]])
+  
+  # Identify values that appear at least 5 times
+  valid_values <- names(value_counts)[value_counts >= 5]
+  
+  # Filter samples to only include those with valid values
+  final_keep_samples <- sam_data_filtered[[variable]] %in% valid_values
+  ps_final <- prune_samples(final_keep_samples, ps_filtered)
+  
+  genustaxa <- get_taxadf(obj = ps_final, taxlevel = 6)
   barplot <- ggbartax(obj = genustaxa, facetNames = variable, plotgroup = TRUE, topn = 15) +
     xlab(NULL) +
     ylab("Relative Abundance (%)") +
@@ -408,42 +419,9 @@ create_genus_barplot <- function(variable) {
   return(barplot)
 }
 
-# Create plots for each variable 
-genus_Factor_age <- create_genus_barplot("Age")
-print(genus_Factor_age)
-
-genus_Factor_sex <- create_genus_barplot("Sex")
-print(genus_Factor_sex)
-
-genus_Factor_weight <- create_genus_barplot("weight")
-print(genus_Factor_weight)
-
-genus_Factor_height <- create_genus_barplot("Height")
-print(genus_Factor_height)
-
-genus_Factor_delivery <- create_genus_barplot("Modeofdelivery")
-print(genus_Factor_delivery)
-
-genus_Factor_vaccine <- create_genus_barplot("Everhadvaccinated")
-print(genus_Factor_vaccine)
-
-genus_Factor_BCG <- create_genus_barplot("BCGscar")
-print(genus_Factor_BCG)
-
-genus_Factor_trimmed <- create_genus_barplot("Childsfingernailtrimmed")
-print(genus_Factor_trimmed)
-
-genus_Factor_nailsdirty <- create_genus_barplot("Arechildsfingernailsdirty")
-print(genus_Factor_nailsdirty)
-
-genus_Factor_nailsoften <- create_genus_barplot("Howoftendoyoutrimyourfingernails")
-print(genus_Factor_nailsoften)
-
-genus_Factor_antibiotics <- create_genus_barplot("Didyourparentsorhealthprofessionalsgaveyouotherantibiotics")
-print(genus_Factor_antibiotics)
-
-genus_Factor_deworming <- create_genus_barplot("Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill")
-print(genus_Factor_deworming)
+for (variable in factors){
+  try(create_genus_barplot(variable))
+}
 
 
 
@@ -526,6 +504,7 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, 
 
 create_combined_volcano <- function(ps, factor, metadata, SVs, taxonomy){
   
+  
   volcano_plot_phylum <- create_volcano_plot(ps, 2, factor, metadata, SVs, taxonomy)
   volcano_plot_family <- create_volcano_plot(ps, 5, factor, metadata, SVs, taxonomy)
   volcano_plot_genus <- create_volcano_plot(ps, 6, factor, metadata, SVs, taxonomy)
@@ -549,74 +528,10 @@ create_combined_volcano(ps, "Didyourparentsteachersorhealthprofessionalsgaveyoua
 
 
 
+
+
 ## AFTER multiple testing correction
 
-
-# Function to create volcano plots for taxonomic levels
-create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, taxonomy) {
-  
-  # Ensure that taxonomy contains the specified level
-  tax_col <- colnames(taxonomy)[taxlevel]
-  taxonomy <- taxonomy %>%
-    rownames_to_column(var = "OTU_name") %>%
-    dplyr::select(OTU_name, !!sym(tax_col)) %>%
-    distinct()
-  
-  # Combine SVs with taxonomy to match the specified level
-  SVs_with_taxonomy <- as.data.frame(SVs) %>%
-    rownames_to_column(var = "OTU_name") %>%
-    left_join(taxonomy, by = "OTU_name")
-  
-  # Aggregate the SVs data to the specified taxonomic level
-  tax_level_SVs <- SVs_with_taxonomy %>%
-    dplyr::select(-OTU_name) %>%
-    group_by(!!sym(tax_col)) %>%
-    summarise(across(everything(), ~sum(.x, na.rm = TRUE)))%>%
-    filter(!!sym(tax_col) != "none") %>%
-    column_to_rownames(var = tax_col)
-  
-  # Convert to matrix for ALDEx2 analysis
-  tax_level_SVs <- as.matrix(tax_level_SVs)
-  
-  condition <- as.character(as.factor(metadata[[condition_col]]))
-  
-  # Run ALDEx2 analysis
-  aldex_data <- aldex(tax_level_SVs, conditions = condition, mc.samples = 128, test = "t", effect = TRUE)
-  
-  # Combine t-test and effect size results
-  results <- data.frame(aldex_data)
-  
-  # Merge results with taxonomy
-  results <- results %>%
-    rownames_to_column(var = tax_col)
-  
-  # Create the volcano plot (after multiple testing correction)
-  p <- results %>%
-    mutate(Significant = if_else(wi.eBH < 0.1, TRUE, FALSE)) %>%
-    mutate(Taxon = as.character(!!sym(tax_col))) %>%
-    mutate(TaxonToPrint = if_else(wi.eBH < 0.05, paste(Taxon, "(", round(wi.eBH,3) , ")", sep = ""), "")) |>
-    ggplot(aes(x = diff.btw, y = -log10(we.ep), color = Significant, label = TaxonToPrint)) +
-    geom_text_repel(size = 2, nudge_y = 0.05, max.overlaps = Inf) +  # Increase max.overlaps
-    geom_point(alpha = 0.6, shape = 16) +
-    theme_minimal() +  
-    xlab("log2(fold change)") +
-    ylab("-log10(P-value)") +
-    theme(legend.position = "none") +
-    scale_color_manual(values = c("black", "red")) +
-    ggtitle(paste("Taxonomic Level:", tax_col))
-  
-  return(p)
-}
-
-
-create_combined_volcano(ps, "Sex", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Modeofdelivery", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Everhadvaccinated", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Childsfingernailtrimmed", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "BCGscar", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Arechildsfingernailsdirty", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", metadata, SVs, taxonomy)
 
 
 
