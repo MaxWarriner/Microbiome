@@ -1,7 +1,8 @@
 
 #Socioeconomic, Environmental, and Demographic Factor Analysis on Gut Microbiome
 
-#Modified Code from Christine Bi by Max Warriner
+#Modified Code from Christine Bi by Max Warriner: 
+#Script is designed to be able to run through a large amount of variables in a phyloseq object with efficency
 
 # ## Part 0: data/phyloseq preprocessing -----------------------------------
 
@@ -12,6 +13,15 @@ library(BiocManager)
 library(phyloseq)
 library(tidyverse)
 library(dplyr)
+library(ggrepel)
+library(patchwork)
+library(RColorBrewer)
+library(rlang)
+library(MicrobiotaProcess)
+library(vegan)
+library(dplyr)
+library(ALDEx2)
+library(microbiomeMarker)
 
 ps <- readRDS("categorized_data.RDS") # Load in using whatever file name you have
 
@@ -30,11 +40,6 @@ tax_table(ps) <- tax_table_ps
 factors <- colnames(ps@sam_data)
 
 # ## Part I : Alpha Diversity (Chao1 and Shannon indices) -----------------
-
-library(ggrepel)
-library(patchwork)
-library(RColorBrewer)
-library(rlang)
 
 
 create_a_diversity_plot <- function(ps,variable){ #function to create an alpha diversity boxplot
@@ -82,8 +87,6 @@ for (var in factors){
 
 # ## Part II (a) Beta diversity (Jaccard and Bray Distance) ----------------------
 
-
-library(MicrobiotaProcess)
 # Define the function to create PCoA plots
 create_pcoa_plot <- function(variable) {
   
@@ -129,8 +132,6 @@ for (var in factors){
 
 # ##(b) Beta diversity using Jaccard distance
 
-
-library(MicrobiotaProcess)
 # Define the function to create PCoA plots
 create_pcoa_plot <- function(variable) {
   
@@ -176,9 +177,6 @@ for (var in factors){
 
 
 ##Calculations of significance:
-
-library(vegan)
-library(dplyr)
 
 calculate_permanova <- function(ps) {
   # Calculate both distance matrices
@@ -427,12 +425,6 @@ for (variable in factors){
 
 # ## Part IV: Differential Abundance Analysis using ALDEx2 and Volc --------
 
-
-#BEFORE multiple testing correction
-#Volcano plots of differentially abundant taxa according to ALEDX2 results between positive and negative at the phylum, family, and genus levels (BEFORE multiple testing correction)
-
-
-library(ALDEx2)
 # Function to create volcano plots for taxonomic levels
 
 metadata <- as.data.frame(sample_data(ps))  # Extract metadata
@@ -440,22 +432,26 @@ SVs <- as.data.frame(otu_table(ps))         # Extract OTU table
 SVs <- data.frame(t(SVs))
 taxonomy <- as.data.frame(phyloseq::tax_table(ps))    # Extract taxonomy
 
-create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, taxonomy) {
+# Before Multiple Testing Correction
+
+create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, taxonomy, comparison_title = NULL) {
   
-  browser()
+  # Get the variable values, remove NAs, and count frequencies
+  var_values <- metadata[[condition_col]]
+  non_na_values <- var_values[!is.na(var_values)]
+  value_counts <- table(non_na_values)
   
-    # Get the variable values, remove NAs, and count frequencies
-    var_values <- metadata[[condition_col]]
-    non_na_values <- var_values[!is.na(var_values)]
-    value_counts <- table(non_na_values)
-    
-    # Get top 2 most frequent non-NA values
-    top_values <- names(sort(value_counts, decreasing = TRUE))[1:2]
-    
-    # Subset data to only include samples with top 2 non-NA values
-    subset_idx <- var_values %in% top_values & !is.na(var_values)
-    sampleda_subset <- metadata[subset_idx, , drop = FALSE]
-    
+  # Get top 2 most frequent non-NA values
+  top_values <- names(sort(value_counts, decreasing = TRUE))[1:2]
+  
+  # Create comparison title if not provided
+  if(is.null(comparison_title)) {
+    comparison_title <- paste(top_values, collapse = " vs ")
+  }
+  
+  # Subset data to only include samples with top 2 non-NA values
+  subset_idx <- var_values %in% top_values & !is.na(var_values)
+  metadata <- metadata[subset_idx, , drop = FALSE]
   
   # Ensure that taxonomy contains the specified level
   tax_col <- colnames(taxonomy)[taxlevel]
@@ -471,12 +467,11 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, 
   SVs_with_taxonomy <- SVs_with_taxonomy |>
     left_join(taxonomy, by = "OTU_name")
   
-  row_names_sample <- rownames(sampleda_subset)
-  matching_cols <- paste0("X", gsub("-", ".", row_names_sample))
+  row_names_sample <- rownames(metadata)
+  matching_cols <- c("OTU_name", colnames(SVs_with_taxonomy)[ncol(SVs_with_taxonomy)] , paste0("X", gsub("-", ".", row_names_sample)))
   
   # Filter df1
   SVs_with_taxonomy <- SVs_with_taxonomy[, colnames(SVs_with_taxonomy) %in% matching_cols, drop = FALSE]
-
   
   # Aggregate the SVs data to the specified taxonomic level
   tax_level_SVs <- SVs_with_taxonomy %>%
@@ -495,7 +490,6 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, 
   
   condition <- as.character(as.factor(metadata[[condition_col]]))
   
-  
   # Run ALDEx2 analysis
   aldex_data <- aldex(tax_level_SVs, conditions = condition, mc.samples = 138, test = "t", effect = TRUE)
   
@@ -508,58 +502,83 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, 
   
   # Create the volcano plot (before multiple testing correction)
   p <- results %>%
-    mutate(Significant = if_else(we.ep < 0.05, TRUE, FALSE)) %>%
+    mutate(Significant = if_else(wi.ep < 0.05, TRUE, FALSE)) %>%
     mutate(Taxon = as.character(!!sym(tax_col))) %>%
-    mutate(TaxonToPrint = if_else(we.ep < 0.05, paste(Taxon, "(", round(we.ep,3) , ")", sep = ""), "")) |>
-    ggplot(aes(x = diff.btw, y = -log10(we.ep), color = Significant, label = TaxonToPrint)) +
-    geom_text_repel(size = 4, nudge_y = 0.05, max.overlaps = Inf) +  # Increase max.overlaps
+    mutate(TaxonToPrint = if_else(wi.ep < 0.05, paste(Taxon, "(", round(wi.ep,3) , ")", sep = ""), "")) |>
+    ggplot(aes(x = diff.btw, y = -log10(wi.ep), color = Significant, label = TaxonToPrint)) +
+    geom_text_repel(size = 4, nudge_y = 0.05, max.overlaps = Inf) +
     geom_point(alpha = 0.6, shape = 16) +
     theme_minimal() +  
     xlab("log2(fold change)") +
     ylab("-log10(P-value)") +
     theme(legend.position = "none") +
-    ggtitle(paste("Factor:", condition_col,"-- Taxonomic Level:", tax_col))
-  
+    ggtitle(paste("Taxonomic Level:", tax_col, "\nComparison:", comparison_title))
   
   return(p)
 }
 
 create_combined_volcano <- function(ps, factor, metadata, SVs, taxonomy){
   
+  # Get comparison title (top 2 values)
+  var_values <- metadata[[factor]]
+  non_na_values <- var_values[!is.na(var_values)]
+  value_counts <- table(non_na_values)
+  top_values <- names(sort(value_counts, decreasing = TRUE))[1:2]
+  comparison_title <- paste(top_values, collapse = " vs ")
   
-  volcano_plot_phylum <- create_volcano_plot(ps, 2, factor, metadata, SVs, taxonomy)
-  volcano_plot_family <- create_volcano_plot(ps, 5, factor, metadata, SVs, taxonomy)
-  volcano_plot_genus <- create_volcano_plot(ps, 6, factor, metadata, SVs, taxonomy)
-  combined_volcano_plot <- (volcano_plot_phylum | volcano_plot_family) / (volcano_plot_genus)
+  # Create plots with consistent comparison title
+  volcano_plot_phylum <- create_volcano_plot(ps, 2, factor, metadata, SVs, taxonomy, comparison_title)
+  volcano_plot_family <- create_volcano_plot(ps, 5, factor, metadata, SVs, taxonomy, comparison_title)
+  volcano_plot_genus <- create_volcano_plot(ps, 6, factor, metadata, SVs, taxonomy, comparison_title)
+  
+  # Combine plots with a single main title
+  combined_volcano_plot <- (volcano_plot_phylum | volcano_plot_family) / (volcano_plot_genus) +
+    plot_annotation(
+      title = paste("Differential Abundance Analysis for", factor),
+      subtitle = paste("Comparison:", comparison_title),
+      theme = theme(plot.title = element_text(size = 14, face = "bold"),
+                    plot.subtitle = element_text(size = 12))
+    )
   
   ggsave(combined_volcano_plot, 
          filename = paste(factor, "_volcano.pdf", sep = ""),
          device = "pdf",
          height = 8, width = 12, units = "in")
   
+  return(combined_volcano_plot)
 }
 
-create_combined_volcano(ps, "Height", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Modeofdelivery", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Everhadvaccinated", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Childsfingernailtrimmed", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "BCGscar", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Arechildsfingernailsdirty", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Didyourparentsorhealthprofessionalsgaveyouotherantibiotics", metadata, SVs, taxonomy)
-create_combined_volcano(ps, "Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill", metadata, SVs, taxonomy)
+for (variable in factors){
+  try(create_combined_volcano(ps, variable, metadata, SVs, taxonomy))
+}
 
 
 
 
 
-## AFTER multiple testing correction
+#After Multiple Testing Correction
 
-metadata <- as.data.frame(sample_data(ps))  # Extract metadata
-SVs <- as.data.frame(otu_table(ps))         # Extract OTU table
-SVs <- data.frame(t(SVs))
-taxonomy <- as.data.frame(phyloseq::tax_table(ps))    # Extract taxonomy
+#Volcano plots of differentially abundant taxa according to ALEDX2 results between positive and negative at the phylum, family, and genus levels (BEFORE multiple testing correction)
 
-create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, taxonomy) {
+
+create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, taxonomy, comparison_title = NULL) {
+  
+  # Get the variable values, remove NAs, and count frequencies
+  var_values <- metadata[[condition_col]]
+  non_na_values <- var_values[!is.na(var_values)]
+  value_counts <- table(non_na_values)
+  
+  # Get top 2 most frequent non-NA values
+  top_values <- names(sort(value_counts, decreasing = TRUE))[1:2]
+  
+  # Create comparison title if not provided
+  if(is.null(comparison_title)) {
+    comparison_title <- paste(top_values, collapse = " vs ")
+  }
+  
+  # Subset data to only include samples with top 2 non-NA values
+  subset_idx <- var_values %in% top_values & !is.na(var_values)
+  metadata <- metadata[subset_idx, , drop = FALSE]
   
   # Ensure that taxonomy contains the specified level
   tax_col <- colnames(taxonomy)[taxlevel]
@@ -575,6 +594,12 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, 
   SVs_with_taxonomy <- SVs_with_taxonomy |>
     left_join(taxonomy, by = "OTU_name")
   
+  row_names_sample <- rownames(metadata)
+  matching_cols <- c("OTU_name", colnames(SVs_with_taxonomy)[ncol(SVs_with_taxonomy)] , paste0("X", gsub("-", ".", row_names_sample)))
+  
+  # Filter df1
+  SVs_with_taxonomy <- SVs_with_taxonomy[, colnames(SVs_with_taxonomy) %in% matching_cols, drop = FALSE]
+  
   # Aggregate the SVs data to the specified taxonomic level
   tax_level_SVs <- SVs_with_taxonomy %>%
     dplyr::select(-OTU_name) %>%
@@ -592,7 +617,6 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, 
   
   condition <- as.character(as.factor(metadata[[condition_col]]))
   
-  
   # Run ALDEx2 analysis
   aldex_data <- aldex(tax_level_SVs, conditions = condition, mc.samples = 138, test = "t", effect = TRUE)
   
@@ -605,90 +629,203 @@ create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, 
   
   # Create the volcano plot (before multiple testing correction)
   p <- results %>%
-    mutate(Significant = if_else(we.ep < 0.05, TRUE, FALSE)) %>%
+    mutate(Significant = if_else(wi.eBH < 0.05, TRUE, FALSE)) %>%
     mutate(Taxon = as.character(!!sym(tax_col))) %>%
-    mutate(TaxonToPrint = if_else(we.ep < 0.05, paste(Taxon, "(", round(we.ep,3) , ")", sep = ""), "")) |>
-    ggplot(aes(x = diff.btw, y = -log10(we.ep), color = Significant, label = TaxonToPrint)) +
-    geom_text_repel(size = 4, nudge_y = 0.05, max.overlaps = Inf) +  # Increase max.overlaps
+    mutate(TaxonToPrint = if_else(wi.eBH < 0.05, paste(Taxon, "(", round(wi.eBH,3) , ")", sep = ""), "")) |>
+    ggplot(aes(x = diff.btw, y = -log10(wi.eBH), color = Significant, label = TaxonToPrint)) +
+    geom_text_repel(size = 4, nudge_y = 0.05, max.overlaps = Inf) +
     geom_point(alpha = 0.6, shape = 16) +
     theme_minimal() +  
     xlab("log2(fold change)") +
     ylab("-log10(P-value)") +
     theme(legend.position = "none") +
-    ggtitle(paste("Factor:", condition_col,"-- Taxonomic Level:", tax_col))
-  
+    ggtitle(paste("Taxonomic Level:", tax_col, "\nComparison:", comparison_title))
   
   return(p)
 }
 
 create_combined_volcano <- function(ps, factor, metadata, SVs, taxonomy){
   
+  # Get comparison title (top 2 values)
+  var_values <- metadata[[factor]]
+  non_na_values <- var_values[!is.na(var_values)]
+  value_counts <- table(non_na_values)
+  top_values <- names(sort(value_counts, decreasing = TRUE))[1:2]
+  comparison_title <- paste(top_values, collapse = " vs ")
   
-  volcano_plot_phylum <- create_volcano_plot(ps, 2, factor, metadata, SVs, taxonomy)
-  volcano_plot_family <- create_volcano_plot(ps, 5, factor, metadata, SVs, taxonomy)
-  volcano_plot_genus <- create_volcano_plot(ps, 6, factor, metadata, SVs, taxonomy)
-  combined_volcano_plot <- (volcano_plot_phylum | volcano_plot_family) / (volcano_plot_genus)
+  # Create plots with consistent comparison title
+  volcano_plot_phylum <- create_volcano_plot(ps, 2, factor, metadata, SVs, taxonomy, comparison_title)
+  volcano_plot_family <- create_volcano_plot(ps, 5, factor, metadata, SVs, taxonomy, comparison_title)
+  volcano_plot_genus <- create_volcano_plot(ps, 6, factor, metadata, SVs, taxonomy, comparison_title)
+  
+  # Combine plots with a single main title
+  combined_volcano_plot <- (volcano_plot_phylum | volcano_plot_family) / (volcano_plot_genus) +
+    plot_annotation(
+      title = paste("Differential Abundance Analysis for", factor),
+      subtitle = paste("Comparison:", comparison_title),
+      theme = theme(plot.title = element_text(size = 14, face = "bold"),
+                    plot.subtitle = element_text(size = 12))
+    )
   
   ggsave(combined_volcano_plot, 
          filename = paste(factor, "_volcano.pdf", sep = ""),
          device = "pdf",
          height = 8, width = 12, units = "in")
   
+  return(combined_volcano_plot)
+}
+
+for (variable in factors){
+  try(create_combined_volcano(ps, variable, metadata, SVs, taxonomy))
 }
 
 
-# ## Part V: Differential Abundance Using Lefse -----------------------------
 
 
-library(microbiomeMarker)
+# ## Part V: Differential Abundance Using Lefse and Edger  -----------------------------
 
 #Adjust cutoff values if needed
 #Note: If it gives error like "Error in names(marker) <- `*vtmp*` : attempt to set an attribute on NULL", it means no marker was identified, and you will have to increase your wilcoxon/kw/pvalue cutoffs and/or decrease your lda_cutoff.
 
 create_lefse_edgar <- function(ps, factor){
   
-  # Run LefSe
-  mm_lefse <- run_lefse(
-    ps,
-    wilcoxon_cutoff = 0.05,
-    group = factor,
-    kw_cutoff = 0.05,
-    multigrp_strat = TRUE,
-    lda_cutoff = 2
+  # Extract sample data as a data frame
+  sample_df <- data.frame(sample_data(ps))
+  
+  # Get the variable of interest
+  var_vector <- sample_df[[factor]]
+  
+  # Exclude NAs and get top two most frequent categories
+  var_vector_no_na <- var_vector[!is.na(var_vector)]
+  if(length(unique(var_vector_no_na)) < 2) {
+    message(paste("Skipping", factor, "- fewer than 2 categories after removing NAs"))
+    return(NULL)
+  }
+  
+  top_categories <- names(sort(table(var_vector_no_na), decreasing = TRUE))[1:2]
+  
+  # Get sample names to keep
+  keep_samples <- rownames(sample_df)[!is.na(var_vector) & var_vector %in% top_categories]
+  
+  # Subset the phyloseq object using sample names
+  ps_subset <- prune_samples(sample_names(ps) %in% keep_samples, ps)
+  
+  # Verify we have exactly two categories
+  if(length(unique(sample_data(ps_subset)[[factor]])) != 2) {
+    message(paste("Skipping", factor, "- doesn't have exactly 2 categories after subsetting"))
+    return(NULL)
+  }
+  
+  # Initialize plot objects as NULL
+  lefse_bar_plot <- NULL
+  lefse_dot_plot <- NULL
+  edger_bar_plot <- NULL
+  
+  # Try to run LefSe
+  mm_lefse <- tryCatch(
+    run_lefse(
+      ps_subset,
+      wilcoxon_cutoff = 0.01,
+      group = factor,
+      kw_cutoff = 0.01,
+      multigrp_strat = TRUE,
+      lda_cutoff = 2
+    ),
+    error = function(e) {
+      message(paste("LefSe failed for", factor, ":", e$message))
+      return(NULL)
+    }
   )
   
-  # Run edgeR
-  mm_edger <- run_edger(
-    ps,
-    group = factor,
-    pvalue_cutoff = 0.05,
-    p_adjust = "fdr"
+  # Create LefSe plots if successful
+  if(!is.null(mm_lefse)) {
+    lefse_bar_plot <- tryCatch(
+      plot_ef_bar(mm_lefse),
+      error = function(e) {
+        message(paste("Failed to create LefSe bar plot:", e$message))
+        NULL
+      }
+    )
+    
+    lefse_dot_plot <- tryCatch(
+      plot_ef_dot(mm_lefse),
+      error = function(e) {
+        message(paste("Failed to create LefSe dot plot:", e$message))
+        NULL
+      }
+    )
+  }
+  
+  # Try to run edgeR
+  mm_edger <- tryCatch(
+    run_edger(
+      ps_subset,
+      group = factor,
+      pvalue_cutoff = 0.05,
+      p_adjust = "fdr"
+    ),
+    error = function(e) {
+      message(paste("edgeR failed for", factor, ":", e$message))
+      return(NULL)
+    }
   )
   
-  # Create plots
-  lefse_bar_plot <- plot_ef_bar(mm_lefse)
-  lefse_dot_plot <- plot_ef_dot(mm_lefse)
-  edger_bar_plot <- plot_ef_bar(mm_edger)
-  #lefse_cladogram <- (plot_cladogram(mm_lefse, color = c(Negative = "darkgreen", Positive = "red")) +
-  #theme(plot.margin = margin(0, 0, 0, 0))
+  # Create edgeR plot if successful
+  if(!is.null(mm_edger)) {
+    edger_bar_plot <- tryCatch(
+      plot_ef_bar(mm_edger),
+      error = function(e) {
+        message(paste("Failed to create edgeR bar plot:", e$message))
+        NULL
+      }
+    )
+  }
   
-  combined_plot <- (lefse_bar_plot | edger_bar_plot) / lefse_dot_plot
+  # Create placeholder plots if any are missing
+  if(is.null(lefse_bar_plot)) {
+    lefse_bar_plot <- ggplot() + 
+      annotate("text", x = 1, y = 1, label = "LefSe analysis failed", size = 6) + 
+      theme_void()
+  }
+  
+  if(is.null(edger_bar_plot)) {
+    edger_bar_plot <- ggplot() + 
+      annotate("text", x = 1, y = 1, label = "edgeR analysis failed", size = 6) + 
+      theme_void()
+  }
+  
+  if(is.null(lefse_dot_plot)) {
+    lefse_dot_plot <- ggplot() + 
+      annotate("text", x = 1, y = 1, label = "LefSe dot plot unavailable", size = 6) + 
+      theme_void()
+  }
+  
+  # Create combined plot layout
+  combined_plot <- (lefse_bar_plot | edger_bar_plot) / lefse_dot_plot +
+    plot_annotation(
+      title = paste("LefSe/Edger Plots for:", factor),
+      subtitle = paste("Top two categories:", paste(top_categories, collapse = " vs ")),
+      theme = theme(plot.title = element_text(size = 14, face = "bold"),
+                    plot.subtitle = element_text(size = 12))
+    )
   
   print(combined_plot)
   
-  ggsave(combined_plot, 
-         filename = paste("lefse_edgar_plot_",factor, ".pdf", sep = ""),
-         device = "pdf",
-         height = 12, width = 16, units = "in")
+  # Save plot
+  tryCatch({
+    ggsave(combined_plot, 
+           filename = paste("lefse_edgar_plot_", factor, ".pdf", sep = ""),
+           device = "pdf",
+           height = 12, width = 16, units = "in")
+  }, error = function(e) {
+    message(paste("Failed to save plot for", factor, ":", e$message))
+  })
   
+  return(combined_plot)
 }
 
-create_lefse_edgar(ps, "Age")
-create_lefse_edgar(ps, "Sex")
-create_lefse_edgar(ps, "Modeofdelivery")
-create_lefse_edgar(ps, "Everhadvaccinated")
-create_lefse_edgar(ps, "Childsfingernailtrimmed")
-create_lefse_edgar(ps, "BCGscar")
-create_lefse_edgar(ps, "Arechildsfingernailsdirty")
-create_lefse_edgar(ps, "Didyourparentsorhealthprofessionalsgaveyouotherantibiotics")
-create_lefse_edgar(ps, "Didyourparentsteachersorhealthprofessionalsgaveyouadewormingpill")
+# Run for each factor
+for (variable in factors) {
+  try(create_lefse_edgar(ps, variable))
+}
+
