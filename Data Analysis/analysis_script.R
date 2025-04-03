@@ -44,7 +44,6 @@ factors <- colnames(ps@sam_data)
 
 
 create_a_diversity_plot <- function(ps,variable){ #function to create an alpha diversity boxplot
-  
   # Convert sample data to data frame
   sam_data <- as(sample_data(ps), "data.frame")
   
@@ -68,22 +67,64 @@ create_a_diversity_plot <- function(ps,variable){ #function to create an alpha d
   #create the plot
   a_diversity_factor<- plot_richness(ps_final, x=variable, color=variable, measures=c("Chao1", "Shannon"))
   a_diversity_factor$layers[[2]] = NULL 
-  a_diversity_factor <- a_diversity_factor  + geom_boxplot() + geom_jitter(alpha = 0.25) + theme_bw()
+  a_diversity_factor <- a_diversity_factor  + geom_boxplot() + geom_jitter(alpha = 0.25) + theme_bw() + 
+    theme(axis.text=element_text(size=12),axis.title=element_text(size=18,face="bold")) + 
+    labs(x = gsub("_", " ", variable)) + guides(color=guide_legend(title=gsub("_", " ", variable)))
   
   print(a_diversity_factor) #sneak-peek
   
   #save the file as a pdf with big dimensions
-  ggsave(a_diversity_factor,
-         filename = paste(variable,"_boxplot.pdf", sep = ""),
-         device = "pdf",
-         height = 6, width = 12, units = "in")
+  # ggsave(a_diversity_factor,
+  #        filename = paste(variable,"_boxplot.pdf", sep = ""),
+  #        device = "pdf",
+  #        height = 6, width = 12, units = "in")
   
+  return(a_diversity_factor)
 }
 
-#run through all the factors in the dataset
-for (var in factors){
-  try(create_a_diversity_plot(ps,var)) #try() will continue running the loop even if there's an error(if certain variables can't work with the plot)
-}
+# #run through all the factors in the dataset
+# for (var in factors){
+#   try(create_a_diversity_plot(ps,var)) #try() will continue running the loop even if there's an error(if certain variables can't work with the plot)
+# }
+
+# Demographic Factors
+a_diversity_age <- create_a_diversity_plot(ps, "Age")
+a_diversity_sex <- create_a_diversity_plot(ps, "Sex")
+a_diversity_weight <- create_a_diversity_plot(ps, "Weight")
+a_diversity_height <- create_a_diversity_plot(ps, "Height")
+a_diversity_delivery <- create_a_diversity_plot(ps, "Mode_of_Delivery")
+a_diversity_vaccine <- create_a_diversity_plot(ps, "Vaccinated")
+a_diversity_bcg <- create_a_diversity_plot(ps, "BCG_Scar")
+combined_demographic <- (a_diversity_age + a_diversity_sex) / (a_diversity_weight + a_diversity_height) / (a_diversity_delivery + a_diversity_vaccine + a_diversity_bcg)
+print(combined_demographic)
+ggsave(combined_demographic,
+       filename = "demographic_alpha_diversity",
+       device = "jpg",
+       height = 12, width = 16, units = "in")
+
+# Lifestyle Factors
+a_diversity_fingernails <- create_a_diversity_plot(ps, "Child_Has_Dirty_Fingernails")
+a_diversity_trimming <- create_a_diversity_plot(ps, "Child.s_Fingernails_Trimmed")
+a_diversity_trimming_freq <- create_a_diversity_plot(ps, "How_often_do_you_trim_your_fingernails.")
+a_diversity_washing_hands_method_toilet <- create_a_diversity_plot(ps, "Howdoyouwashyourhandsaftertoilet")
+a_diversity_barefoot <- create_a_diversity_plot(ps, "Frequency_of_Walking_Barefoot")
+a_diversity_footwear <- create_a_diversity_plot(ps, "Prefer_Sandals_or_Barefoot_in_House")
+a_diversity_raw_veg <- create_a_diversity_plot(ps, "Frequency_of_Eating_Raw.Undercooked_Vegetables")
+a_diversity_washing_hands_method_eating <- create_a_diversity_plot(ps, "Method_of_Washing_Hands_Before_Eating")
+a_diversity_use_school_latrine <- create_a_diversity_plot(ps, "Frequency_of_Using_School_Latrine")
+a_diversity_antibiotic <- create_a_diversity_plot(ps, "Antibiotics")
+a_diversity_defecating_field <- create_a_diversity_plot(ps, "Defecating_in_Open_Field")
+a_diversity_bathing_river <- create_a_diversity_plot(ps, "Frequency_of_Bathing_in_River")
+a_diversity_clothes_river <- create_a_diversity_plot(ps, "Frequency_of_Clothes_Washing_in_River")
+combined_lifestyle <- a_diversity_fingernails + a_diversity_trimming + a_diversity_trimming_freq + 
+  a_diversity_washing_hands_method_toilet + a_diversity_washing_hands_method_eating + a_diversity_barefoot +
+  a_diversity_footwear + a_diversity_raw_veg + a_diversity_use_school_latrine + a_diversity_antibiotic + 
+  a_diversity_defecating_field + a_diversity_bathing_river + a_diversity_clothes_river
+print(combined_lifestyle)
+ggsave(combined_lifestyle,
+       filename = "lifestyle_alpha_diversity",
+       device = "jpg",
+       height = 18, width = 46, units = "in")
 
 
 # ## Part II (a) Beta diversity (Jaccard and Bray Distance) ----------------------
