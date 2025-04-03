@@ -22,6 +22,7 @@ library(vegan)
 library(dplyr)
 library(ALDEx2)
 library(microbiomeMarker)
+library(ggsci)
 
 ps <- readRDS("categorized_data.RDS") # Load in using whatever file name you have
 
@@ -67,12 +68,12 @@ create_a_diversity_plot <- function(ps,variable){ #function to create an alpha d
   #create the plot
   a_diversity_factor<- plot_richness(ps_final, x=variable, color=variable, measures=c("Chao1", "Shannon"))
   a_diversity_factor$layers[[2]] = NULL 
-  a_diversity_factor <- a_diversity_factor  + geom_boxplot() + theme_bw()
+  a_diversity_factor <- a_diversity_factor  + geom_boxplot() + geom_jitter(alpha = 0.25) + theme_bw()
   
   print(a_diversity_factor) #sneak-peek
   
   #save the file as a pdf with big dimensions
-  ggsave(a_diversity_factor, 
+  ggsave(a_diversity_factor,
          filename = paste(variable,"_boxplot.pdf", sep = ""),
          device = "pdf",
          height = 6, width = 12, units = "in")
