@@ -106,7 +106,7 @@ ggsave(combined_demographic,
 a_diversity_fingernails <- create_a_diversity_plot(ps, "Child_Has_Dirty_Fingernails")
 a_diversity_trimming <- create_a_diversity_plot(ps, "Child.s_Fingernails_Trimmed")
 a_diversity_trimming_freq <- create_a_diversity_plot(ps, "How_often_do_you_trim_your_fingernails.")
-a_diversity_washing_hands_method_toilet <- create_a_diversity_plot(ps, "Howdoyouwashyourhandsaftertoilet")
+a_diversity_washing_hands_method_toilet <- create_a_diversity_plot(ps, "Method_of_Washing_Hands_After_Toilet")
 a_diversity_barefoot <- create_a_diversity_plot(ps, "Frequency_of_Walking_Barefoot")
 a_diversity_footwear <- create_a_diversity_plot(ps, "Prefer_Sandals_or_Barefoot_in_House")
 a_diversity_raw_veg <- create_a_diversity_plot(ps, "Frequency_of_Eating_Raw.Undercooked_Vegetables")
@@ -125,6 +125,18 @@ ggsave(combined_lifestyle,
        filename = "lifestyle_alpha_diversity",
        device = "jpg",
        height = 18, width = 46, units = "in")
+
+# Clinical Factors
+a_diversity_malaria <- create_a_diversity_plot(ps, "Anti.Malarial_Drug")
+a_diversity_fever <- create_a_diversity_plot(ps, "Fever_in_Last_Two_Weeks")
+a_diversity_diarrhea <- create_a_diversity_plot(ps, "Diarrhea_in_Last_Two_Weeks")
+a_diversity_wheezing <- create_a_diversity_plot(ps, "How_Many_Times_Wheezing_or_Whistling")
+combined_clinical <- a_diversity_malaria + a_diversity_fever + a_diversity_diarrhea + a_diversity_wheezing
+print(combined_clinical)
+ggsave(combined_clinical,
+       filename = "clinical_alpha_diversity",
+       device = "jpg",
+       height = 12, width = 16, units = "in")
 
 
 # ## Part II (a) Beta diversity (Jaccard and Bray Distance) ----------------------
