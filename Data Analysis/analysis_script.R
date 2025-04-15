@@ -2,7 +2,7 @@
 #Socioeconomic, Environmental, and Demographic Factor Analysis on Gut Microbiome
 
 #Modified Code from Christine Bi by Max Warriner: 
-#Script is designed to be able to run through a large amount of variables in a phyloseq object with efficency
+#Script is designed to be able to run through a large amount of variables in a phyloseq object with efficiency
 
 # ## Part 0: data/phyloseq preprocessing -----------------------------------
 
@@ -23,6 +23,9 @@ library(dplyr)
 library(ALDEx2)
 library(microbiomeMarker)
 library(ggsci)
+library(ggpubr)
+library(patchwork)
+library(tidyverse)
 
 ps <- readRDS("categorized_data.RDS") # Load in using whatever file name you have
 
@@ -43,7 +46,7 @@ factors <- colnames(ps@sam_data)
 # ## Part I : Alpha Diversity (Chao1 and Shannon indices) -----------------
 
 
-create_a_diversity_plot <- function(ps,variable){ #function to create an alpha diversity boxplot
+create_a_diversity_plot <- function(ps, variable) {
   # Convert sample data to data frame
   sam_data <- as(sample_data(ps), "data.frame")
   
@@ -64,24 +67,38 @@ create_a_diversity_plot <- function(ps,variable){ #function to create an alpha d
   final_keep_samples <- sam_data_filtered[[variable]] %in% valid_values
   ps_final <- prune_samples(final_keep_samples, ps_filtered)
   
-  #create the plot
-  a_diversity_factor<- plot_richness(ps_final, x=variable, color=variable, measures=c("Chao1", "Shannon"))
+  # Get alpha diversity metrics
+  alpha_div <- estimate_richness(ps_final, measures = c("Chao1", "Shannon"))
+  alpha_div$sample_id <- rownames(alpha_div)
+  alpha_div <- merge(alpha_div, sam_data_filtered, by.x = "sample_id", by.y = "row.names")
+  
+  # Create the plot
+  a_diversity_factor <- plot_richness(ps_final, x = variable, color = variable, 
+                                      measures = c("Chao1", "Shannon"))
   a_diversity_factor$layers[[2]] = NULL 
-  a_diversity_factor <- a_diversity_factor  + geom_boxplot() + geom_jitter(alpha = 0.25) + theme_bw() + 
-    theme(axis.text=element_text(size=12),
-          axis.title=element_text(size=18,face="bold"), 
+  
+  # Add statistical annotations
+  a_diversity_factor <- a_diversity_factor + 
+    geom_boxplot() + 
+    geom_jitter(alpha = 0.25) + 
+    theme_bw() + 
+    theme(axis.text = element_text(size = 12),
+          axis.title = element_text(size = 18, face = "bold"), 
           legend.position = "none", 
           axis.text.x = element_text(size = 14)) + 
     labs(x = gsub("_", " ", variable)) + 
-    scale_x_discrete(limits = c("0", "1-2","3-4", ">4"))
+    # Add p-values for each metric
+    stat_compare_means(
+      method = "kruskal.test",
+      label = "p.format",
+      label.x = 1,    # Left side
+      label.y = Inf,  # Top
+      hjust = 0,      # Left-align text
+      vjust = 1.5,    # Pushes it down slightly from top edge
+      size = 10
+    )
   
-  print(a_diversity_factor) #sneak-peek
-  
-  #save the file as a pdf with big dimensions
-  # ggsave(a_diversity_factor,
-  #        filename = paste(variable,"_boxplot.pdf", sep = ""),
-  #        device = "pdf",
-  #        height = 6, width = 12, units = "in")
+  print(a_diversity_factor)
   
   return(a_diversity_factor)
 }
@@ -93,13 +110,9 @@ create_a_diversity_plot <- function(ps,variable){ #function to create an alpha d
 
 # Demographic Factors
 a_diversity_age <- create_a_diversity_plot(ps, "Age")
-a_diversity_sex <- create_a_diversity_plot(ps, "Sex")
 a_diversity_weight <- create_a_diversity_plot(ps, "Weight")
-a_diversity_height <- create_a_diversity_plot(ps, "Height")
-a_diversity_delivery <- create_a_diversity_plot(ps, "Mode_of_Delivery")
 a_diversity_vaccine <- create_a_diversity_plot(ps, "Vaccinated")
-a_diversity_bcg <- create_a_diversity_plot(ps, "BCG_Scar")
-combined_demographic <- a_diversity_age + a_diversity_sex + a_diversity_weight + a_diversity_height + a_diversity_delivery + a_diversity_vaccine + a_diversity_bcg + 
+combined_demographic <-  a_diversity_age + a_diversity_weight + a_diversity_vaccine + 
   plot_annotation(
     title = "Demographic Factors") &
   theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
@@ -109,23 +122,12 @@ ggsave(combined_demographic,
        height = 12, width = 28, units = "in")
 
 # Lifestyle Factors
-a_diversity_fingernails <- create_a_diversity_plot(ps, "Child_Has_Dirty_Fingernails")
-a_diversity_trimming <- create_a_diversity_plot(ps, "Child.s_Fingernails_Trimmed")
-a_diversity_trimming_freq <- create_a_diversity_plot(ps, "How_often_do_you_trim_your_fingernails.")
-a_diversity_washing_hands_method_toilet <- create_a_diversity_plot(ps, "Method_of_Washing_Hands_After_Toilet")
-a_diversity_barefoot <- create_a_diversity_plot(ps, "Frequency_of_Walking_Barefoot")
-a_diversity_footwear <- create_a_diversity_plot(ps, "Prefer_Sandals_or_Barefoot_in_House")
 a_diversity_raw_veg <- create_a_diversity_plot(ps, "Frequency_of_Eating_Raw.Undercooked_Vegetables")
 a_diversity_washing_hands_method_eating <- create_a_diversity_plot(ps, "Method_of_Washing_Hands_Before_Eating")
 a_diversity_use_school_latrine <- create_a_diversity_plot(ps, "Frequency_of_Using_School_Latrine")
-a_diversity_antibiotic <- create_a_diversity_plot(ps, "Antibiotics")
-a_diversity_defecating_field <- create_a_diversity_plot(ps, "Defecating_in_Open_Field")
 a_diversity_bathing_river <- create_a_diversity_plot(ps, "Frequency_of_Bathing_in_River")
-a_diversity_clothes_river <- create_a_diversity_plot(ps, "Frequency_of_Clothes_Washing_in_River")
-combined_lifestyle <- a_diversity_fingernails + a_diversity_trimming + a_diversity_trimming_freq + 
-  a_diversity_washing_hands_method_toilet + a_diversity_washing_hands_method_eating + a_diversity_barefoot +
-  a_diversity_footwear + a_diversity_raw_veg + a_diversity_use_school_latrine + a_diversity_antibiotic + 
-  a_diversity_defecating_field + a_diversity_bathing_river + a_diversity_clothes_river  + 
+combined_lifestyle <- a_diversity_raw_veg + a_diversity_washing_hands_method_eating + a_diversity_use_school_latrine + 
+   a_diversity_bathing_river +
   plot_annotation(
     title = "Lifestyle Factors") &
   theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
@@ -149,31 +151,14 @@ ggsave(combined_clinical,
        height = 12, width = 32, units = "in")
 
 
-# Environmental Factors
-a_diversity_rural_urban <- create_a_diversity_plot(ps, "Urban.Rural")
-a_diversity_potable <- create_a_diversity_plot(ps, "Potable_Water_in_House")
-a_diversity_latrine_distance <- create_a_diversity_plot(ps, "Latrine_Distance_from_House")
-combined_environmental <- a_diversity_rural_urban + a_diversity_potable + a_diversity_latrine_distance + 
-  plot_annotation(
-    title = "Environmental Factors") &
-  theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
-
-ggsave(combined_environmental,
-       filename = "environmental_alpha_diversity",
-       device = "jpg",
-       height = 12, width = 36, units = "in")
-
 # Household Factors
 a_diversity_kitchen_material <- create_a_diversity_plot(ps, "Kitchen_Material")
 a_diversity_house_material <- create_a_diversity_plot(ps, "House_Floor_Material")
-a_diversity_household_size <- create_a_diversity_plot(ps, "Household_Number")
-a_diversity_older_siblings <- create_a_diversity_plot(ps, "Number_of_Older_Siblings")
 a_diversity_younger_siblings <- create_a_diversity_plot(ps, "Number_of_Siblings_Younger_than_12")
-a_diversity_animals <- create_a_diversity_plot(ps, "No_Animals_in_House.Compound")
 a_diversity_pet <- create_a_diversity_plot(ps, "Pet_in_House.Compound")
 a_diversity_wood <- create_a_diversity_plot(ps, "Wood_as_Cooking_Fuel")
-combined_household <- a_diversity_kitchen_material + a_diversity_house_material + a_diversity_household_size + a_diversity_older_siblings +
-  a_diversity_younger_siblings + a_diversity_animals + a_diversity_pet + a_diversity_wood + 
+combined_household <- a_diversity_kitchen_material + a_diversity_house_material +
+  a_diversity_younger_siblings + a_diversity_pet + a_diversity_wood + 
   plot_annotation(
     title = "Household Factors") &
   theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
@@ -208,17 +193,36 @@ create_pcoa_plot <- function(variable) {
   final_keep_samples <- sam_data_filtered[[variable]] %in% valid_values
   ps_final <- prune_samples(final_keep_samples, ps_filtered)
   
+  # Get final sample data
+  sam_data_final <- as(sample_data(ps_final), "data.frame")
+  
   # Perform PCoA
   pcoares <- get_pcoa(obj = ps_final, distmethod = "bray", method = "hellinger")
   
+  # Perform PERMANOVA to get p-value
+  physeq_dist <- phyloseq::distance(ps_final, method = "bray")
+  permanova <- vegan::adonis2(physeq_dist ~ sam_data_final[[variable]])
+  p_value <- permanova$`Pr(>F)`[1]
+  
+  # Format p-value for display
+  p_text <- ifelse(p_value < 0.001, "p < 0.001", 
+                   paste("p =", format(round(p_value, 3), nsmall = 3)))
+  
   # Create PCoA plot
   pcoaplot <- ggordpoint(obj = pcoares, biplot = FALSE, speciesannot = TRUE,
-                         factorNames = c(variable), ellipse = TRUE, linesize = 1.5) +
+                         factorNames = c(variable), ellipse = TRUE, linesize = 1.5, 
+                         ellipse_linewd = 1, ellipse_lty = 2) +
     ggtitle(gsub("_", " ", variable)) + 
-    guides(color=guide_legend(title=gsub("_", " ", variable))) +
-    theme(title = element_text(size=12,face="bold"), 
+    guides(color=guide_legend(title=gsub("_", " ", variable), 
+                              override.aes = list(size = 4))) +
+    theme(title = element_text(size=4,face="bold"), 
           legend.title = element_blank(), 
-          legend.text = element_text(size = 12))
+          legend.text = element_text(size = 32)) +
+    # Add p-value annotation
+    annotate("text", x = Inf, y = Inf, 
+             label = p_text, 
+             hjust = 1.1, vjust = 1.5, 
+             size = 14, fontface = "bold")
   
   print(pcoaplot)
   
@@ -229,7 +233,6 @@ create_pcoa_plot <- function(variable) {
   
   return(pcoaplot)
 }
-
 # for (var in factors){
 #   try(pcoa_factor <- create_pcoa_plot(var))
 # }
@@ -282,13 +285,10 @@ create_pcoa_plot <- function(variable) {
 
 # Demographic Factors
 beta_diversity_age <- create_pcoa_plot("Age")
-beta_diversity_sex <- create_pcoa_plot("Sex")
 beta_diversity_weight <- create_pcoa_plot("Weight")
-beta_diversity_height <- create_pcoa_plot("Height")
-beta_diversity_delivery <- create_pcoa_plot("Mode_of_Delivery")
 beta_diversity_vaccine <- create_pcoa_plot("Vaccinated")
 beta_diversity_bcg <- create_pcoa_plot("BCG_Scar")
-combined_demographic <- beta_diversity_age + beta_diversity_sex + beta_diversity_weight + beta_diversity_height + beta_diversity_delivery + beta_diversity_vaccine + beta_diversity_bcg + 
+combined_demographic <- beta_diversity_age  + beta_diversity_weight  + beta_diversity_vaccine + beta_diversity_bcg + 
   plot_annotation(
     title = "Demographic Factors") &
   theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
@@ -298,73 +298,56 @@ ggsave(combined_demographic,
        height = 24, width = 24, units = "in")
 
 # Lifestyle Factors
-beta_diversity_fingernails <- create_pcoa_plot("Child_Has_Dirty_Fingernails")
 beta_diversity_trimming <- create_pcoa_plot("Child.s_Fingernails_Trimmed")
-beta_diversity_trimming_freq <- create_pcoa_plot("How_often_do_you_trim_your_fingernails.")
-beta_diversity_washing_hands_method_toilet <- create_pcoa_plot("Method_of_Washing_Hands_After_Toilet")
-beta_diversity_barefoot <- create_pcoa_plot("Frequency_of_Walking_Barefoot")
 beta_diversity_footwear <- create_pcoa_plot("Prefer_Sandals_or_Barefoot_in_House")
 beta_diversity_raw_veg <- create_pcoa_plot("Frequency_of_Eating_Raw.Undercooked_Vegetables")
 beta_diversity_washing_hands_method_eating <- create_pcoa_plot("Method_of_Washing_Hands_Before_Eating")
 beta_diversity_use_school_latrine <- create_pcoa_plot("Frequency_of_Using_School_Latrine")
-beta_diversity_antibiotic <- create_pcoa_plot("Antibiotics")
-beta_diversity_defecating_field <- create_pcoa_plot("Defecating_in_Open_Field")
-beta_diversity_bathing_river <- create_pcoa_plot("Frequency_of_Bathing_in_River")
 beta_diversity_clothes_river <- create_pcoa_plot("Frequency_of_Clothes_Washing_in_River")
-combined_lifestyle <- beta_diversity_fingernails + beta_diversity_trimming + beta_diversity_trimming_freq + 
-  beta_diversity_washing_hands_method_toilet + beta_diversity_washing_hands_method_eating + beta_diversity_barefoot +
-  beta_diversity_footwear + beta_diversity_raw_veg + beta_diversity_use_school_latrine + beta_diversity_antibiotic + 
-  beta_diversity_defecating_field + beta_diversity_bathing_river + beta_diversity_clothes_river  + 
+combined_lifestyle <- beta_diversity_trimming + beta_diversity_washing_hands_method_eating +
+  beta_diversity_footwear + beta_diversity_raw_veg + beta_diversity_use_school_latrine + beta_diversity_clothes_river  + 
   plot_annotation(
     title = "Lifestyle Factors") &
-  theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
+  theme(plot.title = element_text(size = 32, face = "bold", hjust = 0.5))
 ggsave(combined_lifestyle,
-       filename = "lifestyle_alpha_diversity",
+       filename = "lifestyle_beta_diversity",
        device = "jpg",
-       height = 18, width = 46, units = "in")
+       height = 32, width = 48, units = "in")
 
 # Clinical Factors
 beta_diversity_fever <- create_pcoa_plot("Fever_in_Last_Two_Weeks")
-beta_diversity_diarrhea <- create_pcoa_plot("Diarrhea_in_Last_Two_Weeks")
 beta_diversity_wheezing <- create_pcoa_plot("How_Many_Times_Wheezing_or_Whistling")
-combined_clinical <- beta_diversity_fever + beta_diversity_diarrhea + beta_diversity_wheezing + 
+combined_clinical <- beta_diversity_fever + beta_diversity_wheezing + 
   plot_annotation(
     title = "Clinical Factors") &
-  theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
+  theme(plot.title = element_text(size = 32, face = "bold", hjust = 0.5))
 
 ggsave(combined_clinical,
-       filename = "clinical_alpha_diversity",
+       filename = "clinical_beta_diversity",
        device = "jpg",
        height = 12, width = 32, units = "in")
 
 
 # Environmental Factors
 beta_diversity_rural_urban <- create_pcoa_plot("Urban.Rural")
-beta_diversity_potable <- create_pcoa_plot("Potable_Water_in_House")
-beta_diversity_school_latrine <- create_pcoa_plot("Toilet_in_School")
-beta_diversity_latrine_distance <- create_pcoa_plot("Latrine_Distance_from_House")
-combined_environmental <- beta_diversity_rural_urban + beta_diversity_potable + beta_diversity_latrine_distance + 
+combined_environmental <- beta_diversity_rural_urban + 
   plot_annotation(
     title = "Environmental Factors") &
   theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
 
 ggsave(combined_environmental,
-       filename = "environmental_alpha_diversity",
+       filename = "environmental_beta_diversity",
        device = "jpg",
-       height = 12, width = 36, units = "in")
+       height = 12, width = 12, units = "in")
 
 # Household Factors
 beta_diversity_kitchen_material <- create_pcoa_plot("Kitchen_Material")
 beta_diversity_house_material <- create_pcoa_plot("House_Floor_Material")
-beta_diversity_household_size <- create_pcoa_plot("Household_Number")
-beta_diversity_older_siblings <- create_pcoa_plot("Number_of_Older_Siblings")
 beta_diversity_younger_siblings <- create_pcoa_plot("Number_of_Siblings_Younger_than_12")
 beta_diversity_animals <- create_pcoa_plot("No_Animals_in_House.Compound")
 beta_diversity_pet <- create_pcoa_plot("Pet_in_House.Compound")
-beta_diversity_latrine_inside_outside <- create_pcoa_plot("Latrine_Inside_or_Outside")
 beta_diversity_wood <- create_pcoa_plot("Wood_as_Cooking_Fuel")
-beta_diversity_kerosene <- create_pcoa_plot("Kerosene_as_Cooking_Fuel")
-combined_household <- beta_diversity_kitchen_material + beta_diversity_house_material + beta_diversity_household_size + beta_diversity_older_siblings +
+combined_household <- beta_diversity_kitchen_material + beta_diversity_house_material +
   beta_diversity_younger_siblings + beta_diversity_animals + beta_diversity_pet + beta_diversity_wood + 
   plot_annotation(
     title = "Household Factors") &
@@ -372,7 +355,7 @@ combined_household <- beta_diversity_kitchen_material + beta_diversity_house_mat
 ggsave(combined_household,
        filename = "household_alpha_diversity",
        device = "jpg",
-       height = 16, width = 32, units = "in")
+       height = 16, width = 38, units = "in")
 
 
 
@@ -517,19 +500,77 @@ create_phylum_barplot <- function(variable) {
   
   print(barplot)
   
-  ggsave(barplot, 
-         filename = paste(variable, "_phylum_barplot.pdf", sep = ""),
-         device = "pdf",
-         height = 6, width = 8, units = "in")
+  # ggsave(barplot, 
+  #        filename = paste(variable, "_phylum_barplot.pdf", sep = ""),
+  #        device = "pdf",
+  #        height = 6, width = 8, units = "in")
   
   return(barplot)
 }
 
-for (variable in factors){
-  try(create_phylum_barplot(variable))
-}
+# for (variable in factors){
+#   try(create_phylum_barplot(variable))
+# }
 
 
+# Demographic Factors
+phylum_age <- create_phylum_barplot( "Age")
+phylum_weight <- create_phylum_barplot( "Weight")
+phylum_vaccine <- create_phylum_barplot( "Vaccinated")
+combined_demographic <-  phylum_age + phylum_weight + phylum_vaccine + 
+  plot_annotation(
+    title = "Demographic Factors") &
+  theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
+ggsave(combined_demographic,
+       filename = "demographic_phylum",
+       device = "jpg",
+       height = 12, width = 28, units = "in")
+
+# Lifestyle Factors
+phylum_raw_veg <- create_phylum_barplot( "Frequency_of_Eating_Raw.Undercooked_Vegetables")
+phylum_washing_hands_method_eating <- create_phylum_barplot( "Method_of_Washing_Hands_Before_Eating")
+phylum_use_school_latrine <- create_phylum_barplot( "Frequency_of_Using_School_Latrine")
+phylum_bathing_river <- create_phylum_barplot( "Frequency_of_Bathing_in_River")
+combined_lifestyle <- phylum_raw_veg + phylum_washing_hands_method_eating + phylum_use_school_latrine + 
+  phylum_bathing_river +
+  plot_annotation(
+    title = "Lifestyle Factors") &
+  theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
+ggsave(combined_lifestyle,
+       filename = "lifestyle_phylum",
+       device = "jpg",
+       height = 18, width = 32, units = "in")
+
+# Clinical Factors
+phylum_fever <- create_phylum_barplot( "Fever_in_Last_Two_Weeks")
+phylum_diarrhea <- create_phylum_barplot( "Diarrhea_in_Last_Two_Weeks")
+phylum_wheezing <- create_phylum_barplot( "How_Many_Times_Wheezing_or_Whistling")
+combined_clinical <- phylum_fever + phylum_diarrhea + phylum_wheezing + 
+  plot_annotation(
+    title = "Clinical Factors") &
+  theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
+
+ggsave(combined_clinical,
+       filename = "clinical_phylum",
+       device = "jpg",
+       height = 12, width = 32, units = "in")
+
+
+# Household Factors
+phylum_kitchen_material <- create_phylum_barplot( "Kitchen_Material")
+phylum_house_material <- create_phylum_barplot( "House_Floor_Material")
+phylum_younger_siblings <- create_phylum_barplot( "Number_of_Siblings_Younger_than_12")
+phylum_pet <- create_phylum_barplot( "Pet_in_House.Compound")
+phylum_wood <- create_phylum_barplot( "Wood_as_Cooking_Fuel")
+combined_household <- phylum_kitchen_material + phylum_house_material +
+  phylum_younger_siblings + phylum_pet + phylum_wood + 
+  plot_annotation(
+    title = "Household Factors") &
+  theme(plot.title = element_text(size = 48, face = "bold", hjust = 0.5))
+ggsave(combined_household,
+       filename = "household_phylum",
+       device = "jpg",
+       height = 16, width = 32, units = "in")
 
 
 # Define the function to create bar plots at the family level
