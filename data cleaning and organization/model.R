@@ -3,7 +3,7 @@ library(glmnet)
 library(caret)
 library(dplyr)
 
-ps <- readRDS("categorized_data.rds") # read in ps file
+ps <- readRDS("continuous_data.rds") # read in ps file
 
 #Rarefy Data
 set.seed(13)
@@ -21,8 +21,8 @@ sample_data <- data.frame(sample_data) #convert sample data to data frame for me
 
 a_diversity <- merge(sample_data, a_diversity, by = c("sample")) #merge the data together
 
-a_diversity <- a_diversity |> # remove sample column now that it's not needed
-  dplyr::select(-sample)
+a_diversity <- a_diversity |> # remove unnecessary columns for the model
+  dplyr::select(-sample, -se.chao1)
 
 a_diversity <- mutate_if(a_diversity, is.character, as.factor) #change all character columns to factor
 
@@ -51,75 +51,79 @@ remove_na_columns <- function(df) {
 
 a_diversity <- remove_na_columns(a_diversity)
 
-model <- lm(Chao_Shannon ~ ., data = a_diversity[, c(1:68, 74)])
+a_diversity <- a_diversity |>
+  dplyr::select(-Chao1, -Chao_plus, -Shannon, -Shannon_plus)
 
 
-removeAliased <- function(mod) {
-  # Check if there are any aliased terms
-  aliased_info <- alias(mod)
-  if (is.null(aliased_info$Complete)) {
-    return(mod)  # Return original model if no aliasing
-  }
-  
-  # Retrieve aliased terms
-  rn <- rownames(aliased_info$Complete)
-  
-  # Handle factor levels in coefficient names
-  factor_vars <- mod$model[, sapply(mod$model, is.factor), drop = FALSE]
-  regex.base <- if (ncol(factor_vars) > 0) {
-    unique(unlist(lapply(factor_vars, levels)))
-  } else {
-    character(0)
-  }
-  
-  # Clean coefficient names to match formula terms
-  aliased <- if (length(regex.base) > 0) {
-    gsub(paste0(regex.base, "$", collapse = "|"), "", 
-         gsub(paste0(regex.base, ":", collapse = "|"), ":", rn))
-  } else {
-    rn
-  }
-  
-  # Skip if no aliased terms left after cleaning
-  if (length(aliased) == 0) {
-    return(mod)
-  }
-  
-  # Update formula (safely)
-  uF <- reformulate(".", response = ".", 
-                    drop.terms = terms(reformulate(aliased)), 
-                    intercept = attr(mod$terms, "intercept"))
-  
-  update(mod, uF)
-}
+a_diversity <- a_diversity[,c(1:16, 33:46, 54:78, 88:93, 116)]
 
-model <- removeAliased(model) # remove colinear variables from data
+model <- lm(Chao_Shannon ~ ., data = a_diversity, na.action = na.omit)
 
-
-#Perform Multivariable Linear Regression
 summary(model)
 
-#perform stepwise regression
-library(MASS)
-model = stepAIC(model, direction = "both", trace = FALSE) # Stepwise regression model with shannon measure
-model_summary <- summary(model)
-model_coeffs <- data.frame(model_summary$coefficients)
-
-round_df <- function(df, digits) {
-  nums <- vapply(df, is.numeric, FUN.VALUE = logical(1)) #function that rounds all the numbers in the dataframe
+top10_rsquared <- function(model) {
+  # Check if the input is a linear model
+  if (!inherits(model, "lm")) {
+    stop("Input must be a linear model (lm) object")
+  }
   
-  df[,nums] <- round(df[,nums], digits = digits)
+  # Get the model data and formula
+  model_data <- model.frame(model)
+  response_var <- as.character(formula(model)[[2]])
   
-  (df)
+  # Get all predictor variables
+  predictors <- setdiff(colnames(model_data), response_var)
+  
+  # If there are 10 or fewer predictors, return them all
+  if (length(predictors) <= 10) {
+    message("Model has 10 or fewer predictors - returning all variables")
+    return(predictors)
+  }
+  
+  # Calculate individual R-squared contributions
+  rsq_contributions <- sapply(predictors, function(var) {
+    # Create a formula with just this predictor
+    f <- as.formula(paste(response_var, "~", var))
+    # Fit a simple model
+    m <- lm(f, data = model_data)
+    # Return R-squared
+    summary(m)$r.squared
+  })
+  
+  # Sort by R-squared in descending order
+  sorted_vars <- names(sort(rsq_contributions, decreasing = TRUE))
+  
+  # Return the top 10
+  return(sorted_vars[1:10])
 }
 
-model_coeffs <- round_df(model_coeffs, 4) #round each data frame to four decimal places
 
-model_coeffs <- model_coeffs[-1,]
+top10_rsquared(model)
 
-library(pwr)
-r2  = summary(model)$r.squared          # R-squared for our linear model
-my.f2 = r2 / (1-r2)                         # Effect Size
+best_model <- lm(Chao_Shannon ~ Familyoccupation + Yourlatrineconnectedto + Doyouuseschoollatrine + Ifwithsoaphowoftenyouuseit +
+                   Ifwithsoaphowoftenyouuseit_A + Doyoueatraworundercookedvegitables + Underweight + Isyourkitcheninyourhouseorsepatated + 
+                   Howoftendoyoubathinriver + Doyoudeficateintheopenfield, data = a_diversity)
 
-print(r2)
-print(my.f2)
+#Perform Multivariable Linear Regression
+summary(best_model)
+
+library(mlbench)     # For PimaIndiansDiabetes2 dataset
+library(dplyr)       # For data manipulation (dplyr) 
+library(broom)       # For making model summary tidy
+library(visreg)      # For plotting logodds and probability 
+library(rcompanion)  # To calculate pseudo R-squared
+library(MASS)        # For stepwise model selection
+library(ROCR)        # To find the probability threshold for best accuracy
+library(car)         # For multicollinearity function vif()
+
+nagelkerke(best_model)
+
+
+#Normality of Residuals
+hist(best_model$residuals, freq=FALSE, xlab = "Residuals", main="",cex.axis=1.5,cex.lab=1.5)
+curve(dnorm(x,mean(best_model$residuals), sd(best_model$residuals)), -1.6, 2.1, add=TRUE,col=c('red'))
+qqnorm(best_model$residuals, main="")
+qqline(best_model$residuals)
+shapiro.test(best_model$residuals)
+
+plot(a_diversity$weight, a_diversity$Chao_Shannon)
