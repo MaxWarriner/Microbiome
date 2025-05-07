@@ -96,7 +96,8 @@ create_a_diversity_plot <- function(ps, variable) {
       hjust = 0,      # Left-align text
       vjust = 1.5,    # Pushes it down slightly from top edge
       size = 10
-    )
+    ) + 
+    scale_x_discrete(limits = c("never", "sometimes", "always"))
   
   print(a_diversity_factor)
   
@@ -215,14 +216,15 @@ create_pcoa_plot <- function(variable) {
     ggtitle(gsub("_", " ", variable)) + 
     guides(color=guide_legend(title=gsub("_", " ", variable), 
                               override.aes = list(size = 4))) +
-    theme(title = element_text(size=4,face="bold"), 
+    theme( 
           legend.title = element_blank(), 
-          legend.text = element_text(size = 32)) +
+          legend.text = element_text(size = 20)) +
     # Add p-value annotation
     annotate("text", x = Inf, y = Inf, 
              label = p_text, 
              hjust = 1.1, vjust = 1.5, 
-             size = 14, fontface = "bold")
+             size = 12, fontface = "bold") +
+    labs(color = paste("Kitchen Floor Material"))
   
   print(pcoaplot)
   
