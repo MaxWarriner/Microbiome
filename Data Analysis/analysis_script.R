@@ -1187,7 +1187,7 @@ cv_predict_clr_xgb <- function(
 }
 
 # E.g.
-results <- cv_predict_clr_xgb(ps, "House_Floor_Material", meta_cols = c("Sex"))
+results <- cv_predict_clr_xgb(ps, "SEI_proxy", meta_cols = c("Age", "Sex"))
 results$confusion_matrix
 head(results$feature_importance, 50)
 
@@ -1315,8 +1315,7 @@ plot_top_feature_heatmap_clr <- function(
   heatmap_mat_scaled[is.na(heatmap_mat_scaled)] <- 0
   
   # 10. Plot heatmap (no clustering of samples)
-  png("top_features_heatmap.png", width = 3000, height = 1800, res = 500)
-  pheatmap::pheatmap(
+  heatmap <- pheatmap::pheatmap(
     mat = heatmap_mat_scaled,
     annotation_col = sample_anno,
     main = paste("Top", n_top, "Features Heatmap"),
@@ -1328,7 +1327,9 @@ plot_top_feature_heatmap_clr <- function(
     scale = "none",
     color = colorRampPalette(c("navy", "white", "firebrick3"))(100)
   )
-  dev.off()
+
+  ggsave('top_features_heatmap.png', width = 5, height = )
+  
 }
 
 
@@ -1337,8 +1338,8 @@ plot_top_feature_heatmap_clr(
   ps_obj = ps,
   model_results = results,
   n_top = 10,
-  metadata_vars = c("Sex"),
-  outcome_var = "House_Floor_Material",
+  metadata_vars = c("Sex", "Age"),
+  outcome_var = "SEI_proxy",
   min_prevalence = 0.05
 )
 
