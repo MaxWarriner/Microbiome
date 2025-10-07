@@ -1,287 +1,233 @@
-,variable,distance_method,comparison,F_statistic,p_value,significance
-1,Frequency_of_Using_School_Latrine,bray,Comparing: sometimes vs never,1.917460974,0.002,***
-2,Kitchen_Material,jaccard,Comparing: Dust vs Cement,1.565978311,0.003,***
-3,Kitchen_Material,bray,Comparing: Dust vs Cement,1.861804038,0.005,***
-4,Frequency_of_Using_School_Latrine,jaccard,Comparing: sometimes vs never,1.551744119,0.005,***
-5,Weight,bray,Comparing: <40 vs >=40,1.521203227,0.016,**
-6,Dewormingin1yr,jaccard,Comparing: yes vs no,1.364956975,0.017,**
-7,Dewormingin1yr,bray,Comparing: yes vs no,1.529315653,0.019,**
-8,Frequency_of_Using_Soap_After_Using_Toilet,bray,Comparing: sometimes vs always,1.484626857,0.023,**
-9,Frequency_of_Clothes_Washing_in_River,jaccard,Comparing: never vs sometimes,1.298072021,0.026,**
-10,Frequency_of_Clothes_Washing_in_River,bray,Comparing: never vs sometimes,1.475098988,0.028,**
-11,Weight,jaccard,Comparing: <40 vs >=40,1.285248954,0.029,**
-12,Deworming_Pill,jaccard,Comparing: yes vs no,1.261368339,0.029,**
-13,Pet_in_House.Compound,bray,Comparing: no vs yes,1.42633583,0.031,**
-14,No_Animals_in_House.Compound,jaccard,Comparing: no vs yes,1.268041524,0.039,**
-15,Deworming_Pill,bray,Comparing: yes vs no,1.3825694,0.04,**
-16,Pet_in_House.Compound,jaccard,Comparing: no vs yes,1.278936056,0.042,**
-17,Frequency_of_Using_Soap_After_Using_Toilet,jaccard,Comparing: sometimes vs always,1.263460088,0.044,**
-18,Frequency_of_Bathing_in_River,bray,Comparing: never vs sometimes,1.351372013,0.045,**
-19,Number_of_Siblings_Younger_than_12,bray,Comparing: 1-2 vs 0,1.342643746,0.054,*
-20,No_Animals_in_House.Compound,bray,Comparing: no vs yes,1.355040604,0.059,*
-21,Underweight,bray,Comparing: Underweight vs Not Underweight,1.32846465,0.061,*
-22,Frequency_of_Bathing_in_River,jaccard,Comparing: never vs sometimes,1.218334966,0.061,*
-23,Told_by_Health_Professional,bray,Comparing: no vs yes,1.393164019,0.063,*
-24,Number_of_Siblings_Younger_than_12,jaccard,Comparing: 1-2 vs 0,1.216477495,0.064,*
-25,How_Many_Times_Wheezing_or_Whistling,bray,Comparing: 0 vs 1-3,1.311738502,0.071,*
-26,Told_by_Health_Professional,jaccard,Comparing: no vs yes,1.234811901,0.071,*
-27,Underweight,jaccard,Comparing: Underweight vs Not Underweight,1.21071998,0.074,*
-28,How_Many_Times_Wheezing_or_Whistling,jaccard,Comparing: 0 vs 1-3,1.206627517,0.075,*
-29,Family_Owns_Television,jaccard,Comparing: yes vs no,1.190046417,0.078,*
-30,Height,jaccard,Comparing: 1.15-1.35 vs 1.35-1.55,1.184760471,0.081,*
-31,Family_Owns_Television,bray,Comparing: yes vs no,1.267905008,0.09,*
-32,Activities_Where_Barefoot,bray,Comparing: At home vs while at home,1.230164012,0.091,*
-33,Tricuris,bray,Comparing: Negative vs Postive,1.291023015,0.093,*
-34,Height,bray,Comparing: 1.15-1.35 vs 1.35-1.55,1.281487599,0.094,*
-35,Prefer_Sandals_or_Barefoot_in_House,bray,Comparing: Sandals vs Barefoot,1.272816377,0.094,*
-36,Told_by_Family,jaccard,Comparing: yes vs no,1.157055234,0.094,*
-37,Prefer_Sandals_or_Barefoot_in_House,jaccard,Comparing: Sandals vs Barefoot,1.147903482,0.095,*
-38,OversqrtBAZ,bray,Comparing: 2.88675134594813 vs 0.971285862357264,1.168469103,0.1,*
-39,OversqrtBAZ,jaccard,Comparing: 2.88675134594813 vs 0.971285862357264,1.110105172,0.1,*
-40,SoilConsumpFinal,bray,Comparing: 2 vs 1,1.231211931,0.101,
-41,Activities_Where_Barefoot,jaccard,Comparing: At home vs while at home,1.149867731,0.106,
-42,Frequency_of_Eating_Raw.Undercooked_Vegetables,bray,Comparing: sometimes vs always,1.228446155,0.109,
-43,Told_by_Family,bray,Comparing: yes vs no,1.224627821,0.11,
-44,Drink_Water_Directly_or_Treated.,jaccard,Comparing: Directly vs Treat,1.15284448,0.11,
-45,Wood_as_Cooking_Fuel,jaccard,Comparing: yes vs no,1.145513182,0.114,
-46,Frequency_of_Eating_Soil,bray,Comparing: never vs sometimes,1.231211931,0.115,
-47,Use_of_Toilet_Paper_after_Defecation,bray,Comparing: sometimes vs always,1.213825179,0.117,
-48,Frequency_of_Eating_Soil,jaccard,Comparing: never vs sometimes,1.141049408,0.119,
-49,House_Floor_Material,jaccard,Comparing: Dust vs Cement,1.139340745,0.121,
-50,SoilConsumpFinal,jaccard,Comparing: 2 vs 1,1.141049408,0.121,
-51,SoilConsumpThinning,bray,Comparing: 1 vs 0,1.231211931,0.124,
-52,Use_of_Toilet_Paper_after_Defecation,jaccard,Comparing: sometimes vs always,1.146587123,0.124,
-53,Age,bray,Comparing: <=12 vs >12,1.214093871,0.13,
-54,SoilConsumpThinning,jaccard,Comparing: 1 vs 0,1.141049408,0.13,
-55,House_Floor_Material,bray,Comparing: Dust vs Cement,1.183789608,0.131,
-56,Tricuris,jaccard,Comparing: Negative vs Postive,1.146121433,0.131,
-57,logWeight,jaccard,Comparing: 1.47712125471966 vs 1.38021124171161,1.140743342,0.137,
-58,Age,jaccard,Comparing: <=12 vs >12,1.126055321,0.138,
-59,Drink_Water_Directly_or_Treated.,bray,Comparing: Directly vs Treat,1.197063346,0.14,
-60,Frequency_of_Eating_Raw.Undercooked_Vegetables,jaccard,Comparing: sometimes vs always,1.141880704,0.14,
-61,Kerosene_as_Cooking_Fuel,jaccard,Comparing: no vs yes,1.121514348,0.141,
-62,AgeGroupUnderweight,jaccard,Comparing: 2 vs 1,1.121404832,0.144,
-63,Rash_Affecting_Elbow_Folds,jaccard,Comparing: no vs yes,1.11142058,0.149,
-64,Wood_as_Cooking_Fuel,bray,Comparing: yes vs no,1.208640505,0.152,
-65,Log1Weight,jaccard,Comparing: 2.47712125471966 vs 2.38021124171161,1.140743342,0.157,
-66,Cattle_in_House.Compound,bray,Comparing: no vs yes,1.186519827,0.159,
-67,lnWeight,jaccard,Comparing: 3.40119738166216 vs 3.17805383034795,1.140743342,0.16,
-68,Cattle_in_House.Compound,jaccard,Comparing: no vs yes,1.114680026,0.168,
-69,sqrtWeight,bray,Comparing: 5.47722557505166 vs 4.89897948556636,1.181540944,0.176,
-70,sqrtWeight,jaccard,Comparing: 5.47722557505166 vs 4.89897948556636,1.140743342,0.177,
-71,lnWeight,bray,Comparing: 3.40119738166216 vs 3.17805383034795,1.181540944,0.178,
-72,Family_Occupation,jaccard,Comparing: Other vs Merchant,1.10828726,0.178,
-73,Family_Occupation,bray,Comparing: Other vs Merchant,1.145518178,0.179,
-74,Log1Weight,bray,Comparing: 2.47712125471966 vs 2.38021124171161,1.181540944,0.179,
-75,logWeight,bray,Comparing: 1.47712125471966 vs 1.38021124171161,1.181540944,0.18,
-76,Kerosene_as_Cooking_Fuel,bray,Comparing: no vs yes,1.168633938,0.182,
-77,Rash_Affecting_Elbow_Folds,bray,Comparing: no vs yes,1.156636938,0.182,
-78,Rash_Affecting_Skin_Creases,jaccard,Comparing: no vs yes,1.09648071,0.19,
-79,Foods,jaccard,Comparing: 1 vs 0,1.086222625,0.19,
-80,Foods,bray,Comparing: 1 vs 0,1.124036405,0.2,
-81,logWAZ,bray,Comparing: -0.275724130399211 vs -0.443697499232713,1.45195959,0.2,
-82,logBAZ,bray,Comparing: -0.920818753952375 vs -2,1.210520354,0.2,
-83,Log1WAZ,bray,Comparing: 0.724275869600789 vs 0.556302500767287,1.45195959,0.2,
-84,Log1BAZ,bray,Comparing: 0.0791812460476248 vs -1,1.210520354,0.2,
-85,lnWAZ,bray,Comparing: -0.63487827243597 vs -1.02165124753198,1.45195959,0.2,
-86,lnBAZ,bray,Comparing: -2.12026353620009 vs -4.60517018598809,1.210520354,0.2,
-87,sqrtWAZ,bray,Comparing: 0.728010988928052 vs 0.6,1.45195959,0.2,
-88,sqrtBAZ,bray,Comparing: 0.346410161513775 vs 0.1,1.210520354,0.2,
-89,OversqrtWAZ,bray,Comparing: 1.37360563948689 vs 1.66666666666667,1.45195959,0.2,
-90,logWAZ,jaccard,Comparing: -0.275724130399211 vs -0.443697499232713,1.301284048,0.2,
-91,logBAZ,jaccard,Comparing: -0.920818753952375 vs -2,1.141393014,0.2,
-92,Log1WAZ,jaccard,Comparing: 0.724275869600789 vs 0.556302500767287,1.301284048,0.2,
-93,Log1BAZ,jaccard,Comparing: 0.0791812460476248 vs -1,1.141393014,0.2,
-94,lnWAZ,jaccard,Comparing: -0.63487827243597 vs -1.02165124753198,1.301284048,0.2,
-95,lnBAZ,jaccard,Comparing: -2.12026353620009 vs -4.60517018598809,1.141393014,0.2,
-96,sqrtWAZ,jaccard,Comparing: 0.728010988928052 vs 0.6,1.301284048,0.2,
-97,sqrtBAZ,jaccard,Comparing: 0.346410161513775 vs 0.1,1.141393014,0.2,
-98,OversqrtWAZ,jaccard,Comparing: 1.37360563948689 vs 1.66666666666667,1.301284048,0.2,
-99,Rash_Affecting_Skin_Creases,bray,Comparing: no vs yes,1.124720421,0.21,
-100,AgeGroupUnderweight,bray,Comparing: 2 vs 1,1.122957709,0.218,
-101,Told_by_Teacher,jaccard,Comparing: no vs yes,1.074669045,0.224,
-102,Told_by_Teacher,bray,Comparing: no vs yes,1.118060308,0.225,
-103,Method_of_Washing_Hands_Before_Eating,bray,Comparing: Soap and Water vs Water,1.104024989,0.233,
-104,Ascaris,jaccard,Comparing: Negative vs Postive,1.048597964,0.248,
-105,Heard_of_HIV,bray,Comparing: yes vs no,1.071219144,0.261,
-106,Sex,jaccard,Comparing: female vs Male,1.05832189,0.269,
-107,Log1Height,bray,Comparing: 1.14612803567824 vs 1.10037054511756,1.114750363,0.271,
-108,SevThinning,jaccard,Comparing: 0 vs 1,1.038862115,0.275,
-109,lnHeight,bray,Comparing: 0.336472236621213 vs 0.231111720963387,1.114750363,0.28,
-110,Method_of_Washing_Hands_Before_Eating,jaccard,Comparing: Soap and Water vs Water,1.048476149,0.285,
-111,Thinned,jaccard,Comparing: no vs yes,1.037071411,0.286,
-112,OversqrtHeight,bray,Comparing: 0.845154254728517 vs 0.890870806374748,1.114750363,0.289,
-113,logHeight,bray,Comparing: 0.146128035678238 vs 0.100370545117563,1.114750363,0.291,
-114,sqrtHeight,bray,Comparing: 1.18321595661992 vs 1.12249721603218,1.114750363,0.291,
-115,Heard_of_HIV,jaccard,Comparing: yes vs no,1.044158828,0.292,
-116,SevThinning,bray,Comparing: 0 vs 1,1.046348795,0.302,
-117,Distance_Between_Latrine_and_Kitchen,bray,Comparing: 5-10 vs 10-20,1.040171905,0.311,
-118,Method_of_Treating_Water,jaccard,Comparing: Filter vs Boil,1.030199384,0.323,
-119,Method_of_Treating_Water,bray,Comparing: Filter vs Boil,1.031190487,0.326,
-120,Sex,bray,Comparing: female vs Male,1.039034364,0.334,
-121,Connection_to_Latrine,bray,Comparing: Well vs NA/Don't Know,1.032057757,0.335,
-122,Kitchen_Separated.In_House,bray,Comparing: Separated vs Within House,1.037543129,0.342,
-123,AnySTHs,jaccard,Comparing: Negative vs Postive,1.028177229,0.344,
-124,Diarrhea_in_Last_Two_Weeks,jaccard,Comparing: no vs yes,1.018180451,0.349,
-125,Family_Owns_Radio,bray,Comparing: yes vs no,1.027478568,0.356,
-126,Dewormingin6mo,jaccard,Comparing: no vs yes,1.021727415,0.358,
-127,OversqrtWeight,jaccard,Comparing: 0.182574185835055 vs 0.169030850945703,1.020508879,0.359,
-128,How_often_do_you_trim_your_fingernails.,bray,Comparing: Once per Week vs Once per two weeks,1.026397719,0.361,
-129,How_often_do_you_trim_your_fingernails.,jaccard,Comparing: Once per Week vs Once per two weeks,1.023049433,0.364,
-130,Distance_Between_Latrine_and_Kitchen,jaccard,Comparing: 5-10 vs 10-20,1.017247024,0.364,
-131,Ascaris,bray,Comparing: Negative vs Postive,1.023208942,0.366,
-132,Urban.Rural,bray,Comparing: Urban vs Rural,1.020318279,0.37,
-133,Kitchen_Separated.In_House,jaccard,Comparing: Separated vs Within House,1.015079694,0.37,
-134,Howdoyouwashyourhandsaftertoilet,bray,Comparing: Soap and Water vs Water,1.020705416,0.374,
-135,Family_Owns_Radio,jaccard,Comparing: yes vs no,1.018926879,0.375,
-136,Diarrhea_in_Last_Two_Weeks,bray,Comparing: no vs yes,1.023007222,0.376,
-137,Rash_Behind_the_Knees,jaccard,Comparing: no vs yes,1.004401014,0.377,
-138,OtherIPs,bray,Comparing: Negative vs Postive,1.016434371,0.379,
-139,AnySTHs,bray,Comparing: Negative vs Postive,1.006788007,0.382,
-140,Rash_Behind_the_Knees,bray,Comparing: no vs yes,0.998817745,0.384,
-141,Freqency_of_Washing_Raw.Undercooked_Vegetables,jaccard,Comparing: never vs sometimes,1.006880667,0.386,
-142,OtherIPs,jaccard,Comparing: Negative vs Postive,1.011650431,0.386,
-143,Frequency_of_Walking_Barefoot,jaccard,Comparing: always vs sometimes,1.009728303,0.389,
-144,Knowledge_of_Intestinal_Worm_Transmission,jaccard,Comparing: no vs yes,1.010775974,0.39,
-145,Thinned,bray,Comparing: no vs yes,1.013001454,0.391,
-146,How_are_Worms_Bad_for_Your_Health.,jaccard,Comparing: Abdominal cramp vs Abdominal pain,1.016404024,0.392,
-147,Frequency_of_Walking_Barefoot,bray,Comparing: always vs sometimes,1.005671035,0.405,
-148,Howdoyouwashyourhandsaftertoilet,jaccard,Comparing: Soap and Water vs Water,1.004032721,0.405,
-149,Electricity_for_Cooking,jaccard,Comparing: no vs yes,1.003703227,0.407,
-150,Freqency_of_Washing_Raw.Undercooked_Vegetables,bray,Comparing: never vs sometimes,1.014530659,0.409,
-151,Fever_in_Last_Two_Weeks,jaccard,Comparing: no vs yes,1.001841109,0.414,
-152,Fever_in_Last_Two_Weeks,bray,Comparing: no vs yes,1.007995965,0.415,
-153,Dewormingin6mo,bray,Comparing: no vs yes,1.01212502,0.417,
-154,OversqrtWeight,bray,Comparing: 0.182574185835055 vs 0.169030850945703,0.998511855,0.419,
-155,Urban.Rural,jaccard,Comparing: Urban vs Rural,1.005082489,0.425,
-156,Connection_to_Latrine,jaccard,Comparing: Well vs NA/Don't Know,0.997506057,0.43,
-157,Frequency_of_Hand_Washing_After_Using_Toilet,bray,Comparing: always vs sometimes,0.98094665,0.437,
-158,Knowledge_of_Intestinal_Worm_Transmission,bray,Comparing: no vs yes,0.98759952,0.441,
-159,How_are_Worms_Bad_for_Your_Health.,bray,Comparing: Abdominal cramp vs Abdominal pain,1.003606863,0.442,
-160,Potable_Water_in_House,jaccard,Comparing: yes vs no,0.997859509,0.444,
-161,Knowledge_of_Health_Effects_of_Worms,bray,Comparing: yes vs no,0.985485771,0.446,
-162,Log1Height,jaccard,Comparing: 1.14612803567824 vs 1.10037054511756,1.003736138,0.469,
-163,Frequency_of_Hand_Washing_After_Using_Toilet,jaccard,Comparing: always vs sometimes,0.990279905,0.478,
-164,Favorite_Fruit,jaccard,Comparing: Mango vs Other,0.981785788,0.478,
-165,OversqrtHeight,jaccard,Comparing: 0.845154254728517 vs 0.890870806374748,1.003736138,0.479,
-166,logHeight,jaccard,Comparing: 0.146128035678238 vs 0.100370545117563,1.003736138,0.48,
-167,lnHeight,jaccard,Comparing: 0.336472236621213 vs 0.231111720963387,1.003736138,0.482,
-168,AnyParasite,jaccard,Comparing: Negative vs Postive,0.983466804,0.489,
-169,Child.s_Fingernails_Trimmed,bray,Comparing: yes vs no,0.951153344,0.491,
-170,Knowledge_of_Health_Effects_of_Worms,jaccard,Comparing: yes vs no,0.986949936,0.491,
-171,Heard_of_Malaria,bray,Comparing: yes vs no,0.963528544,0.495,
-172,sqrtHeight,jaccard,Comparing: 1.18321595661992 vs 1.12249721603218,1.003736138,0.495,
-173,Potable_Water_in_House,bray,Comparing: yes vs no,0.960386575,0.496,
-174,Electricity_for_Cooking,bray,Comparing: no vs yes,0.964796742,0.501,
-175,Favorite_Fruit,bray,Comparing: Mango vs Other,0.949712053,0.505,
-176,Vaccinated,jaccard,Comparing: yes vs no,0.972029941,0.522,
-177,Electricity_in_House,jaccard,Comparing: yes vs no,0.95632633,0.538,
-178,Child.s_Fingernails_Trimmed,jaccard,Comparing: yes vs no,0.963955412,0.546,
-179,Anti.Malarial_Drug,jaccard,Comparing: no vs yes,0.959350578,0.55,
-180,Heard_of_Malaria,jaccard,Comparing: yes vs no,0.972166413,0.556,
-181,Vaccinated,bray,Comparing: yes vs no,0.924788224,0.559,
-182,AnyParasite,bray,Comparing: Negative vs Postive,0.928529345,0.567,
-183,Anti.Malarial_Drug,bray,Comparing: no vs yes,0.926083819,0.569,
-184,SevStunting,jaccard,Comparing: 0 vs 1,0.957494679,0.569,
-185,Rash_Under_the_Buttocks,jaccard,Comparing: no vs yes,0.959568653,0.574,
-186,Source_of_Water_if_not_House,bray,Comparing: River vs Tap Water,0.928967837,0.575,
-187,Rash_Under_the_Buttocks,bray,Comparing: no vs yes,0.922893636,0.578,
-188,SevStunting,bray,Comparing: 0 vs 1,0.925142561,0.582,
-189,Stunted_Growth,bray,Comparing: no vs yes,0.928113901,0.585,
-190,Electricity_in_House,bray,Comparing: yes vs no,0.920840249,0.59,
-191,BCG_Scar,bray,Comparing: yes vs no,0.928459891,0.593,
-192,How_Can_You_Avoid_Getting_Intestinal_Worms.,bray,Comparing: Treatment vs Hand washing,0.755781103,0.597,
-193,How_Can_You_Avoid_Getting_Intestinal_Worms.,jaccard,Comparing: Treatment vs Hand washing,0.771618967,0.599,
-194,BCG_Scar,jaccard,Comparing: yes vs no,0.952128679,0.601,
-195,Rash_Affecting_the_Neck,jaccard,Comparing: no vs yes,0.944119185,0.617,
-196,Chicken_in_House.Compound,jaccard,Comparing: no vs yes,0.946838056,0.621,
-197,Maternal_Education_Status,jaccard,Comparing: Primary School vs Illiterate,0.947592817,0.622,
-198,Source_of_Water_if_not_House,jaccard,Comparing: River vs Tap Water,0.950915531,0.625,
-199,Frequency_of_Using_Soap_Before_Eating,jaccard,Comparing: sometimes vs always,0.938073278,0.631,
-200,Stunted_Growth,jaccard,Comparing: no vs yes,0.945200199,0.634,
-201,Child_Has_Dirty_Fingernails,bray,Comparing: no vs yes,0.899461391,0.651,
-202,Chicken_in_House.Compound,bray,Comparing: no vs yes,0.90246815,0.655,
-203,Rash_Affecting_the_Neck,bray,Comparing: no vs yes,0.895325529,0.658,
-204,Knowledge_of_How_To_Avoid_Intestinal_Worms,jaccard,Comparing: no vs yes,0.929157173,0.661,
-205,Doyouwashyourhandsbeforeeating,bray,Comparing: always vs sometimes,0.891337839,0.665,
-206,Frequency_of_Using_Soap_Before_Eating,bray,Comparing: sometimes vs always,0.887331363,0.666,
-207,Child_Has_Dirty_Fingernails,jaccard,Comparing: no vs yes,0.926639563,0.671,
-208,Mode_of_Delivery,jaccard,Comparing: Vaginal vs C-Section,0.929698802,0.674,
-209,Maternal_Education_Status,bray,Comparing: Primary School vs Illiterate,0.886559096,0.7,
-210,Household_Number,jaccard,Comparing: 4-6 vs >6,0.915480956,0.7,
-211,Mode_of_Delivery,bray,Comparing: Vaginal vs C-Section,0.879354188,0.707,
-212,Coal_as_Cooking_Fuel,jaccard,Comparing: yes vs no,0.928583931,0.707,
-213,Sheep_or_Goat_in_House.Compound,jaccard,Comparing: no vs yes,0.917100995,0.726,
-214,Number_of_Cough_in_Last_Two_Weeks,jaccard,Comparing: 2 vs 3,0.934321712,0.727,
-215,Number_of_Cough_in_Last_Two_Weeks,bray,Comparing: 2 vs 3,0.898290758,0.728,
-216,Rash_In_Front_of_Ankles,jaccard,Comparing: no vs yes,0.90922026,0.728,
-217,Kitchen_Has_Roof,bray,Comparing: yes vs no,0.857510387,0.73,
-218,Rash_In_Front_of_Ankles,bray,Comparing: no vs yes,0.859368187,0.736,
-219,MatEdThinning,jaccard,Comparing: 1 vs 0,0.917737638,0.736,
-220,Number_of_Diarrhea_in_Last_Two_Weeks,bray,Comparing: 2 vs 3,0.857620774,0.768,
-221,Doyouwashyourhandsbeforeeating,jaccard,Comparing: always vs sometimes,0.907245006,0.77,
-222,Kitchen_Has_Wall,bray,Comparing: yes vs no,0.854436739,0.776,
-223,Number_of_Diarrhea_in_Last_Two_Weeks,jaccard,Comparing: 2 vs 3,0.900778012,0.776,
-224,Coal_as_Cooking_Fuel,bray,Comparing: yes vs no,0.859156859,0.778,
-225,Heard_of_Schistosoma,bray,Comparing: no vs yes,0.843457575,0.784,
-226,Knowledge_of_How_To_Avoid_Intestinal_Worms,bray,Comparing: no vs yes,0.844399661,0.786,
-227,Kitchen_Has_Roof,jaccard,Comparing: yes vs no,0.899762736,0.789,
-228,Cough_in_Last_Two_Weeks,bray,Comparing: no vs yes,0.848650124,0.79,
-229,Sheep_or_Goat_in_House.Compound,bray,Comparing: no vs yes,0.849173917,0.791,
-230,Heard_of_Intestinal_Worms,jaccard,Comparing: yes vs no,0.899319729,0.792,
-231,Most_Eaten_Food,jaccard,Comparing: injera vs Injera,0.902327983,0.793,
-232,Household_Number,bray,Comparing: 4-6 vs >6,0.852296853,0.798,
-233,Family_Owns_Latrine,bray,Comparing: yes vs no,0.822050867,0.8,
-234,Cough_in_Last_Two_Weeks,jaccard,Comparing: no vs yes,0.903376899,0.801,
-235,Kitchen_Has_Wall,jaccard,Comparing: yes vs no,0.898341988,0.802,
-236,Heard_of_Schistosoma,jaccard,Comparing: no vs yes,0.8924756,0.807,
-237,MatEdThinning,bray,Comparing: 1 vs 0,0.840407891,0.812,
-238,Schistosoma,bray,Comparing: Negative vs Postive,0.824554279,0.816,
-239,Family_Owns_Latrine,jaccard,Comparing: yes vs no,0.886040423,0.829,
-240,Most_Eaten_Food,bray,Comparing: injera vs Injera,0.836492071,0.838,
-241,Schistosoma,jaccard,Comparing: Negative vs Postive,0.883516365,0.838,
-242,Drug_Prescribed_For_Illness_Currently,bray,Comparing: no vs yes,0.801638933,0.85,
-243,How_Are_Intestinal_Worms_Transmitted.,bray,Comparing: Poor sanitation vs Contaminated water,0.820133577,0.863,
-244,Family_Member_with_Phone,bray,Comparing: yes vs no,0.808287611,0.865,
-245,Heard_of_Intestinal_Worms,bray,Comparing: yes vs no,0.819930845,0.866,
-246,Drug_Prescribed_For_Illness_Currently,jaccard,Comparing: no vs yes,0.873428317,0.866,
-247,WashFruitsThinned,bray,Comparing: 0 vs 1,0.800659419,0.884,
-248,OpenFieldDefFinal,jaccard,Comparing: 2 vs 1,0.865567158,0.889,
-249,OpenFieldDefFinal,bray,Comparing: 2 vs 1,0.793573129,0.894,
-250,FinalFamOcc,jaccard,Comparing: 5 vs 3,0.882857011,0.894,
-251,OpenFieldDefThinning,jaccard,Comparing: 1 vs 0,0.865567158,0.897,
-252,Number_of_Fevers_in_Last_Two_Weeks,bray,Comparing: 2 vs 3,0.831887866,0.899,
-253,Heard_of_Tuberculosis,jaccard,Comparing: no vs yes,0.866556402,0.899,
-254,Defecating_in_Open_Field,bray,Comparing: never vs sometimes,0.793573129,0.901,
-255,How_Are_Intestinal_Worms_Transmitted.,jaccard,Comparing: Poor sanitation vs Contaminated water,0.876240406,0.901,
-256,Number_of_Fevers_in_Last_Two_Weeks,jaccard,Comparing: 2 vs 3,0.894659512,0.903,
-257,Kitchen_Has_No_Roof_or_Wall,bray,Comparing: no vs yes,0.78165847,0.904,
-258,Heard_of_Hookworm,jaccard,Comparing: no vs yes,0.854721696,0.904,
-259,Kitchen_Has_No_Roof_or_Wall,jaccard,Comparing: no vs yes,0.862538355,0.906,
-260,Living_Address,bray,Comparing: Other vs Welda,0.777450632,0.911,
-261,Defecating_in_Open_Field,jaccard,Comparing: never vs sometimes,0.865567158,0.912,
-262,Family_Member_with_Phone,jaccard,Comparing: yes vs no,0.858464959,0.914,
-263,Heard_of_Hookworm,bray,Comparing: no vs yes,0.768498554,0.916,
-264,OpenFieldDefThinning,bray,Comparing: 1 vs 0,0.793573129,0.916,
-265,FinalFamOcc,bray,Comparing: 5 vs 3,0.800594779,0.917,
-266,Number_of_Older_Siblings,jaccard,Comparing: 1-2 vs 0,0.855592664,0.92,
-267,Living_Address,jaccard,Comparing: Other vs Welda,0.852790194,0.927,
-268,Purpose_of_Phone_Use,bray,Comparing: Call/Radio/Internet vs Call Only,0.75940073,0.934,
-269,Latrine_Distance_from_House,bray,Comparing: 10-20 vs 5-10,0.773619775,0.935,
-270,Heard_of_Tuberculosis,bray,Comparing: no vs yes,0.768130649,0.937,
-271,Number_of_Older_Siblings,bray,Comparing: 1-2 vs 0,0.771291346,0.938,
-272,Frequency_of_Washing_Fruit_Before_Eating,bray,Comparing: sometimes vs never,0.760247341,0.943,
-273,WashFruitsThinned,jaccard,Comparing: 0 vs 1,0.840318224,0.95,
-274,Latrine_Distance_from_House,jaccard,Comparing: 10-20 vs 5-10,0.844145682,0.952,
-275,Purpose_of_Phone_Use,jaccard,Comparing: Call/Radio/Internet vs Call Only,0.833587654,0.955,
-276,Does_Toilet_in_School_Have_Doors.,bray,Comparing: yes vs no,0.732701422,0.97,
-277,Frequency_of_Washing_Fruit_Before_Eating,jaccard,Comparing: sometimes vs never,0.816889476,0.976,
-278,Does_Toilet_in_School_Have_Doors.,jaccard,Comparing: yes vs no,0.815002905,0.977,
-279,Last_Deworming_Pill,bray,Comparing: 7-9 Months vs 1-3 Months,0.695319139,0.985,
-280,Antibiotics,jaccard,Comparing: no vs yes,0.809818272,0.986,
-281,Antibiotics,bray,Comparing: no vs yes,0.710996904,0.988,
-282,Last_Deworming_Pill,jaccard,Comparing: 7-9 Months vs 1-3 Months,0.787760737,0.991,
-283,Heard_of_Ascharis,bray,Comparing: yes vs no,0.657788967,0.998,
-284,Heard_of_Ascharis,jaccard,Comparing: yes vs no,0.767057564,0.998,
-285,Told_by_Media,bray,Comparing: no vs yes,0.645216414,1,
-286,Told_by_Media,jaccard,Comparing: no vs yes,0.743161295,1,
+"","variable","distance_method","comparison","F_statistic","p_value","significance","adjusted"
+"1","Kitchen_Material","bray","Comparing: Dust vs Cement",1.87448859262364,0.002,"***",0.3712
+"2","Kitchen_Material","jaccard","Comparing: Dust vs Cement",1.57641316002853,0.004,"***",0.3712
+"3","Frequency_of_Using_School_Latrine","bray","Comparing: sometimes vs never",1.78352966281732,0.007,"***",0.3712
+"4","Frequency_of_Using_School_Latrine","jaccard","Comparing: sometimes vs never",1.47661602434355,0.008,"***",0.3712
+"5","Dewormingin1yr","jaccard","Comparing: yes vs no",1.43169017841735,0.008,"***",0.3712
+"6","Frequency_of_Clothes_Washing_in_River","jaccard","Comparing: never vs sometimes",1.36203436919523,0.014,"**",0.419809523809524
+"7","Dewormingin1yr","bray","Comparing: yes vs no",1.62218770981373,0.018,"**",0.419809523809524
+"8","Frequency_of_Clothes_Washing_in_River","bray","Comparing: never vs sometimes",1.57087452809825,0.019,"**",0.419809523809524
+"9","Pet_in_House.Compound","bray","Comparing: no vs yes",1.46830635605372,0.022,"**",0.419809523809524
+"10","No_Animals_in_House.Compound","jaccard","Comparing: no vs yes",1.27920665130851,0.027,"**",0.419809523809524
+"11","Last_Deworming_Pill","jaccard","Comparing: 7-9 Months vs Unknown",1.3020875493753,0.027,"**",0.419809523809524
+"12","Deworming_Pill","bray","Comparing: yes vs no",1.42131029073839,0.03,"**",0.419809523809524
+"13","Pet_in_House.Compound","jaccard","Comparing: no vs yes",1.29424490137788,0.031,"**",0.419809523809524
+"14","Frequency_of_Using_Soap_After_Using_Toilet","bray","Comparing: sometimes vs always",1.47841575712903,0.032,"**",0.419809523809524
+"15","Frequency_of_Using_Soap_After_Using_Toilet","jaccard","Comparing: sometimes vs always",1.27940815004856,0.032,"**",0.419809523809524
+"16","Deworming_Pill","jaccard","Comparing: yes vs no",1.28604642220252,0.035,"**",0.419809523809524
+"17","SEI_proxy","jaccard","Comparing: High vs Low",1.27692837427528,0.035,"**",0.419809523809524
+"18","Frequency_of_Bathing_in_River","bray","Comparing: never vs sometimes",1.41175696368618,0.037,"**",0.419809523809524
+"19","SEI_proxy","bray","Comparing: High vs Low",1.41315194961846,0.037,"**",0.419809523809524
+"20","Last_Deworming_Pill","bray","Comparing: 7-9 Months vs Unknown",1.42816704765076,0.038,"**",0.419809523809524
+"21","Frequency_of_Bathing_in_River","jaccard","Comparing: never vs sometimes",1.24937360126113,0.038,"**",0.419809523809524
+"22","Weight","bray","Comparing: <40 vs >=40",1.4173313162134,0.042,"**",0.423652173913043
+"23","Number_of_Siblings_Younger_than_12","bray","Comparing: 1-2 vs 0",1.37723674889986,0.042,"**",0.423652173913043
+"24","No_Animals_in_House.Compound","bray","Comparing: no vs yes",1.37596346966941,0.049,"**",0.473666666666667
+"25","Told_by_Health_Professional","jaccard","Comparing: no vs yes",1.23911547574309,0.066,"*",0.552705882352941
+"26","How_Many_Times_Wheezing_or_Whistling","jaccard","Comparing: 0 vs 1-3",1.1915771892874,0.067,"*",0.552705882352941
+"27","Number_of_Siblings_Younger_than_12","jaccard","Comparing: 1-2 vs 0",1.23327555834621,0.068,"*",0.552705882352941
+"28","Weight","jaccard","Comparing: <40 vs >=40",1.21831603583228,0.069,"*",0.552705882352941
+"29","Told_by_Family","bray","Comparing: yes vs no",1.2649340454964,0.075,"*",0.552705882352941
+"30","Told_by_Health_Professional","bray","Comparing: no vs yes",1.39965411828033,0.076,"*",0.552705882352941
+"31","How_Many_Times_Wheezing_or_Whistling","bray","Comparing: 0 vs 1-3",1.28336727913853,0.077,"*",0.552705882352941
+"32","Underweight","bray","Comparing: Underweight vs Not Underweight",1.29353487802368,0.079,"*",0.552705882352941
+"33","Underweight","jaccard","Comparing: Underweight vs Not Underweight",1.19807185745733,0.08,"*",0.552705882352941
+"34","Told_by_Family","jaccard","Comparing: yes vs no",1.18104312962525,0.081,"*",0.552705882352941
+"35","Height","bray","Comparing: 1.15-1.35 vs 1.35-1.55",1.24932741616564,0.091,"*",0.6032
+"36","Height","jaccard","Comparing: 1.15-1.35 vs 1.35-1.55",1.17269082009907,0.095,"*",0.612222222222222
+"37","Prefer_Sandals_or_Barefoot_in_House","bray","Comparing: Sandals vs Barefoot",1.24268363120191,0.102,"",0.618666666666667
+"38","Tricuris","bray","Comparing: Negative vs Postive",1.29215570158579,0.104,"",0.618666666666667
+"39","Drink_Water_Directly_or_Treated.","jaccard","Comparing: Directly vs Treat",1.14963951837571,0.104,"",0.618666666666667
+"40","Family_Owns_Television","jaccard","Comparing: yes vs no",1.13805242317071,0.11,"",0.638
+"41","Frequency_of_Eating_Soil","jaccard","Comparing: never vs sometimes",1.15047798586765,0.115,"",0.640761904761905
+"42","House_Floor_Material","jaccard","Comparing: Dust vs Cement",1.13398134741057,0.116,"",0.640761904761905
+"43","Tricuris","jaccard","Comparing: Negative vs Postive",1.14600820376135,0.121,"",0.652837209302326
+"44","Frequency_of_Eating_Soil","bray","Comparing: never vs sometimes",1.24401358444818,0.124,"",0.653818181818182
+"45","Frequency_of_Eating_Raw.Undercooked_Vegetables","jaccard","Comparing: sometimes vs always",1.13948506099519,0.13,"",0.665358490566038
+"46","Frequency_of_Eating_Raw.Undercooked_Vegetables","bray","Comparing: sometimes vs always",1.22226027070798,0.133,"",0.665358490566038
+"47","Use_of_Toilet_Paper_after_Defecation","jaccard","Comparing: sometimes vs always",1.12696898353836,0.135,"",0.665358490566038
+"48","Drink_Water_Directly_or_Treated.","bray","Comparing: Directly vs Treat",1.18852448011419,0.141,"",0.665358490566038
+"49","Method_of_Treating_Water","jaccard","Comparing: Unknown vs Filter",1.12465082668491,0.141,"",0.665358490566038
+"50","Prefer_Sandals_or_Barefoot_in_House","jaccard","Comparing: Sandals vs Barefoot",1.12570037017212,0.145,"",0.665358490566038
+"51","Family_Owns_Television","bray","Comparing: yes vs no",1.18621843132594,0.149,"",0.665358490566038
+"52","Use_of_Toilet_Paper_after_Defecation","bray","Comparing: sometimes vs always",1.18157764613032,0.151,"",0.665358490566038
+"53","Source_of_Water_if_not_House","jaccard","Comparing: Unknown vs River",1.10229320437947,0.152,"",0.665358490566038
+"54","Rash_Affecting_Elbow_Folds","jaccard","Comparing: no vs yes",1.10675104181913,0.155,"",0.665925925925926
+"55","Kerosene_as_Cooking_Fuel","jaccard","Comparing: no vs yes",1.12333479133978,0.158,"",0.666472727272727
+"56","Rash_Affecting_Elbow_Folds","bray","Comparing: no vs yes",1.1487909408312,0.166,"",0.684590163934426
+"57","Cattle_in_House.Compound","jaccard","Comparing: no vs yes",1.09745217855881,0.169,"",0.684590163934426
+"58","Kerosene_as_Cooking_Fuel","bray","Comparing: no vs yes",1.17203904179529,0.173,"",0.684590163934426
+"59","Family_Occupation","jaccard","Comparing: Other vs Merchant",1.1148877104873,0.175,"",0.684590163934426
+"60","Method_of_Treating_Water","bray","Comparing: Unknown vs Filter",1.13957344898444,0.178,"",0.684590163934426
+"61","Rash_Affecting_Skin_Creases","jaccard","Comparing: no vs yes",1.09200155892031,0.18,"",0.684590163934426
+"62","House_Floor_Material","bray","Comparing: Dust vs Cement",1.17294995437705,0.188,"",0.68875
+"63","Ascaris","jaccard","Comparing: Negative vs Postive",1.08249263902405,0.189,"",0.68875
+"64","Wood_as_Cooking_Fuel","jaccard","Comparing: yes vs no",1.0937713385433,0.19,"",0.68875
+"65","Family_Occupation","bray","Comparing: Other vs Merchant",1.15600036176288,0.193,"",0.688861538461539
+"66","Wood_as_Cooking_Fuel","bray","Comparing: yes vs no",1.13419139264907,0.196,"",0.688969696969697
+"67","Heard_of_HIV","bray","Comparing: yes vs no",1.1150676420607,0.205,"",0.696
+"68","Heard_of_HIV","jaccard","Comparing: yes vs no",1.07415685995796,0.207,"",0.696
+"69","Source_of_Water_if_not_House","bray","Comparing: Unknown vs River",1.11650107699506,0.209,"",0.696
+"70","Number_of_Fevers_in_Last_Two_Weeks","jaccard","Comparing: Unknown vs 2",1.07667546626556,0.215,"",0.696
+"71","Cattle_in_House.Compound","bray","Comparing: no vs yes",1.15881191745579,0.219,"",0.696
+"72","Age","bray","Comparing: <=12 vs >12",1.12939195494019,0.225,"",0.696
+"73","Number_of_Cough_in_Last_Two_Weeks","bray","Comparing: Unknown vs 2",1.11836039950717,0.226,"",0.696
+"74","Number_of_Cough_in_Last_Two_Weeks","jaccard","Comparing: Unknown vs 2",1.07701062647211,0.226,"",0.696
+"75","Rash_Affecting_Skin_Creases","bray","Comparing: no vs yes",1.11628989731845,0.228,"",0.696
+"76","Method_of_Washing_Hands_Before_Eating","bray","Comparing: Soap and Water vs Water",1.11246556035044,0.232,"",0.696
+"77","Age","jaccard","Comparing: <=12 vs >12",1.06980845992187,0.234,"",0.696
+"78","Number_of_Fevers_in_Last_Two_Weeks","bray","Comparing: Unknown vs 2",1.10490011544355,0.239,"",0.696
+"79","Dewormingin6mo","jaccard","Comparing: no vs yes",1.05777876714822,0.239,"",0.696
+"80","AnySTHs","jaccard","Comparing: Negative vs Postive",1.06418066257594,0.241,"",0.696
+"81","Activities_Where_Barefoot","bray","Comparing: Unknown vs At home",1.11825628777639,0.243,"",0.696
+"82","Told_by_Teacher","bray","Comparing: no vs yes",1.07634476664556,0.257,"",0.723951807228916
+"83","Sex","jaccard","Comparing: female vs Male",1.06042853734241,0.259,"",0.723951807228916
+"84","Method_of_Washing_Hands_Before_Eating","jaccard","Comparing: Soap and Water vs Water",1.05358340854253,0.276,"",0.762285714285714
+"85","Thinned","jaccard","Comparing: no vs yes",1.03689098851734,0.281,"",0.766964705882353
+"86","Told_by_Teacher","jaccard","Comparing: no vs yes",1.04511372100807,0.288,"",0.774173913043478
+"87","Dewormingin6mo","bray","Comparing: no vs yes",1.05984931072458,0.292,"",0.774173913043478
+"88","AnySTHs","bray","Comparing: Negative vs Postive",1.05018899567676,0.297,"",0.774173913043478
+"89","Fever_in_Last_Two_Weeks","bray","Comparing: no vs yes",1.06335541567093,0.301,"",0.774173913043478
+"90","Activities_Where_Barefoot","jaccard","Comparing: Unknown vs At home",1.03733888549101,0.303,"",0.774173913043478
+"91","Diarrhea_in_Last_Two_Weeks","bray","Comparing: no vs yes",1.04985075986324,0.306,"",0.774173913043478
+"92","Diarrhea_in_Last_Two_Weeks","jaccard","Comparing: no vs yes",1.03450617271815,0.307,"",0.774173913043478
+"93","Ascaris","bray","Comparing: Negative vs Postive",1.05653549828652,0.315,"",0.783915789473684
+"94","Distance_Between_Latrine_and_Kitchen","bray","Comparing: 5-10 vs 10-20",1.04285705613768,0.319,"",0.783915789473684
+"95","Fever_in_Last_Two_Weeks","jaccard","Comparing: no vs yes",1.03285169587442,0.321,"",0.783915789473684
+"96","Thinned","bray","Comparing: no vs yes",1.01229688236594,0.343,"",0.79835294117647
+"97","Connection_to_Latrine","bray","Comparing: Well vs NA/Don't Know",1.03772781015439,0.344,"",0.79835294117647
+"98","OtherIPs","jaccard","Comparing: Negative vs Postive",1.01784923483238,0.344,"",0.79835294117647
+"99","Knowledge_of_Intestinal_Worm_Transmission","jaccard","Comparing: no vs yes",1.02425175028014,0.348,"",0.79835294117647
+"100","Kitchen_Separated.In_House","bray","Comparing: Separated vs Within House",1.03739240103548,0.349,"",0.79835294117647
+"101","Sex","bray","Comparing: female vs Male",1.04072339700343,0.35,"",0.79835294117647
+"102","OtherIPs","bray","Comparing: Negative vs Postive",1.02632240329816,0.351,"",0.79835294117647
+"103","Kitchen_Separated.In_House","jaccard","Comparing: Separated vs Within House",1.01629136690509,0.357,"",0.804116504854369
+"104","How_are_Worms_Bad_for_Your_Health.","jaccard","Comparing: Unknown vs Abdominal cramp",1.0199738209275,0.364,"",0.812
+"105","Distance_Between_Latrine_and_Kitchen","jaccard","Comparing: 5-10 vs 10-20",1.01720259997871,0.374,"",0.820592592592593
+"106","Freqency_of_Washing_Raw.Undercooked_Vegetables","bray","Comparing: never vs sometimes",1.01098613767909,0.378,"",0.820592592592593
+"107","Connection_to_Latrine","jaccard","Comparing: Well vs NA/Don't Know",1.00923438960391,0.381,"",0.820592592592593
+"108","Method_of_Washing_Hands_After_Toilet","bray","Comparing: Soap and Water vs Water",1.0141490619066,0.382,"",0.820592592592593
+"109","Frequency_of_Walking_Barefoot","jaccard","Comparing: always vs sometimes",1.01196911139793,0.389,"",0.827466666666667
+"110","Frequency_of_Walking_Barefoot","bray","Comparing: always vs sometimes",1.00975132549056,0.399,"",0.827466666666667
+"111","AnyParasite","jaccard","Comparing: Negative vs Postive",1.00240595135539,0.416,"",0.827466666666667
+"112","How_are_Worms_Bad_for_Your_Health.","bray","Comparing: Unknown vs Abdominal cramp",1.01154941581424,0.417,"",0.827466666666667
+"113","Family_Owns_Radio","bray","Comparing: yes vs no",0.991734832783627,0.417,"",0.827466666666667
+"114","Urban.Rural","bray","Comparing: Urban vs Rural",0.990448581378231,0.418,"",0.827466666666667
+"115","Knowledge_of_Intestinal_Worm_Transmission","bray","Comparing: no vs yes",0.995993320654258,0.419,"",0.827466666666667
+"116","Anti.Malarial_Drug","bray","Comparing: no vs Unknown",0.98305413988857,0.42,"",0.827466666666667
+"117","Freqency_of_Washing_Raw.Undercooked_Vegetables","jaccard","Comparing: never vs sometimes",0.998343254826765,0.42,"",0.827466666666667
+"118","Rash_Behind_the_Knees","bray","Comparing: no vs yes",0.987793025307157,0.423,"",0.827466666666667
+"119","Rash_Behind_the_Knees","jaccard","Comparing: no vs yes",0.997953229153094,0.426,"",0.827466666666667
+"120","Family_Owns_Radio","jaccard","Comparing: yes vs no",0.994924410423618,0.428,"",0.827466666666667
+"121","Method_of_Washing_Hands_After_Toilet","jaccard","Comparing: Soap and Water vs Water",0.991732672911249,0.447,"",0.830883720930233
+"122","Latrine_Inside_or_Outside","bray","Comparing: Outside vs Unknown",0.964763510357812,0.452,"",0.830883720930233
+"123","Urban.Rural","jaccard","Comparing: Urban vs Rural",0.987953692703871,0.452,"",0.830883720930233
+"124","Child.s_Fingernails_Trimmed","bray","Comparing: yes vs no",0.977272374518453,0.456,"",0.830883720930233
+"125","Potable_Water_in_House","jaccard","Comparing: yes vs no",0.991522207155153,0.456,"",0.830883720930233
+"126","How_often_do_you_trim_your_fingernails.","bray","Comparing: Once per Week vs Once per two weeks",0.980715152915925,0.46,"",0.830883720930233
+"127","How_often_do_you_trim_your_fingernails.","jaccard","Comparing: Once per Week vs Once per two weeks",0.99056914895444,0.461,"",0.830883720930233
+"128","Frequency_of_Hand_Washing_After_Using_Toilet","jaccard","Comparing: always vs sometimes",0.995104503295058,0.461,"",0.830883720930233
+"129","Favorite_Fruit","jaccard","Comparing: Mango vs Other",0.987138449108419,0.462,"",0.830883720930233
+"130","Knowledge_of_Health_Effects_of_Worms","jaccard","Comparing: yes vs no",0.988639139787085,0.472,"",0.834848484848485
+"131","Electricity_for_Cooking","jaccard","Comparing: no vs yes",0.9886629163302,0.473,"",0.834848484848485
+"132","Knowledge_of_Health_Effects_of_Worms","bray","Comparing: yes vs no",0.974899561043959,0.475,"",0.834848484848485
+"133","Child.s_Fingernails_Trimmed","jaccard","Comparing: yes vs no",0.986743076658815,0.48,"",0.835882352941176
+"134","Latrine_Inside_or_Outside","jaccard","Comparing: Outside vs Unknown",0.971988346413735,0.484,"",0.835882352941176
+"135","Frequency_of_Hand_Washing_After_Using_Toilet","bray","Comparing: always vs sometimes",0.979219191598173,0.489,"",0.835882352941176
+"136","Favorite_Fruit","bray","Comparing: Mango vs Other",0.96236937567827,0.49,"",0.835882352941176
+"137","Potable_Water_in_House","bray","Comparing: yes vs no",0.961829056684199,0.494,"",0.836554744525547
+"138","Anti.Malarial_Drug","jaccard","Comparing: no vs Unknown",0.972931738979771,0.499,"",0.838898550724638
+"139","Heard_of_Malaria","bray","Comparing: yes vs no",0.951655096917638,0.511,"",0.849021276595745
+"140","Electricity_in_House","bray","Comparing: yes vs no",0.93076166127903,0.516,"",0.849021276595745
+"141","Vaccinated","jaccard","Comparing: yes vs no",0.966733267436799,0.516,"",0.849021276595745
+"142","AnyParasite","bray","Comparing: Negative vs Postive",0.948750556914388,0.545,"",0.8816
+"143","Rash_Under_the_Buttocks","jaccard","Comparing: no vs yes",0.955888062175286,0.549,"",0.8816
+"144","How_Can_You_Avoid_Getting_Intestinal_Worms.","jaccard","Comparing: Unknown vs Treatment",0.947655024369166,0.557,"",0.8816
+"145","Electricity_in_House","jaccard","Comparing: yes vs no",0.956630170959629,0.57,"",0.8816
+"146","Number_of_Diarrhea_in_Last_Two_Weeks","bray","Comparing: Unknown vs 2",0.939064517010447,0.571,"",0.8816
+"147","BCG_Scar","bray","Comparing: yes vs no",0.943025888560228,0.573,"",0.8816
+"148","Electricity_for_Cooking","bray","Comparing: no vs yes",0.938220316826686,0.573,"",0.8816
+"149","Heard_of_Malaria","jaccard","Comparing: yes vs no",0.959947856784538,0.573,"",0.8816
+"150","Number_of_Diarrhea_in_Last_Two_Weeks","jaccard","Comparing: Unknown vs 2",0.959242737889576,0.578,"",0.8816
+"151","BCG_Scar","jaccard","Comparing: yes vs no",0.954901970382684,0.582,"",0.8816
+"152","Cleanliness_proxy","bray","Comparing: Clean vs Unclean",0.925590184297001,0.583,"",0.8816
+"153","Vaccinated","bray","Comparing: yes vs no",0.928586928342359,0.584,"",0.8816
+"154","Rash_Under_the_Buttocks","bray","Comparing: no vs yes",0.916109273636433,0.588,"",0.8816
+"155","Frequency_of_Using_Soap_Before_Eating","jaccard","Comparing: sometimes vs always",0.950417408459672,0.589,"",0.8816
+"156","Stunted_Growth","bray","Comparing: no vs yes",0.919053811333487,0.613,"",0.907285714285714
+"157","Rash_Affecting_the_Neck","jaccard","Comparing: no vs yes",0.943511346473376,0.62,"",0.907285714285714
+"158","Child_Has_Dirty_Fingernails","bray","Comparing: no vs yes",0.910607696795091,0.623,"",0.907285714285714
+"159","Maternal_Education_Status","jaccard","Comparing: Primary School vs Illiterate",0.944933932477238,0.624,"",0.907285714285714
+"160","Cleanliness_proxy","jaccard","Comparing: Clean vs Unclean",0.950140840885439,0.628,"",0.907285714285714
+"161","How_Can_You_Avoid_Getting_Intestinal_Worms.","bray","Comparing: Unknown vs Treatment",0.903694424957701,0.63,"",0.907285714285714
+"162","Child_Has_Dirty_Fingernails","jaccard","Comparing: no vs yes",0.939553981193804,0.639,"",0.907285714285714
+"163","Doyouwashyourhandsbeforeeating","bray","Comparing: always vs sometimes",0.907627484030176,0.644,"",0.907285714285714
+"164","Frequency_of_Using_Soap_Before_Eating","bray","Comparing: sometimes vs always",0.907415661275316,0.647,"",0.907285714285714
+"165","Knowledge_of_How_To_Avoid_Intestinal_Worms","jaccard","Comparing: no vs yes",0.934483370522895,0.647,"",0.907285714285714
+"166","Chicken_in_House.Compound","jaccard","Comparing: no vs yes",0.935232978559723,0.65,"",0.907285714285714
+"167","Rash_Affecting_the_Neck","bray","Comparing: no vs yes",0.893360932544936,0.656,"",0.907285714285714
+"168","Stunted_Growth","jaccard","Comparing: no vs yes",0.939750042864948,0.657,"",0.907285714285714
+"169","Chicken_in_House.Compound","bray","Comparing: no vs yes",0.891770048133162,0.671,"",0.921136094674556
+"170","Mode_of_Delivery","jaccard","Comparing: Vaginal vs C-Section",0.929392728857277,0.681,"",0.929364705882353
+"171","Coal_as_Cooking_Fuel","jaccard","Comparing: yes vs no",0.926637329057075,0.69,"",0.936140350877193
+"172","Mode_of_Delivery","bray","Comparing: Vaginal vs C-Section",0.878255213796649,0.711,"",0.953479768786127
+"173","Maternal_Education_Status","bray","Comparing: Primary School vs Illiterate",0.878233329637954,0.711,"",0.953479768786127
+"174","Household_Number","jaccard","Comparing: 4-6 vs >6",0.920540888818504,0.729,"",0.972
+"175","Rash_In_Front_of_Ankles","bray","Comparing: no vs yes",0.847908392964888,0.735,"",0.9744
+"176","Kitchen_Has_Wall","bray","Comparing: yes vs no",0.864489995113344,0.742,"",0.97780790960452
+"177","Doyouwashyourhandsbeforeeating","jaccard","Comparing: always vs sometimes",0.91816105078318,0.746,"",0.97780790960452
+"178","Heard_of_Intestinal_Worms","jaccard","Comparing: yes vs no",0.910953505016771,0.754,"",0.978547486033519
+"179","Sheep_or_Goat_in_House.Compound","jaccard","Comparing: no vs yes",0.907563176226549,0.755,"",0.978547486033519
+"180","Rash_In_Front_of_Ankles","jaccard","Comparing: no vs yes",0.901940256671046,0.761,"",0.978710382513661
+"181","Kitchen_Has_Roof","bray","Comparing: yes vs no",0.856477594890264,0.767,"",0.978710382513661
+"182","Kitchen_Has_Wall","jaccard","Comparing: yes vs no",0.904454462565169,0.77,"",0.978710382513661
+"183","Household_Number","bray","Comparing: 4-6 vs >6",0.861925676308144,0.772,"",0.978710382513661
+"184","Coal_as_Cooking_Fuel","bray","Comparing: yes vs no",0.854121872528745,0.783,"",0.987260869565217
+"185","Kitchen_Has_Roof","jaccard","Comparing: yes vs no",0.900279915044378,0.797,"",0.990019801980198
+"186","Sheep_or_Goat_in_House.Compound","bray","Comparing: no vs yes",0.832884138698345,0.806,"",0.990019801980198
+"187","Most_Eaten_Food","jaccard","Comparing: injera vs Injera",0.902078922245558,0.808,"",0.990019801980198
+"188","Family_Owns_Latrine","bray","Comparing: yes vs no",0.812890618189811,0.815,"",0.990019801980198
+"189","Heard_of_Schistosoma","bray","Comparing: no vs yes",0.830150685379468,0.822,"",0.990019801980198
+"190","Most_Eaten_Food","bray","Comparing: injera vs Injera",0.835818432433081,0.823,"",0.990019801980198
+"191","Heard_of_Intestinal_Worms","bray","Comparing: yes vs no",0.82662791920204,0.827,"",0.990019801980198
+"192","Knowledge_of_How_To_Avoid_Intestinal_Worms","bray","Comparing: no vs yes",0.839976387293362,0.827,"",0.990019801980198
+"193","How_Are_Intestinal_Worms_Transmitted.","bray","Comparing: Unknown vs Poor sanitation",0.824562996880529,0.841,"",0.990019801980198
+"194","Drug_Prescribed_For_Illness_Currently","bray","Comparing: no vs yes",0.813256175301754,0.843,"",0.990019801980198
+"195","Schistosoma","bray","Comparing: Negative vs Postive",0.81735378821811,0.844,"",0.990019801980198
+"196","How_Are_Intestinal_Worms_Transmitted.","jaccard","Comparing: Unknown vs Poor sanitation",0.884659800741548,0.846,"",0.990019801980198
+"197","Heard_of_Schistosoma","jaccard","Comparing: no vs yes",0.884214492267121,0.847,"",0.990019801980198
+"198","Family_Owns_Latrine","jaccard","Comparing: yes vs no",0.879993756353568,0.848,"",0.990019801980198
+"199","Cough_in_Last_Two_Weeks","bray","Comparing: no vs yes",0.823179815535136,0.85,"",0.990019801980198
+"200","Cough_in_Last_Two_Weeks","jaccard","Comparing: no vs yes",0.884644347602938,0.859,"",0.990019801980198
+"201","Schistosoma","jaccard","Comparing: Negative vs Postive",0.878642194864149,0.86,"",0.990019801980198
+"202","Drug_Prescribed_For_Illness_Currently","jaccard","Comparing: no vs yes",0.881016575046891,0.862,"",0.990019801980198
+"203","Heard_of_Tuberculosis","jaccard","Comparing: no vs yes",0.868047306094011,0.884,"",1
+"204","Kitchen_Has_No_Roof_or_Wall","bray","Comparing: no vs yes",0.782749134642185,0.887,"",1
+"205","Family_Member_with_Phone","bray","Comparing: yes vs no",0.801888332074069,0.894,"",1
+"206","Kitchen_Has_No_Roof_or_Wall","jaccard","Comparing: no vs yes",0.862951606984423,0.895,"",1
+"207","Defecating_in_Open_Field","bray","Comparing: never vs sometimes",0.77985208957807,0.899,"",1
+"208","Heard_of_Hookworm","jaccard","Comparing: no vs yes",0.856068557908351,0.899,"",1
+"209","Heard_of_Hookworm","bray","Comparing: no vs yes",0.771348521240946,0.913,"",1
+"210","Number_of_Older_Siblings","jaccard","Comparing: 1-2 vs 0",0.860139582719634,0.925,"",1
+"211","Number_of_Older_Siblings","bray","Comparing: 1-2 vs 0",0.778457920940509,0.928,"",1
+"212","Name_and_Type_of_Drug_Currently_Prescribed","bray","Comparing: Unknown vs Amoxacilin",0.759157854454274,0.931,"",1
+"213","Purpose_of_Phone_Use","bray","Comparing: Call/Radio/Internet vs Call Only",0.767656833135476,0.932,"",1
+"214","Name_and_Type_of_Drug_Currently_Prescribed","jaccard","Comparing: Unknown vs Amoxacilin",0.842513133795814,0.936,"",1
+"215","Defecating_in_Open_Field","jaccard","Comparing: never vs sometimes",0.857747056834744,0.937,"",1
+"216","Heard_of_Tuberculosis","bray","Comparing: no vs yes",0.768793271067557,0.939,"",1
+"217","Family_Member_with_Phone","jaccard","Comparing: yes vs no",0.854560500713653,0.943,"",1
+"218","Purpose_of_Phone_Use","jaccard","Comparing: Call/Radio/Internet vs Call Only",0.841463211471935,0.945,"",1
+"219","Frequency_of_Washing_Fruit_Before_Eating","bray","Comparing: sometimes vs never",0.757440004667236,0.951,"",1
+"220","Latrine_Distance_from_House","bray","Comparing: 10-20 vs 5-10",0.762863983946563,0.955,"",1
+"221","Latrine_Distance_from_House","jaccard","Comparing: 10-20 vs 5-10",0.838103089311974,0.958,"",1
+"222","Living_Address","jaccard","Comparing: Other vs Welda",0.829370363954121,0.964,"",1
+"223","Does_Toilet_in_School_Have_Doors.","jaccard","Comparing: yes vs no",0.823555052203054,0.972,"",1
+"224","Living_Address","bray","Comparing: Other vs Welda",0.738265034379965,0.973,"",1
+"225","Does_Toilet_in_School_Have_Doors.","bray","Comparing: yes vs no",0.741405784264877,0.978,"",1
+"226","Frequency_of_Washing_Fruit_Before_Eating","jaccard","Comparing: sometimes vs never",0.81672692850829,0.978,"",1
+"227","Told_by_Media","bray","Comparing: no vs yes",0.667107638460268,0.996,"",1
+"228","Told_by_Media","jaccard","Comparing: no vs yes",0.76470156068508,0.998,"",1
+"229","Heard_of_Ascharis","bray","Comparing: yes vs no",0.675021306873585,0.999,"",1
+"230","Heard_of_Ascharis","jaccard","Comparing: yes vs no",0.777061237140201,0.999,"",1
+"231","Antibiotics","jaccard","Comparing: no vs yes",0.757355260277049,0.999,"",1
+"232","Antibiotics","bray","Comparing: no vs yes",0.643941634773714,1,"",1

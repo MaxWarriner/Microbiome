@@ -137,6 +137,9 @@ ggsave(combined_lifestyle,
        device = "jpg",
        height = 18, width = 32, units = "in")
 
+a_diversity_clean <- create_a_diversity_plot(ps, 'Cleanliness_proxy')
+
+
 # Clinical Factors
 a_diversity_fever <- create_a_diversity_plot(ps, "Fever_in_Last_Two_Weeks")
 a_diversity_diarrhea <- create_a_diversity_plot(ps, "Diarrhea_in_Last_Two_Weeks")
@@ -167,6 +170,9 @@ ggsave(combined_household,
        filename = "household_alpha_diversity",
        device = "jpg",
        height = 16, width = 32, units = "in")
+
+a_diversity_SEI <- create_a_diversity_plot(ps, "SEI_proxy")
+
 
 
 # ## Part II (a) Beta diversity (Jaccard and Bray Distance) ----------------------
@@ -276,6 +282,8 @@ create_pcoa_plot <- function(variable) {
          device = "pdf",
          height = 6, width = 8, units = "in")
   
+  print(pcoaplot)
+  
   return(pcoaplot)
 }
 
@@ -316,6 +324,8 @@ ggsave(combined_lifestyle,
        device = "jpg",
        height = 32, width = 48, units = "in")
 
+beta_diversity_cleanliness <- create_pcoa_plot('Cleanliness_proxy')
+
 # Clinical Factors
 beta_diversity_fever <- create_pcoa_plot("Fever_in_Last_Two_Weeks")
 beta_diversity_wheezing <- create_pcoa_plot("How_Many_Times_Wheezing_or_Whistling")
@@ -342,6 +352,7 @@ ggsave(combined_environmental,
        device = "jpg",
        height = 12, width = 12, units = "in")
 
+
 # Household Factors
 beta_diversity_kitchen_material <- create_pcoa_plot("Kitchen_Material")
 beta_diversity_house_material <- create_pcoa_plot("House_Floor_Material")
@@ -360,7 +371,7 @@ ggsave(combined_household,
        height = 16, width = 38, units = "in")
 
 
-
+beta_diversity_SEI <- create_pcoa_plot('SEI_proxy')
 
 
 
@@ -461,38 +472,21 @@ calculate_permanova <- function(ps) {
 
 permanova_results <- calculate_permanova(ps)
 
+permanova_results$adjusted <- p.adjust(permanova_results$p_value, method = "BH")
+
 permanova_results <- permanova_results |>
-  arrange("p_value")
+  arrange(adjusted)
 
 write.csv(permanova_results, "PERMANOVA_results.csv")
 
 
 # ## Part III Overall microbial abundance "at the Phylum, Genus and Family Level --------
 
+phylumtaxa <- get_taxadf(obj = ps, taxlevel = 2)
+
 # Define the function to create bar plots with titles
-create_phylum_barplot <- function(variable) {
+create_phylum_barplot <- function(variable, phylumtaxa) {
   
-  # Convert sample data to data frame
-  sam_data <- as(sample_data(ps), "data.frame")
-  
-  # First remove NAs
-  keep_samples <- !is.na(sam_data[[variable]])
-  ps_filtered <- prune_samples(keep_samples, ps)
-  
-  # Get updated sample data after NA removal
-  sam_data_filtered <- as(sample_data(ps_filtered), "data.frame")
-  
-  # Count occurrences of each value in the variable
-  value_counts <- table(sam_data_filtered[[variable]])
-  
-  # Identify values that appear at least 5 times
-  valid_values <- names(value_counts)[value_counts >= 5]
-  
-  # Filter samples to only include those with valid values
-  final_keep_samples <- sam_data_filtered[[variable]] %in% valid_values
-  ps_final <- prune_samples(final_keep_samples, ps_filtered)
-  
-  phylumtaxa <- get_taxadf(obj = ps_final, taxlevel = 2)
   barplot <- ggbartax(obj = phylumtaxa, facetNames = variable, plotgroup = TRUE, topn = 5) +
     xlab(NULL) +
     ylab("relative abundance (%)") +
@@ -543,6 +537,8 @@ ggsave(combined_lifestyle,
        device = "jpg",
        height = 18, width = 32, units = "in")
 
+phylum_clean <- create_phylum_barplot('Cleanliness_proxy')
+
 # Clinical Factors
 phylum_fever <- create_phylum_barplot( "Fever_in_Last_Two_Weeks")
 phylum_diarrhea <- create_phylum_barplot( "Diarrhea_in_Last_Two_Weeks")
@@ -573,6 +569,8 @@ ggsave(combined_household,
        filename = "household_phylum",
        device = "jpg",
        height = 16, width = 32, units = "in")
+
+phylum_SEI <- create_phylum_barplot('SEI_proxy')
 
 
 # Define the function to create bar plots at the family level
@@ -1187,6 +1185,8 @@ cv_predict_clr_xgb <- function(
 }
 
 # E.g.
+# try to predict:
+# Socioeconomic proxy
 results <- cv_predict_clr_xgb(ps, "SEI_proxy", meta_cols = c("Age", "Sex"))
 results$confusion_matrix
 head(results$feature_importance, 50)
