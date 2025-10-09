@@ -802,7 +802,7 @@ for (variable in factors){
 
 #After Multiple Testing Correction
 
-#Volcano plots of differentially abundant taxa according to ALEDX2 results between positive and negative at the phylum, family, and genus levels (BEFORE multiple testing correction)
+#Volcano plots of differentially abundant taxa according to ALEDX2 results between positive and negative at the phylum, family, and genus levels (AFTER multiple testing correction)
 
 
 create_volcano_plot <- function(ps_obj, taxlevel, condition_col, metadata, SVs, taxonomy, comparison_title = NULL) {
