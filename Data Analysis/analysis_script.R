@@ -32,18 +32,15 @@ library(pROC)
 
 ps <- readRDS("categorized_data.RDS") # Load in using whatever file name you have
 
+sam <- ps@sam_data
 
-#Changing the taxonomic table labels (From Rank 1~Rank 7 to Kingdom~Species)
-# Access the existing taxonomy table from the phyloseq object
-tax_table_ps <- tax_table(ps)[,1:7]
-
-# Assign the modified taxonomy table back to the phyloseq object
-tax_table(ps) <- tax_table_ps
-
-#define list of factors to be tested
-socioeconomic_factors <- colnames(ps@sam_data)[]
 
 # ## Part I : Alpha Diversity (Chao1 and Shannon indices) -----------------
+
+div <- estimate_richness(ps)
+
+sam$Shannon <- div$Shannon
+sam$chao1 <- div$Chao1
 
 
 create_a_diversity_plot <- function(ps, variable) {
@@ -1075,7 +1072,7 @@ create_lefse_edgar <- function(ps, factor){
 cv_predict_clr_xgb <- function(
     ps_obj,
     outcome_var,
-    meta_cols = c("Ascaris", "Trichuris", "Hookworm"),
+    meta_cols,
     min_prevalence = 0.05,
     nfolds = 10,
     seed = 100,
@@ -1184,17 +1181,9 @@ cv_predict_clr_xgb <- function(
   ))
 }
 
-# E.g.
-# try to predict:
-# Socioeconomic proxy
-results <- cv_predict_clr_xgb(ps, "SEI_proxy", meta_cols = c("Age", "Sex"))
-results$confusion_matrix
-head(results$feature_importance, 50)
-
 ## ROC, Variable Importance, and Heatmap plots
 
-
-plot_roc_curve_gg <- function(model_results, positive_class = NULL) {
+plot_roc_curve_gg <- function(model_results, positive_class = NULL, factor) {
   
   y_true <- model_results$y_true
   if (is.null(positive_class)) {
@@ -1208,40 +1197,46 @@ plot_roc_curve_gg <- function(model_results, positive_class = NULL) {
   roc_obj <- roc(y_true, pred_prob, levels = rev(levels(y_true)), direction = "<")
   auc_value <- auc(roc_obj)
   
-  ggroc(roc_obj, legacy.axes = TRUE, colour = "darkgreen", size = 1.3) +
+  roc <- ggroc(roc_obj, legacy.axes = TRUE, colour = "darkgreen", size = 1.3) +
     geom_abline(linetype = "dashed", color = "gray50") +
     labs(
-      title = sprintf("ROC Curve (AUC = %.2f)", auc_value),
+      title = paste(factor, ": ROC Curve (AUC = ", round(auc_value, 3), ")", sep = ""),
       x = "False Positive Rate (1 - Specificity)",
       y = "True Positive Rate (Sensitivity)"
     ) +
     theme_minimal(base_size = 14)
+  
+  ggsave(filename = paste(factor, "ROC.png", sep = ""), plot = roc, width = 7, height = 5)
+  
 }
 
-plot_top_importance <- function(model_results, n_top = 10, bar_color = "#2c7bb6") {
+plot_top_importance <- function(model_results, n_top = 10, bar_color = "#2c7bb6", factor) {
   
   varimp <- model_results$feature_importance %>% 
     arrange(desc(Importance)) %>%
     head(n_top)
   
-  ggplot(varimp, aes(x = reorder(Feature, Importance), y = Importance)) +
+  plot <- ggplot(varimp, aes(x = reorder(Feature, Importance), y = Importance)) +
     geom_bar(stat = "identity", fill = bar_color) +
     coord_flip() +
     labs(
-      title = paste("Top", n_top, "Feature Importance"),
+      title = paste(factor, ": Top", n_top, "Feature Importance"),
       x = "",
       y = "Importance"
     ) +
     theme_minimal(base_size = 14) +
     theme(legend.position = "none")
+  
+  ggsave(filename = paste(factor, "top_importance.png", sep = ""), plot = plot, width = 10, height = 5)
+  
 }
 
 plot_top_feature_heatmap_clr <- function(
     ps_obj,
     model_results,
     n_top = 10,
-    metadata_vars = c("Ascaris", "Trichuris", "Hookworm"),
-    outcome_var = "FoodSecure_vs_FoodInsecure",
+    metadata_vars,
+    outcome_var,
     min_prevalence = 0.05
 ) {
   
@@ -1327,26 +1322,64 @@ plot_top_feature_heatmap_clr <- function(
     scale = "none",
     color = colorRampPalette(c("navy", "white", "firebrick3"))(100)
   )
-
-  ggsave('top_features_heatmap.png', width = 5, height = )
+  
+  ggsave(filename = paste(outcome_var, "_heatmap.png", sep = ""), plot = heatmap, height = 6, width = 18)
+  
+  return(heatmap)
   
 }
 
+# Kitchen Material
+ps <- subset_samples(ps, Kitchen_Material %in% c("Cement", "Dust"))
+kitchen_material_results <- cv_predict_clr_xgb(ps, "Kitchen_Material", meta_cols = c("Age", "Sex"))
+kitchen_material_results$confusion_matrix
+head(kitchen_material_results$feature_importance, 50)
 
-# E.g.
-plot_top_feature_heatmap_clr(
-  ps_obj = ps,
-  model_results = results,
-  n_top = 10,
-  metadata_vars = c("Sex", "Age"),
-  outcome_var = "SEI_proxy",
-  min_prevalence = 0.05
-)
+plot_top_feature_heatmap_clr(ps_obj = ps, model_results = kitchen_material_results,
+                             n_top = 10, metadata_vars = c("Sex", "Age"), 
+                             outcome_var = "Kitchen_Material", min_prevalence = 0.05)
 
-plot_roc_curve_gg(results)
-(plot_top_importance(results, n_top = 10))
+plot_roc_curve_gg(kitchen_material_results, factor = "Kitchen_Material")
+
+plot_top_importance(kitchen_material_results, n_top = 10, factor = "Kitchen_Material")
 
 
+# Kitchen Material
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+ps <- readRDS("categorized_data.RDS")
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
+ps <- subset_samples(ps, Kitchen_Material %in% c("Cement", "Dust"))
+kitchen_material_results <- cv_predict_clr_xgb(ps, "Kitchen_Material", meta_cols = c("Age", "Sex"))
+kitchen_material_results$confusion_matrix
+head(kitchen_material_results$feature_importance, 50)
+
+plot_top_feature_heatmap_clr(ps_obj = ps, model_results = kitchen_material_results,
+                             n_top = 10, metadata_vars = c("Sex", "Age"), 
+                             outcome_var = "Kitchen_Material", min_prevalence = 0.05)
+
+plot_roc_curve_gg(kitchen_material_results, factor = "Kitchen_Material")
+
+plot_top_importance(kitchen_material_results, n_top = 10, factor = "Kitchen_Material")
+
+
+# Use of School Latrine
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+ps <- readRDS("categorized_data.RDS")
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
+ps <- subset_samples(ps, Frequency_of_Using_School_Latrine %in% c("always", "never", "sometimes"))
+ps@sam_data$Frequency_of_Using_School_Latrine <- ifelse(ps@sam_data$Frequency_of_Using_School_Latrine == "never", "never", "always/sometimes")
+
+school_latrine_results <- cv_predict_clr_xgb(ps, "Frequency_of_Using_School_Latrine", meta_cols = c("Age", "Sex"))
+school_latrine_results$confusion_matrix
+head(school_latrine_results$feature_importance, 50)
+
+plot_top_feature_heatmap_clr(ps_obj = ps, model_results = school_latrine_results,
+                             n_top = 10, metadata_vars = c("Sex", "Age"), 
+                             outcome_var = "Frequency_of_Using_School_Latrine", min_prevalence = 0.05)
+
+plot_roc_curve_gg(kitchen_material_results, factor = "Kitchen_Material")
+
+plot_top_importance(kitchen_material_results, n_top = 10, factor = "Kitchen_Material")
 
 
 # Maaslin2 Plots ----------------------------------------------------------

@@ -463,7 +463,7 @@ cv_predict_clr_xgb <- function(
 
 ## ROC, Variable Importance, and Heatmap plots
 
-plot_roc_curve_gg <- function(model_results, positive_class = NULL) {
+plot_roc_curve_gg <- function(model_results, positive_class = NULL, factor) {
   
   y_true <- model_results$y_true
   if (is.null(positive_class)) {
@@ -477,32 +477,38 @@ plot_roc_curve_gg <- function(model_results, positive_class = NULL) {
   roc_obj <- roc(y_true, pred_prob, levels = rev(levels(y_true)), direction = "<")
   auc_value <- auc(roc_obj)
   
-  ggroc(roc_obj, legacy.axes = TRUE, colour = "darkgreen", size = 1.3) +
+  roc <- ggroc(roc_obj, legacy.axes = TRUE, colour = "darkgreen", size = 1.3) +
     geom_abline(linetype = "dashed", color = "gray50") +
     labs(
-      title = sprintf("ROC Curve (AUC = %.2f)", auc_value),
+      title = paste(factor, ": ROC Curve (AUC = ", round(auc_value, 3), ")", sep = ""),
       x = "False Positive Rate (1 - Specificity)",
       y = "True Positive Rate (Sensitivity)"
     ) +
     theme_minimal(base_size = 14)
+  
+  ggsave(filename = paste(factor, "ROC.png", sep = ""), plot = roc, width = 7, height = 5)
+  
 }
 
-plot_top_importance <- function(model_results, n_top = 10, bar_color = "#2c7bb6") {
+plot_top_importance <- function(model_results, n_top = 10, bar_color = "#2c7bb6", factor) {
   
   varimp <- model_results$feature_importance %>% 
     arrange(desc(Importance)) %>%
     head(n_top)
   
-  ggplot(varimp, aes(x = reorder(Feature, Importance), y = Importance)) +
+  plot <- ggplot(varimp, aes(x = reorder(Feature, Importance), y = Importance)) +
     geom_bar(stat = "identity", fill = bar_color) +
     coord_flip() +
     labs(
-      title = paste("Top", n_top, "Feature Importance"),
+      title = paste(factor, ": Top", n_top, "Feature Importance"),
       x = "",
       y = "Importance"
     ) +
     theme_minimal(base_size = 14) +
     theme(legend.position = "none")
+  
+  ggsave(filename = paste(factor, "top_importance.png", sep = ""), plot = plot, width = 10, height = 5)
+  
 }
 
 plot_top_feature_heatmap_clr <- function(
@@ -597,6 +603,8 @@ plot_top_feature_heatmap_clr <- function(
     color = colorRampPalette(c("navy", "white", "firebrick3"))(100)
   )
   
+  ggsave(filename = paste(outcome_var, "_heatmap.png", sep = ""), plot = heatmap, height = 6, width = 18)
+  
   return(heatmap)
   
 }
@@ -605,31 +613,40 @@ plot_top_feature_heatmap_clr <- function(
 hygiene_results <- cv_predict_clr_xgb(ps, "hygiene_group", meta_cols = c("Age", "Sex"))
 hygiene_results$confusion_matrix
 head(hygiene_results$feature_importance, 50)
+
 plot_top_feature_heatmap_clr(ps_obj = ps, model_results = hygiene_results,
                              n_top = 10, metadata_vars = c("Sex", "Age"), 
                              outcome_var = "hygiene_group", min_prevalence = 0.05)
-plot_roc_curve_gg(hygiene_results)
-(plot_top_importance(hygiene_results, n_top = 10))
+
+plot_roc_curve_gg(hygiene_results, factor = "Hygiene_Group")
+
+plot_top_importance(hygiene_results, n_top = 10, factor = "hygiene_group")
 
 # SES
 SES_results <- cv_predict_clr_xgb(ps, "SES_group", meta_cols = c("Age", "Sex"))
 SES_results$confusion_matrix
 head(SES_results$feature_importance, 50)
+
 plot_top_feature_heatmap_clr(ps_obj = ps, model_results = SES_results,
                              n_top = 10, metadata_vars = c("Sex", "Age"), 
                              outcome_var = "SES_group", min_prevalence = 0.05)
-plot_roc_curve_gg(SES_results)
-(plot_top_importance(SES_results, n_top = 10))
+
+plot_roc_curve_gg(SES_results, factor = "SES_Group")
+
+plot_top_importance(SES_results, n_top = 10, factor = "SES_group")
 
 # HSI
 HSI_results <- cv_predict_clr_xgb(ps, "HSI_group", meta_cols = c("Age", "Sex"))
 HSI_results$confusion_matrix
 head(HSI_results$feature_importance, 50)
+
 plot_top_feature_heatmap_clr(ps_obj = ps, model_results = HSI_results,
                              n_top = 10, metadata_vars = c("Sex", "Age"), 
                              outcome_var = "HSI_group", min_prevalence = 0.05)
-plot_roc_curve_gg(HSI_results)
-(plot_top_importance(HSI_results, n_top = 10))
+
+plot_roc_curve_gg(HSI_results, factor = "HSI_Group")
+
+plot_top_importance(HSI_results, n_top = 10, factor = "HSI_group")
 
 
 
@@ -637,11 +654,14 @@ plot_roc_curve_gg(HSI_results)
 HIQ_results <- cv_predict_clr_xgb(ps, "HIQ_group", meta_cols = c("Age", "Sex"))
 HIQ_results$confusion_matrix
 head(HIQ_results$feature_importance, 50)
+
 plot_top_feature_heatmap_clr(ps_obj = ps, model_results = HIQ_results,
                              n_top = 10, metadata_vars = c("Sex", "Age"), 
                              outcome_var = "HIQ_group", min_prevalence = 0.05)
-plot_roc_curve_gg(HIQ_results)
-(plot_top_importance(HIQ_results, n_top = 10))
+
+plot_roc_curve_gg(HIQ_results, factor = "HIQ_Group")
+
+plot_top_importance(HIQ_results, n_top = 10, factor = "HIQ_results")
 
 
 
@@ -649,8 +669,9 @@ plot_roc_curve_gg(HIQ_results)
 
 
 # Extract sample data, OTU table, taxonomy
-metadata <- as.data.frame(sample_data(ps_obj))
-SVs <- as.data.frame(otu_table(ps_obj))
+metadata <- as.data.frame(sample_data(ps))
+SVs <- as.data.frame(otu_table(ps))
+
 
 run_maaslin2_and_plot <- function(
     ps_obj, 
@@ -782,6 +803,8 @@ run_maaslin2_and_plot <- function(
     theme_minimal() +
     theme(legend.position = "none")
   
+  ggsave(filename = paste(variable, "maslin_volcano.png", sep = ""), plot = p, width = 8, height = 6)
+  
   print(p)
   n_rare_sig <- sum(results_var_unique$sig == "Significant" & results_var_unique$prevalence < min_samples)
   if (n_rare_sig > 0) {
@@ -850,6 +873,11 @@ plot_all_significant_boxplots <- function(
   plot_list <- plot_list[!sapply(plot_list, is.null)]  # Remove any nulls
   print(paste("Created", length(plot_list), "boxplots for significant genera."))
   plot_list
+  
+  if(plot_list > 0){
+    ggsave(filename = paste(variable, "maaslin_boxplots.png", sep = ""), plot = plot_list, width = 12, height = 5)
+  }
+  
 }
 
 #hygiene
