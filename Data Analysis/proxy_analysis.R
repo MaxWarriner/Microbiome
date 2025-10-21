@@ -402,15 +402,15 @@ cv_predict_clr_xgb <- function(
   nzv <- caret::nearZeroVar(X_full)
   if (length(nzv) > 0) X_full <- X_full[, -nzv, drop = FALSE]
   
-  # b SIMPLIFIED hyperparameter grid
+  # SIMPLIFIED hyperparameter grid
   xgb_grid <- expand.grid(
-    nrounds = c(100, 200),
-    max_depth = c(3, 5, 7),
-    eta = c(0.05, 0.1),
-    gamma = 0,
-    colsample_bytree = 0.8,
-    min_child_weight = 1,
-    subsample = 0.8
+    nrounds = c(100, 300, 600),
+    max_depth = c(3, 5, 7, 9),
+    eta = c(0.01, 0.05, 0.1),
+    gamma = c(0, 0.5),
+    colsample_bytree = c(0.7, 0.9),
+    min_child_weight = c(1, 3),
+    subsample = c(0.7, 0.9)
   )
   
   fitControl <- caret::trainControl(
@@ -418,7 +418,8 @@ cv_predict_clr_xgb <- function(
     number = nfolds,
     classProbs = TRUE,
     savePredictions = "final",
-    allowParallel = TRUE
+    allowParallel = TRUE, 
+    verboseIter = T
   )
   
   xgb_fit <- caret::train(

@@ -1066,7 +1066,7 @@ create_lefse_edgar <- function(ps, factor){
 }
 
 
-# Machine Learning Model --------------------------------------------------
+# ## Part VI: Machine Learning Model --------------------------------------------------
 
 
 cv_predict_clr_xgb <- function(
@@ -1206,7 +1206,7 @@ plot_roc_curve_gg <- function(model_results, positive_class = NULL, factor) {
     ) +
     theme_minimal(base_size = 14)
   
-  ggsave(filename = paste(factor, "ROC.png", sep = ""), plot = roc, width = 7, height = 5)
+  ggsave(filename = paste(factor, "ROC.png", sep = ""), plot = roc, width = 8, height = 5)
   
 }
 
@@ -1330,21 +1330,6 @@ plot_top_feature_heatmap_clr <- function(
 }
 
 # Kitchen Material
-ps <- subset_samples(ps, Kitchen_Material %in% c("Cement", "Dust"))
-kitchen_material_results <- cv_predict_clr_xgb(ps, "Kitchen_Material", meta_cols = c("Age", "Sex"))
-kitchen_material_results$confusion_matrix
-head(kitchen_material_results$feature_importance, 50)
-
-plot_top_feature_heatmap_clr(ps_obj = ps, model_results = kitchen_material_results,
-                             n_top = 10, metadata_vars = c("Sex", "Age"), 
-                             outcome_var = "Kitchen_Material", min_prevalence = 0.05)
-
-plot_roc_curve_gg(kitchen_material_results, factor = "Kitchen_Material")
-
-plot_top_importance(kitchen_material_results, n_top = 10, factor = "Kitchen_Material")
-
-
-# Kitchen Material
 setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
 ps <- readRDS("categorized_data.RDS")
 setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
@@ -1357,9 +1342,32 @@ plot_top_feature_heatmap_clr(ps_obj = ps, model_results = kitchen_material_resul
                              n_top = 10, metadata_vars = c("Sex", "Age"), 
                              outcome_var = "Kitchen_Material", min_prevalence = 0.05)
 
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/ROC Curves")
 plot_roc_curve_gg(kitchen_material_results, factor = "Kitchen_Material")
 
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Feature Importance")
 plot_top_importance(kitchen_material_results, n_top = 10, factor = "Kitchen_Material")
+
+
+
+# House Floor Material
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+ps <- readRDS("categorized_data.RDS")
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
+ps <- subset_samples(ps, House_Floor_Material %in% c("Cement", "Dust"))
+house_material_results <- cv_predict_clr_xgb(ps, "House_Floor_Material", meta_cols = c("Age", "Sex"))
+house_material_results$confusion_matrix
+head(house_material_results$feature_importance, 50)
+
+plot_top_feature_heatmap_clr(ps_obj = ps, model_results = house_material_results,
+                             n_top = 10, metadata_vars = c("Sex", "Age"), 
+                             outcome_var = "House_Floor_Material", min_prevalence = 0.05)
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/ROC Curves")
+plot_roc_curve_gg(house_material_results, factor = "House_Floor_Material")
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Feature Importance")
+plot_top_importance(house_material_results, n_top = 10, factor = "House_Floor_Material")
 
 
 # Use of School Latrine
@@ -1373,101 +1381,94 @@ school_latrine_results <- cv_predict_clr_xgb(ps, "Frequency_of_Using_School_Latr
 school_latrine_results$confusion_matrix
 head(school_latrine_results$feature_importance, 50)
 
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
 plot_top_feature_heatmap_clr(ps_obj = ps, model_results = school_latrine_results,
                              n_top = 10, metadata_vars = c("Sex", "Age"), 
                              outcome_var = "Frequency_of_Using_School_Latrine", min_prevalence = 0.05)
 
-plot_roc_curve_gg(kitchen_material_results, factor = "Kitchen_Material")
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/ROC Curves")
+plot_roc_curve_gg(school_latrine_results, factor = "Frequency_of_Using_School_Latrine")
 
-plot_top_importance(kitchen_material_results, n_top = 10, factor = "Kitchen_Material")
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Feature Importance")
+plot_top_importance(school_latrine_results, n_top = 10, factor = "Frequency_of_Using_School_Latrine")
+
+
+# Deworming pill
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+ps <- readRDS("categorized_data.RDS")
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
+
+deworming_results <- cv_predict_clr_xgb(ps, "Dewormingin1yr", meta_cols = c("Age", "Sex"))
+deworming_results$confusion_matrix
+head(deworming_results$feature_importance, 50)
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
+plot_top_feature_heatmap_clr(ps_obj = ps, model_results = deworming_results,
+                             n_top = 10, metadata_vars = c("Sex", "Age"), 
+                             outcome_var = "Dewormingin1yr", min_prevalence = 0.05)
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/ROC Curves")
+plot_roc_curve_gg(deworming_results, factor = "Dewormingin1yr")
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Feature Importance")
+plot_top_importance(deworming_results, n_top = 10, factor = "Dewormingin1yr")
+
+
+# Clothes Washing in River
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+ps <- readRDS("categorized_data.RDS")
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
+ps <- subset_samples(ps, Frequency_of_Clothes_Washing_in_River %in% c("always", "never", "sometimes"))
+ps@sam_data$Frequency_of_Clothes_Washing_in_River <- ifelse(ps@sam_data$Frequency_of_Clothes_Washing_in_River == "never", "never", "always/sometimes")
+
+clothes_washing_results <- cv_predict_clr_xgb(ps, "Frequency_of_Clothes_Washing_in_River", meta_cols = c("Age", "Sex"))
+clothes_washing_results$confusion_matrix
+head(clothes_washing_results$feature_importance, 50)
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
+plot_top_feature_heatmap_clr(ps_obj = ps, model_results = clothes_washing_results,
+                             n_top = 10, metadata_vars = c("Sex", "Age"), 
+                             outcome_var = "Frequency_of_Clothes_Washing_in_River", min_prevalence = 0.05)
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/ROC Curves")
+plot_roc_curve_gg(clothes_washing_results, factor = "Frequency_of_Clothes_Washing_in_River")
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Feature Importance")
+plot_top_importance(clothes_washing_results, n_top = 10, factor = "Frequency_of_Clothes_Washing_in_River")
+
+
+# Hand Washing after Latrine
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+ps <- readRDS("categorized_data.RDS")
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
+ps <- subset_samples(ps, Frequency_of_Hand_Washing_After_Using_Toilet %in% c("always", "never", "sometimes"))
+ps@sam_data$Frequency_of_Hand_Washing_After_Using_Toilet <- ifelse(ps@sam_data$Frequency_of_Hand_Washing_After_Using_Toilet == "always", "always", "never/sometimes")
+
+hand_washing_results <- cv_predict_clr_xgb(ps, "Frequency_of_Hand_Washing_After_Using_Toilet", meta_cols = c("Age", "Sex"))
+hand_washing_results$confusion_matrix
+head(hand_washing_results$feature_importance, 50)
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
+plot_top_feature_heatmap_clr(ps_obj = ps, model_results = hand_washing_results,
+                             n_top = 10, metadata_vars = c("Sex", "Age"), 
+                             outcome_var = "Frequency_of_Hand_Washing_After_Using_Toilet", min_prevalence = 0.05)
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/ROC Curves")
+plot_roc_curve_gg(hand_washing_results, factor = "Frequency_of_Hand_Washing_After_Using_Toilet")
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Feature Importance")
+plot_top_importance(hand_washing_results, n_top = 10, factor = "Frequency_of_Hand_Washing_After_Using_Toilet")
 
 
 # Maaslin2 Plots ----------------------------------------------------------
 
-create_volcano_plot <- function(ps_obj, taxlevel, condition_col, title_name = condition_col) {
-  # Extract sample data, OTU table, taxonomy
-  metadata <- as.data.frame(sample_data(ps_obj))
-  SVs <- as.data.frame(otu_table(ps_obj))
-  taxonomy <- as.data.frame(tax_table(ps_obj))
-  
-  # Accept taxlevel as number or name
-  if (is.numeric(taxlevel)) {
-    tax_col <- colnames(taxonomy)[taxlevel]
-  } else {
-    tax_col <- taxlevel
-  }
-  
-  # Prepare grouping variable
-  var_values <- metadata[[condition_col]]
-  non_na_values <- var_values[!is.na(var_values)]
-  value_counts <- table(non_na_values)
-  
-  # Top 2 most frequent (works for binary factors too)
-  top_values <- names(sort(value_counts, decreasing = TRUE))[1:2]
-  subset_idx <- var_values %in% top_values & !is.na(var_values)
-  metadata <- metadata[subset_idx, , drop = FALSE]
-  
-  # Subset SVs to match samples
-  sample_names_to_use <- rownames(metadata)
-  # Match sample orientation
-  if (taxa_are_rows(ps_obj)) {
-    SVs <- SVs[, sample_names_to_use, drop = FALSE]
-  } else {
-    SVs <- SVs[sample_names_to_use, , drop = FALSE]
-    SVs <- t(SVs)
-  }
-  
-  # Ensure that taxonomy contains the specified level
-  taxonomy <- taxonomy %>%
-    rownames_to_column(var = "OTU_name") %>%
-    dplyr::select(OTU_name, !!sym(tax_col)) %>%
-    distinct()
-  
-  # Combine SVs with taxonomy
-  SVs_with_taxonomy <- SVs %>%
-    as.data.frame() %>%
-    rownames_to_column(var = "OTU_name") %>%
-    left_join(taxonomy, by = "OTU_name")
-  
-  # Aggregate by taxonomic level
-  tax_level_SVs <- SVs_with_taxonomy %>%
-    dplyr::select(-OTU_name) %>%
-    group_by(!!sym(tax_col)) %>%
-    summarise(across(everything(), ~sum(.x, na.rm = TRUE))) %>%
-    filter(!is.na(!!sym(tax_col)), !!sym(tax_col) != "none") %>%
-    column_to_rownames(var = tax_col)
-  
-  # Ensure column/sample order matches metadata
-  tax_level_SVs <- tax_level_SVs[, rownames(metadata)]
-  
-  # Convert to matrix for ALDEx2
-  tax_level_SVs <- as.matrix(tax_level_SVs)
-  condition <- as.character(metadata[[condition_col]])
-  
-  # Run ALDEx2 analysis
-  aldex_data <- aldex(tax_level_SVs, conditions = condition, mc.samples = 128, test = "t", effect = TRUE)
-  results <- data.frame(aldex_data)
-  results <- results %>% rownames_to_column(var = tax_col)
-  results <- results %>% arrange(we.eBH)
-  
-  # Volcano plot
-  p <- results %>%
-    mutate(Significant = we.eBH < 0.05) %>%
-    mutate(Taxon = as.character(!!sym(tax_col))) %>%
-    mutate(TaxonToPrint = if_else(Significant, paste0(Taxon, " (", round(we.eBH, 3), ")"), "")) %>%
-    ggplot(aes(x = diff.btw, y = -log10(we.ep), color = Significant, label = TaxonToPrint)) +
-    geom_point(alpha = 0.6, shape = 16) +
-    geom_text_repel(size = 4, nudge_y = 0.05, max.overlaps = Inf) +
-    theme_minimal() +
-    xlab("log2(fold change)") +
-    ylab("-log10(P-value)") +
-    scale_color_manual(values = c("black", "red")) +
-    theme(legend.position = "none") +
-    ggtitle(paste(title_name, "\nTaxonomic Level:", tax_col))
-  
-  print(p)
-  return(list(plot = p, table = results))
-}
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+ps <- readRDS("categorized_data.RDS")
+
+# Extract sample data, OTU table, taxonomy
+metadata <- as.data.frame(sample_data(ps))
+SVs <- as.data.frame(otu_table(ps))
+
 
 run_maaslin2_and_plot <- function(
     ps_obj, 
@@ -1484,7 +1485,7 @@ run_maaslin2_and_plot <- function(
 ) {
   # Prepare feature table (taxa as rows, samples as columns)
   otumat <- as.data.frame(otu_table(ps_obj))
-  if (!taxa_are_rows(ps_obj)) otumat <- t(otumat)
+  if (!taxa_are_rows(ps_obj)) otumat <- data.frame(t(otumat))
   
   # Aggregate at desired taxonomic level
   taxmat <- as.data.frame(tax_table(ps_obj))
@@ -1520,6 +1521,8 @@ run_maaslin2_and_plot <- function(
   meta <- meta[ , , drop = FALSE]
   
   # Match samples between metadata and feature table
+  colnames(feature_table) <- gsub("X", "", colnames(feature_table))
+  colnames(feature_table) <- gsub("\\.", "-", colnames(feature_table))
   common_samples <- intersect(colnames(feature_table), rownames(meta))
   feature_table <- feature_table[ , common_samples, drop = FALSE]
   meta <- meta[common_samples, , drop = FALSE]
@@ -1597,6 +1600,8 @@ run_maaslin2_and_plot <- function(
     theme_minimal() +
     theme(legend.position = "none")
   
+  ggsave(filename = paste(variable, "maslin_volcano.png", sep = ""), plot = p, width = 8, height = 6)
+  
   print(p)
   n_rare_sig <- sum(results_var_unique$sig == "Significant" & results_var_unique$prevalence < min_samples)
   if (n_rare_sig > 0) {
@@ -1619,7 +1624,7 @@ plot_all_significant_boxplots <- function(
     unique()
   
   # Helper function for a single genus
-  plot_single <- function(genus) {
+  plot_single <- function(genus, taxlevel = "Genus") {
     qval <- maaslin2_table %>%
       filter(feature == genus, metadata == variable) %>%
       arrange(qval) %>%
@@ -1629,9 +1634,10 @@ plot_all_significant_boxplots <- function(
     auto_title <- paste0(genus, " (q = ", qval_label, ")")
     
     otumat <- as.data.frame(otu_table(ps_obj))
-    if (!taxa_are_rows(ps_obj)) otumat <- t(otumat)
+    if (!taxa_are_rows(ps_obj)){otumat <- as.data.frame(t(otumat))}
     taxmat <- as.data.frame(tax_table(ps_obj))
     otumat$Taxon <- taxmat[rownames(otumat), taxlevel]
+    otumat$Taxon <- ifelse(is.na(otumat$Taxon), "Other", otumat$Taxon)
     feature_table <- otumat %>%
       group_by(Taxon) %>%
       summarise(across(where(is.numeric), \(x) sum(x, na.rm = TRUE))) %>%
@@ -1665,17 +1671,26 @@ plot_all_significant_boxplots <- function(
   plot_list <- plot_list[!sapply(plot_list, is.null)]  # Remove any nulls
   print(paste("Created", length(plot_list), "boxplots for significant genera."))
   plot_list
+  
+  if(plot_list > 0){
+    ggsave(filename = paste(variable, "maaslin_boxplots.png", sep = ""), plot = plot_list, width = 12, height = 5)
+  }
+  
 }
 
-# E.g.
-sex_maaslin2 <- run_maaslin2_and_plot(ps, "Sex", qval_sig_max = 0.2) 
-sex_boxplots <- plot_all_significant_boxplots(
-  ps_obj = ps,
-  maaslin2_table = sex_maaslin2$table,
-  variable = "Sex",
-  variable_name = "Sex"
-)
-print(sex_boxplots[[1]])
 
+#Kitchen Material
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+ps <- readRDS("categorized_data.RDS")
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Volcano Plots")
+ps <- subset_samples(ps, Kitchen_Material %in% c("Cement", "Dust"))
+kitchen_floor_maaslin2 <- run_maaslin2_and_plot(ps, "Kitchen_Material", qval_sig_max = 0.2)
+kitchen_floor_boxplots <- plot_all_significant_boxplots(
+  ps_obj = ps,
+  maaslin2_table = kitchen_floor_maaslin2$table,
+  variable = "Kitchen_Material",
+  variable_name = "Kitchen_Material"
+)
+print(hygiene_boxplots[[1]])
 
 
