@@ -30,6 +30,7 @@ library(parallel)
 library(doParallel)
 library(pROC)
 
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
 ps <- readRDS("categorized_data.RDS") # Load in using whatever file name you have
 
 sam <- ps@sam_data
@@ -1460,20 +1461,15 @@ setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learnin
 plot_top_importance(hand_washing_results, n_top = 10, factor = "Frequency_of_Hand_Washing_After_Using_Toilet")
 
 
-# Maaslin2 Plots ----------------------------------------------------------
+# ## Part VII: Maaslin2 Plots ----------------------------------------------------------
 
 setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
-ps <- readRDS("categorized_data.RDS")
-
-# Extract sample data, OTU table, taxonomy
-metadata <- as.data.frame(sample_data(ps))
-SVs <- as.data.frame(otu_table(ps))
 
 
 run_maaslin2_and_plot <- function(
     ps_obj, 
     variable, 
-    title_name = variable, 
+    title_name = gsub(pattern = "_", replacement = " ", variable), 
     taxlevel = "Genus",
     qval_sig_max = 0.1,
     min_prevalence = 0.05,
@@ -1484,7 +1480,7 @@ run_maaslin2_and_plot <- function(
     remove_unassigned = TRUE
 ) {
   # Prepare feature table (taxa as rows, samples as columns)
-  otumat <- as.data.frame(otu_table(ps_obj))
+  otumat <- SVs
   if (!taxa_are_rows(ps_obj)) otumat <- data.frame(t(otumat))
   
   # Aggregate at desired taxonomic level
@@ -1600,7 +1596,7 @@ run_maaslin2_and_plot <- function(
     theme_minimal() +
     theme(legend.position = "none")
   
-  ggsave(filename = paste(variable, "maslin_volcano.png", sep = ""), plot = p, width = 8, height = 6)
+  ggsave(filename = paste(variable, "_maslin_volcano.png", sep = ""), plot = p, width = 8, height = 6)
   
   print(p)
   n_rare_sig <- sum(results_var_unique$sig == "Significant" & results_var_unique$prevalence < min_samples)
@@ -1633,7 +1629,7 @@ plot_all_significant_boxplots <- function(
     qval_label <- if(length(qval) == 0) "NA" else formatC(qval, digits = 3, format = "f")
     auto_title <- paste0(genus, " (q = ", qval_label, ")")
     
-    otumat <- as.data.frame(otu_table(ps_obj))
+    otumat <- SVs
     if (!taxa_are_rows(ps_obj)){otumat <- as.data.frame(t(otumat))}
     taxmat <- as.data.frame(tax_table(ps_obj))
     otumat$Taxon <- taxmat[rownames(otumat), taxlevel]
@@ -1646,7 +1642,7 @@ plot_all_significant_boxplots <- function(
     if (!genus %in% rownames(feature_table_rel)) return(NULL)
     genus_abund <- as.numeric(feature_table_rel[genus, ])
     sample_names <- colnames(feature_table_rel)
-    meta <- as(sample_data(ps_obj), "data.frame")
+    meta <- metadata
     meta <- meta[sample_names, , drop = FALSE]
     df <- data.frame(
       Sample = sample_names,
@@ -1655,14 +1651,16 @@ plot_all_significant_boxplots <- function(
     )
     ggplot(df, aes(x = Group, y = Abundance, fill = Group)) +
       geom_boxplot(outlier.shape = NA) +
-      geom_jitter(width = 0.2, alpha = 0.6, color = "black") +
+      geom_jitter(width = 0.2, alpha = 0.25, color = "black") +
       labs(
         title = auto_title,
-        x = variable_name,
+        x = "",
         y = "Relative Abundance"
       ) +
       theme_minimal() +
-      theme(legend.position = "none")
+      theme(legend.position = "none", 
+            plot.title = element_text(hjust = 0.5)) + 
+      geom_hline(yintercept = 0)
   }
   
   # Loop and collect
@@ -1670,10 +1668,13 @@ plot_all_significant_boxplots <- function(
   names(plot_list) <- sig_genera
   plot_list <- plot_list[!sapply(plot_list, is.null)]  # Remove any nulls
   print(paste("Created", length(plot_list), "boxplots for significant genera."))
-  plot_list
+  plot_patch <- wrap_plots(plot_list) &
+    plot_annotation(title = gsub(pattern = "_", replacement = " ", variable_name), 
+                    theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold")))
+  print(plot_patch)
   
-  if(plot_list > 0){
-    ggsave(filename = paste(variable, "maaslin_boxplots.png", sep = ""), plot = plot_list, width = 12, height = 5)
+  if(length(plot_list) > 0){
+    ggsave(filename = paste(variable, "_maaslin_boxplots.png", sep = ""), plot = plot_patch, width = 8, height = 6)
   }
   
 }
@@ -1682,15 +1683,104 @@ plot_all_significant_boxplots <- function(
 #Kitchen Material
 setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
 ps <- readRDS("categorized_data.RDS")
-setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Volcano Plots")
 ps <- subset_samples(ps, Kitchen_Material %in% c("Cement", "Dust"))
-kitchen_floor_maaslin2 <- run_maaslin2_and_plot(ps, "Kitchen_Material", qval_sig_max = 0.2)
+
+# Extract sample data, OTU table, taxonomy
+metadata <- as.data.frame(sample_data(ps))
+SVs <- as.data.frame(otu_table(ps))
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Volcano Plots")
+kitchen_floor_maaslin2 <- run_maaslin2_and_plot(ps, "Kitchen_Material", qval_sig_max = 0.1)
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Boxplots")
 kitchen_floor_boxplots <- plot_all_significant_boxplots(
   ps_obj = ps,
   maaslin2_table = kitchen_floor_maaslin2$table,
   variable = "Kitchen_Material",
   variable_name = "Kitchen_Material"
 )
-print(hygiene_boxplots[[1]])
+
+
+#House Floor Material (not significant)
+
+
+
+# Use of School Latrine
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+ps <- readRDS("categorized_data.RDS")
+ps <- subset_samples(ps, Frequency_of_Using_School_Latrine %in% c("always", "never", "sometimes"))
+ps@sam_data$Frequency_of_Using_School_Latrine <- ifelse(ps@sam_data$Frequency_of_Using_School_Latrine == "never", "never", "always/sometimes")
+
+# Extract sample data, OTU table, taxonomy
+metadata <- as.data.frame(sample_data(ps))
+SVs <- as.data.frame(otu_table(ps))
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Volcano Plots")
+school_latrine_maaslin2 <- run_maaslin2_and_plot(ps, "Frequency_of_Using_School_Latrine", qval_sig_max = 0.2)
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Boxplots")
+school_latrine_boxplots <- plot_all_significant_boxplots(
+  ps_obj = ps,
+  maaslin2_table = school_latrine_maaslin2$table,
+  variable = "Frequency_of_Using_School_Latrine",
+  variable_name = "Frequency_of_Using_School_Latrine"
+)
+
+
+
+# Deworming pill (not significant)
+
+
+# Clothes Washing in River (not significant)
+
+
+# Hand Washing after Latrine (not significant)
+
+
+# Frequency of Using Soap After Toilet
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+ps <- readRDS("categorized_data.RDS")
+ps <- subset_samples(ps, Frequency_of_Using_Soap_After_Using_Toilet %in% c("always", "never", "sometimes"))
+ps@sam_data$Frequency_of_Using_Soap_After_Using_Toilet <- ifelse(ps@sam_data$Frequency_of_Using_Soap_After_Using_Toilet == "always", "always", "never/sometimes")
+
+# Extract sample data, OTU table, taxonomy
+metadata <- as.data.frame(sample_data(ps))
+SVs <- as.data.frame(otu_table(ps))
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Volcano Plots")
+soap_maaslin2 <- run_maaslin2_and_plot(ps, "Frequency_of_Using_Soap_After_Using_Toilet", qval_sig_max = 0.2)
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Boxplots")
+soap_boxplots <- plot_all_significant_boxplots(
+  ps_obj = ps,
+  maaslin2_table = soap_maaslin2$table,
+  variable = "Frequency_of_Using_Soap_After_Using_Toilet",
+  variable_name = "Frequency_of_Using_Soap_After_Using_Toilet"
+)
+
+
+
+# animals in house (not significant)
+
+
+# pet in house
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+ps <- readRDS("categorized_data.RDS")
+ps <- subset_samples(ps, Pet_in_House.Compound %in% c("yes", "no"))
+
+# Extract sample data, OTU table, taxonomy
+metadata <- as.data.frame(sample_data(ps))
+SVs <- as.data.frame(otu_table(ps))
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Volcano Plots")
+animals_maaslin2 <- run_maaslin2_and_plot(ps, "Pet_in_House.Compound", qval_sig_max = 0.2)
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Boxplots")
+soap_boxplots <- plot_all_significant_boxplots(
+  ps_obj = ps,
+  maaslin2_table = soap_maaslin2$table,
+  variable = "Frequency_of_Using_Soap_After_Using_Toilet",
+  variable_name = "Frequency_of_Using_Soap_After_Using_Toilet"
+)
+
+
+
 
 
