@@ -29,6 +29,7 @@ library(tidyverse)
 library(parallel)
 library(doParallel)
 library(pROC)
+library(Maaslin2)
 
 setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
 ps <- readRDS("categorized_data.RDS") # Load in using whatever file name you have
@@ -1123,15 +1124,14 @@ cv_predict_clr_xgb <- function(
   nzv <- caret::nearZeroVar(X_full)
   if (length(nzv) > 0) X_full <- X_full[, -nzv, drop = FALSE]
   
-  # b SIMPLIFIED hyperparameter grid
   xgb_grid <- expand.grid(
-    nrounds = c(100, 200),
-    max_depth = c(3, 5, 7),
-    eta = c(0.05, 0.1),
-    gamma = 0,
-    colsample_bytree = 0.8,
-    min_child_weight = 1,
-    subsample = 0.8
+    nrounds = c(200, 400, 800),
+    max_depth = c(3, 5, 7, 9),
+    eta = c(0.01, 0.05, 0.1, 0.3),
+    gamma = c(0, 0.1, 0.5, 1),
+    colsample_bytree = c(0.6, 0.8, 1.0),
+    min_child_weight = c(1, 3, 5),
+    subsample = c(0.6, 0.8, 1.0)
   )
   
   fitControl <- caret::trainControl(
@@ -1621,34 +1621,47 @@ plot_all_significant_boxplots <- function(
   
   # Helper function for a single genus
   plot_single <- function(genus, taxlevel = "Genus") {
-    qval <- maaslin2_table %>%
+    # Extract p- and q-values
+    stats_row <- maaslin2_table %>%
       filter(feature == genus, metadata == variable) %>%
       arrange(qval) %>%
-      slice(1) %>%
-      pull(qval)
-    qval_label <- if(length(qval) == 0) "NA" else formatC(qval, digits = 3, format = "f")
-    auto_title <- paste0(genus, " (q = ", qval_label, ")")
+      slice(1)
     
+    qval <- ifelse(nrow(stats_row) == 0, NA, stats_row$qval)
+    pval <- ifelse(nrow(stats_row) == 0, NA, stats_row$pval)
+    
+    # Format nicely (not scientific notation)
+    qval_label <- ifelse(is.na(qval), "NA", formatC(qval, digits = 3, format = "f"))
+    pval_label <- ifelse(is.na(pval), "NA", formatC(pval, digits = 3, format = "f"))
+    
+    auto_title <- paste0(genus, " (p = ", pval_label, ", q = ", qval_label, ")")
+    
+    # Create data for plotting
     otumat <- SVs
-    if (!taxa_are_rows(ps_obj)){otumat <- as.data.frame(t(otumat))}
+    if (!taxa_are_rows(ps_obj)) otumat <- as.data.frame(t(otumat))
     taxmat <- as.data.frame(tax_table(ps_obj))
     otumat$Taxon <- taxmat[rownames(otumat), taxlevel]
     otumat$Taxon <- ifelse(is.na(otumat$Taxon), "Other", otumat$Taxon)
+    
     feature_table <- otumat %>%
       group_by(Taxon) %>%
       summarise(across(where(is.numeric), \(x) sum(x, na.rm = TRUE))) %>%
       column_to_rownames("Taxon")
+    
     feature_table_rel <- sweep(feature_table, 2, colSums(feature_table), "/")
     if (!genus %in% rownames(feature_table_rel)) return(NULL)
+    
     genus_abund <- as.numeric(feature_table_rel[genus, ])
     sample_names <- colnames(feature_table_rel)
     meta <- metadata
     meta <- meta[sample_names, , drop = FALSE]
+    
     df <- data.frame(
       Sample = sample_names,
       Abundance = genus_abund,
       Group = as.factor(meta[[variable]])
     )
+    
     ggplot(df, aes(x = Group, y = Abundance, fill = Group)) +
       geom_boxplot(outlier.shape = NA) +
       geom_jitter(width = 0.2, alpha = 0.25, color = "black") +
@@ -1658,25 +1671,31 @@ plot_all_significant_boxplots <- function(
         y = "Relative Abundance"
       ) +
       theme_minimal() +
-      theme(legend.position = "none", 
-            plot.title = element_text(hjust = 0.5)) + 
+      theme(
+        legend.position = "none", 
+        plot.title = element_text(hjust = 0.5)
+      ) + 
       geom_hline(yintercept = 0)
   }
   
   # Loop and collect
   plot_list <- lapply(sig_genera, plot_single)
   names(plot_list) <- sig_genera
-  plot_list <- plot_list[!sapply(plot_list, is.null)]  # Remove any nulls
+  plot_list <- plot_list[!sapply(plot_list, is.null)]
+  
   print(paste("Created", length(plot_list), "boxplots for significant genera."))
+  
   plot_patch <- wrap_plots(plot_list) &
-    plot_annotation(title = gsub(pattern = "_", replacement = " ", variable_name), 
-                    theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold")))
+    plot_annotation(
+      title = gsub(pattern = "_", replacement = " ", variable_name), 
+      theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+    )
+  
   print(plot_patch)
   
-  if(length(plot_list) > 0){
-    ggsave(filename = paste(variable, "_maaslin_boxplots.png", sep = ""), plot = plot_patch, width = 8, height = 6)
+  if (length(plot_list) > 0) {
+    ggsave(filename = paste0(variable, "_maaslin_boxplots.png"), plot = plot_patch, width = 8, height = 6)
   }
-  
 }
 
 

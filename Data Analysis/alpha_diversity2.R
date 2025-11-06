@@ -78,7 +78,8 @@ create_a_diversity_plot <- function(ps, variable, alpha_level = 0.05, save_dir =
         hjust = 0,
         vjust = 1.5,
         size = 10
-      )
+      ) + 
+      scale_x_discrete(labels = c("never", "sometimes", "always"))
     
       ggsave(filename = paste0(variable, "_diversity_plot.png"),
              plot = p, width = 8, height = 6, dpi = 300)
@@ -97,5 +98,5 @@ for(factor in colnames(sam)){
 }
 
 
-
+create_a_diversity_plot(ps, "Frequency_of_Using_School_Latrine")
 
