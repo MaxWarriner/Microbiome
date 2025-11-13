@@ -12,8 +12,10 @@ setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
 
 ps <- readRDS('categorized_data.RDS')
 
-sam <- ps@sam_data
+sam_data <- data.frame(ps@sam_data) |>
+  rename("Deworming Pill in the Last Year" = Dewormingin1yr)
 
+sample_data(ps) <- sam_data
 
 bdiv <- tibble(variable = colnames(sam), 
                jaccard_p = rep(NA, 128), 
@@ -77,7 +79,7 @@ create_pcoa_plot <- function(variable, jaccard_dist, bray_dist, jaccard_pcoa, br
   pcoa_jaccard_plot <- ggordpoint(obj = jaccard_pcoa, biplot = FALSE, speciesannot = TRUE,
                                   factorNames = c(variable), ellipse = TRUE, linesize = 1.5,
                                   ellipse_linewd = 1, ellipse_lty = 2) +
-    ggtitle(paste(gsub("_", " ", variable), "(Jaccard)")) +
+    ggtitle("Deworming Pill in the Last Year (Jaccard)") +
     guides(color=guide_legend(title=gsub("_", " ", variable), override.aes = list(size = 4))) +
     theme(legend.title = element_blank(), legend.text = element_text(size = 20)) +
     annotate("text", x = Inf, y = Inf, label = p_text_jaccard,
@@ -86,7 +88,7 @@ create_pcoa_plot <- function(variable, jaccard_dist, bray_dist, jaccard_pcoa, br
   pcoa_bray_plot <- ggordpoint(obj = bray_pcoa, biplot = FALSE, speciesannot = TRUE,
                                factorNames = c(variable), ellipse = TRUE, linesize = 1.5,
                                ellipse_linewd = 1, ellipse_lty = 2) +
-    ggtitle(paste(gsub("_", " ", variable), "(Bray-Curtis)")) +
+    ggtitle("Deworming Pill in the Last Year (Bray-Curtis)") +
     guides(color=guide_legend(title=gsub("_", " ", variable), override.aes = list(size = 4))) +
     theme(legend.title = element_blank(), legend.text = element_text(size = 20)) +
     annotate("text", x = Inf, y = Inf, label = p_text_bray,
@@ -120,11 +122,11 @@ prune_na_samples <- function(ps, variable) {
   return(ps_pruned)
 }
 
-for (i in 1:4){
+for (i in 4:4){
   setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
   ps <- readRDS('categorized_data.RDS')
   
-  ps <- prune_na_samples(ps, sig[i])
+  ps <- prune_na_samples(ps, "Dewormingin1yr")
   
   bray <- phyloseq::distance(ps, method = "bray")
   jaccard <- phyloseq::distance(ps, method = "jaccard")
@@ -134,7 +136,7 @@ for (i in 1:4){
   
   sam <- data.frame(ps@sam_data)
   setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/beta diversity PCOA plots/Significant Combined")
-  try({create_pcoa_plot(sig[i], jaccard, bray, jaccard_pcoa, bray_pcoa, sam)})
+  try({create_pcoa_plot("Dewormingin1yr", jaccard, bray, jaccard_pcoa, bray_pcoa, sam)})
 }
 
 

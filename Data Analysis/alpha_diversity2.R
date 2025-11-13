@@ -24,7 +24,13 @@ setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
 ps <- read_rds('categorized_data.RDS')
 sam <- data.frame(ps@sam_data)
 
-create_a_diversity_plot <- function(ps, variable, alpha_level = 0.05, save_dir = NULL) {
+create_a_diversity_plot <- function(ps, variable, alpha_level = 0.05) {
+  library(phyloseq)
+  library(ggplot2)
+  library(ggpubr)
+  library(dplyr)
+  library(tidyr)
+  
   # Convert sample data to data frame
   sam_data <- as(sample_data(ps), "data.frame")
   
@@ -44,50 +50,76 @@ create_a_diversity_plot <- function(ps, variable, alpha_level = 0.05, save_dir =
   alpha_div <- estimate_richness(ps_final, measures = c("Chao1", "Shannon"))
   sam_data_final$Chao1 <- alpha_div$Chao1
   sam_data_final$Shannon <- alpha_div$Shannon
-
+  
+  # Function to calculate effect size (eta squared)
+  kruskal_eta_sq <- function(formula, data) {
+    test <- kruskal.test(formula, data = data)
+    H <- test$statistic
+    k <- length(unique(data[[all.vars(formula)[2]]]))
+    n <- nrow(data)
+    eta_sq <- (H - k + 1) / (n - k)
+    list(statistic = H, p = test$p.value, eta_sq = eta_sq)
+  }
+  
   # Run significance tests
-  chao_formula <- as.formula(paste("Chao1 ~ ", variable, sep = ""))
-  shannon_formula <- as.formula(paste("Shannon ~ ", variable, sep = ""))
+  chao_res <- kruskal_eta_sq(as.formula(paste("Chao1 ~", variable)), sam_data_final)
+  shan_res <- kruskal_eta_sq(as.formula(paste("Shannon ~", variable)), sam_data_final)
   
-  chao_p <- kruskal.test(chao_formula, data = sam_data_final)$p.value
-  shan_p <- kruskal.test(shannon_formula, data = sam_data_final)$p.value
-  
-  # Check if either metric is significant
-  if (chao_p < alpha_level | shan_p < alpha_level) {
-    message(sprintf("Significant results for '%s' (Chao1 p=%.4f, Shannon p=%.4f)", variable, chao_p, shan_p))
+  if (chao_res$p < alpha_level | shan_res$p < alpha_level) {
+    message(sprintf("Significant results for '%s' (Chao1 p=%.4f, η²=%.3f; Shannon p=%.4f, η²=%.3f)", 
+                    variable, chao_res$p, chao_res$eta_sq, shan_res$p, shan_res$eta_sq))
     
-    # Create plot
-    p <- plot_richness(ps_final, x = variable, color = variable, 
-                       measures = c("Chao1", "Shannon"))
-    p$layers[[2]] <- NULL
+    # Reshape data into long format
+    long_data <- sam_data_final %>%
+      dplyr::select(all_of(variable), Chao1, Shannon) %>%
+      pivot_longer(cols = c("Chao1", "Shannon"), names_to = "Measure", values_to = "Value")
     
-    p <- p + 
-      geom_boxplot() + 
-      geom_jitter(alpha = 0.25) + 
+    # Add p-values and eta squared for each measure
+    annotations <- data.frame(
+      Measure = c("Chao1", "Shannon"),
+      label = c(
+        sprintf("p=%.4f, η²=%.3f", chao_res$p, chao_res$eta_sq),
+        sprintf("p=%.4f, η²=%.3f", shan_res$p, shan_res$eta_sq)
+      ),
+      y = c(max(long_data$Value[long_data$Measure=="Chao1"]) * 1.05,
+            max(long_data$Value[long_data$Measure=="Shannon"]) * 1.05)
+    )
+    
+    # Plot
+    p <- ggplot(long_data, aes_string(x = variable, y = "Value", color = variable)) +
+      geom_boxplot() +
+      geom_jitter(alpha = 0.25, width = 0.1) +
+      facet_wrap(~Measure, scales = "free_y") +
       theme_bw() +
       theme(axis.text = element_text(size = 12),
             axis.title = element_text(size = 18, face = "bold"),
             legend.position = "none",
             axis.text.x = element_text(size = 14)) +
-      labs(x = gsub("_", " ", variable)) +
-      stat_compare_means(
-        method = "kruskal.test",
-        label = "p.format",
-        label.x = 1,
-        label.y = Inf,
-        hjust = 0,
-        vjust = 1.5,
-        size = 10
-      ) + 
-      scale_x_discrete(labels = c("never", "sometimes", "always"))
+      labs(x = gsub("_", " ", variable))
     
+    # Automatically center based on numeric positions of factor levels
+    annotations$x <- sapply(annotations$Measure, function(m) {
+      groups <- unique(long_data[[variable]][long_data$Measure == m])
+      mean(as.numeric(factor(groups, levels = unique(long_data[[variable]]))))
+    })
+    
+    # Add the text
+    p <- p + geom_text(
+      data = annotations,
+      aes(x = x, y = y, label = label),
+      inherit.aes = FALSE,
+      size = 10
+    ) + 
+      scale_x_discrete(values = c("never", "sometimes", "always"))
+    
+    # Save plot if directory specified
       ggsave(filename = paste0(variable, "_diversity_plot.png"),
-             plot = p, width = 8, height = 6, dpi = 300)
-
+             plot = p, width = 12, height = 6, dpi = 300)
     
     return(p)
   } else {
-    message(sprintf("No significant difference for '%s' (Chao1 p=%.4f, Shannon p=%.4f) — skipped.", variable, chao_p, shan_p))
+    message(sprintf("No significant difference for '%s' (Chao1 p=%.4f, Shannon p=%.4f) — skipped.", 
+                    variable, chao_res$p, shan_res$p))
     return(NULL)
   }
 }

@@ -1201,7 +1201,7 @@ plot_roc_curve_gg <- function(model_results, positive_class = NULL, factor) {
   roc <- ggroc(roc_obj, legacy.axes = TRUE, colour = "darkgreen", size = 1.3) +
     geom_abline(linetype = "dashed", color = "gray50") +
     labs(
-      title = paste(factor, ": ROC Curve (AUC = ", round(auc_value, 3), ")", sep = ""),
+      title = paste(gsub(pattern = "_", replacement = "", x = factor), ": ROC Curve (AUC = ", round(auc_value, 3), ")", sep = ""),
       x = "False Positive Rate (1 - Specificity)",
       y = "True Positive Rate (Sensitivity)"
     ) +
@@ -1221,7 +1221,7 @@ plot_top_importance <- function(model_results, n_top = 10, bar_color = "#2c7bb6"
     geom_bar(stat = "identity", fill = bar_color) +
     coord_flip() +
     labs(
-      title = paste(factor, ": Top", n_top, "Feature Importance"),
+      title = paste(gsub(pattern = "_", replacement = "", x = factor), ": Top", n_top, "Feature Importance"),
       x = "",
       y = "Importance"
     ) +
@@ -1632,7 +1632,7 @@ plot_all_significant_boxplots <- function(
     
     # Format nicely (not scientific notation)
     qval_label <- ifelse(is.na(qval), "NA", formatC(qval, digits = 3, format = "f"))
-    pval_label <- ifelse(is.na(pval), "NA", formatC(pval, digits = 3, format = "f"))
+    pval_label <- ifelse(is.na(pval), "NA", formatC(pval, digits = 4, format = "f"))
     
     auto_title <- paste0(genus, " (p = ", pval_label, ", q = ", qval_label, ")")
     
@@ -1673,7 +1673,8 @@ plot_all_significant_boxplots <- function(
       theme_minimal() +
       theme(
         legend.position = "none", 
-        plot.title = element_text(hjust = 0.5)
+        plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(size = 14)
       ) + 
       geom_hline(yintercept = 0)
   }
@@ -1694,7 +1695,7 @@ plot_all_significant_boxplots <- function(
   print(plot_patch)
   
   if (length(plot_list) > 0) {
-    ggsave(filename = paste0(variable, "_maaslin_boxplots.png"), plot = plot_patch, width = 8, height = 6)
+    ggsave(filename = paste0(variable, "_maaslin_boxplots.png"), plot = plot_patch, width = 12, height = 8)
   }
 }
 
