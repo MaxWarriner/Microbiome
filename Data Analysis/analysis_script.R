@@ -1568,12 +1568,14 @@ run_maaslin2_and_plot <- function(
   results_var_unique <- results_var_unique %>% filter(feature %in% genus_list)
   
   # Plot: Label rare significant genera
+  # Add effect size label
   results_var_unique <- results_var_unique %>%
     mutate(
+      effect_size_label = paste0(feature, " (β = ", round(coef, 3), ")"),
       label_flag = ifelse(
-        sig == "Significant" & prevalence < min_samples, 
-        paste0(feature, " (rare)"), 
-        ifelse(sig == "Significant", feature, "")
+        sig == "Significant" & prevalence < min_samples,
+        paste0(feature, " (rare, β=", round(coef,3), ")"),
+        ifelse(sig == "Significant", paste0(feature, " (β=", round(coef,3), ")"), "")
       )
     )
   
@@ -1581,15 +1583,15 @@ run_maaslin2_and_plot <- function(
     geom_point() +
     geom_text_repel(
       aes(label = label_flag),
-      size = 3, 
-      max.overlaps = 12, 
+      size = 3,
+      max.overlaps = 12,
       color = "red",
       force = 2,
       box.padding = 0.5
     ) +
     scale_color_manual(values = c("Significant" = "red", "NS" = "black")) +
     labs(
-      x = "Effect Size Coefficient",
+      x = "Effect Size (β coefficient)",
       y = "-log10(FDR)",
       title = title_name
     ) +
@@ -1634,7 +1636,15 @@ plot_all_significant_boxplots <- function(
     qval_label <- ifelse(is.na(qval), "NA", formatC(qval, digits = 3, format = "f"))
     pval_label <- ifelse(is.na(pval), "NA", formatC(pval, digits = 4, format = "f"))
     
-    auto_title <- paste0(genus, " (p = ", pval_label, ", q = ", qval_label, ")")
+    effect_size <- stats_row$coef[1]
+    effect_label <- formatC(effect_size, digits = 3, format = "f")
+    
+    auto_title <- paste0(
+      genus,
+      " (β = ", effect_label,
+      ", p = ", pval_label,
+      ", q = ", qval_label, ")"
+    )
     
     # Create data for plotting
     otumat <- SVs
@@ -1695,7 +1705,7 @@ plot_all_significant_boxplots <- function(
   print(plot_patch)
   
   if (length(plot_list) > 0) {
-    ggsave(filename = paste0(variable, "_maaslin_boxplots.png"), plot = plot_patch, width = 12, height = 8)
+    ggsave(filename = paste0(variable, "_maaslin_boxplots.png"), plot = plot_patch, width = 14, height = 8)
   }
 }
 

@@ -12,10 +12,10 @@ setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
 
 ps <- readRDS('categorized_data.RDS')
 
-sam_data <- data.frame(ps@sam_data) |>
+sam <- data.frame(ps@sam_data) |>
   rename("Deworming Pill in the Last Year" = Dewormingin1yr)
 
-sample_data(ps) <- sam_data
+sample_data(ps) <- sam
 
 bdiv <- tibble(variable = colnames(sam), 
                jaccard_p = rep(NA, 128), 
@@ -71,37 +71,71 @@ create_pcoa_plot <- function(variable, jaccard_dist, bray_dist, jaccard_pcoa, br
   pval_jaccard <- permanova_jaccard$`Pr(>F)`[1]
   pval_bray <- permanova_bray$`Pr(>F)`[1]
   
+  r2_jaccard <- permanova_jaccard$R2[1]
+  r2_bray <- permanova_bray$R2[1]
+  
   p_text_jaccard <- ifelse(pval_jaccard < 0.001, "p < 0.001",
-                           paste("p =", format(round(pval_jaccard, 3), nsmall = 3)))
+                           paste0("p = ", format(round(pval_jaccard, 3), nsmall = 3)))
   p_text_bray <- ifelse(pval_bray < 0.001, "p < 0.001",
-                        paste("p =", format(round(pval_bray, 3), nsmall = 3)))
+                        paste0("p = ", format(round(pval_bray, 3), nsmall = 3)))
   
-  pcoa_jaccard_plot <- ggordpoint(obj = jaccard_pcoa, biplot = FALSE, speciesannot = TRUE,
-                                  factorNames = c(variable), ellipse = TRUE, linesize = 1.5,
-                                  ellipse_linewd = 1, ellipse_lty = 2) +
-    ggtitle("Deworming Pill in the Last Year (Jaccard)") +
-    guides(color=guide_legend(title=gsub("_", " ", variable), override.aes = list(size = 4))) +
-    theme(legend.title = element_blank(), legend.text = element_text(size = 20)) +
-    annotate("text", x = Inf, y = Inf, label = p_text_jaccard,
-             hjust = 1.1, vjust = 1.5, size = 12, fontface = "bold")
+  r2_text_jaccard <- paste0("R² = ", format(round(r2_jaccard, 3), nsmall = 3))
+  r2_text_bray <- paste0("R² = ", format(round(r2_bray, 3), nsmall = 3))
   
-  pcoa_bray_plot <- ggordpoint(obj = bray_pcoa, biplot = FALSE, speciesannot = TRUE,
-                               factorNames = c(variable), ellipse = TRUE, linesize = 1.5,
-                               ellipse_linewd = 1, ellipse_lty = 2) +
-    ggtitle("Deworming Pill in the Last Year (Bray-Curtis)") +
-    guides(color=guide_legend(title=gsub("_", " ", variable), override.aes = list(size = 4))) +
+  pcoa_jaccard_plot <- ggordpoint(
+    obj = jaccard_pcoa,
+    biplot = FALSE,
+    speciesannot = TRUE,
+    factorNames = c(variable),
+    ellipse = TRUE,
+    linesize = 1.5,
+    ellipse_linewd = 1,
+    ellipse_lty = 2
+   ) +
+  #   ggtitle(paste(gsub(pattern = "_", replacement = " ", variable), " (Jaccard)")) +
+    ggtitle("Deworming Pill in the Last Year (Jaccard)") + 
+    guides(color = guide_legend(
+      title = gsub("_", " ", variable),
+      override.aes = list(size = 4)
+    )) +
     theme(legend.title = element_blank(), legend.text = element_text(size = 20)) +
-    annotate("text", x = Inf, y = Inf, label = p_text_bray,
-             hjust = 1.1, vjust = 1.5, size = 12, fontface = "bold")
+    annotate("text", x = Inf, y = Inf,
+             label = paste(p_text_jaccard, r2_text_jaccard, sep = " • "),
+             hjust = 1.1, vjust = 1.5, size = 10, fontface = "bold")
+  
+  pcoa_bray_plot <- ggordpoint(
+    obj = bray_pcoa,
+    biplot = FALSE,
+    speciesannot = TRUE,
+    factorNames = c(variable),
+    ellipse = TRUE,
+    linesize = 1.5,
+    ellipse_linewd = 1,
+    ellipse_lty = 2
+  ) +
+    # ggtitle(paste(gsub(pattern = "_", replacement = " ", variable), " (Bray-Curtis)")) +
+    ggtitle("Deworming Pill in the Last Year (Bray-Curtis)") + 
+    guides(color = guide_legend(
+      title = gsub("_", " ", variable),
+      override.aes = list(size = 4)
+    )) +
+    theme(legend.title = element_blank(), legend.text = element_text(size = 20)) +
+    annotate("text", x = Inf, y = Inf,
+             label = paste(p_text_bray, r2_text_bray, sep = " • "),
+             hjust = 1.1, vjust = 1.5, size = 10, fontface = "bold")
   
   combined_plot <- pcoa_jaccard_plot + pcoa_bray_plot
   
-  ggsave(combined_plot,
-         filename = paste(variable, "_pcoa_combined.png", sep = ""),
-         device = "png",
-         height = 6, width = 14, units = "in")
+  ggsave(
+    combined_plot,
+    filename = paste(variable, "_pcoa_combined.png", sep = ""),
+    device = "png",
+    height = 6,
+    width = 14,
+    units = "in"
+  )
   
-  return(combined_plot)
+  combined_plot
 }
 
 setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/beta diversity PCOA plots/Significant Combined")
@@ -122,11 +156,13 @@ prune_na_samples <- function(ps, variable) {
   return(ps_pruned)
 }
 
-for (i in 4:4){
+
+
+for (i in 1:5){
   setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
   ps <- readRDS('categorized_data.RDS')
   
-  ps <- prune_na_samples(ps, "Dewormingin1yr")
+  ps <- prune_na_samples(ps, sig[4])
   
   bray <- phyloseq::distance(ps, method = "bray")
   jaccard <- phyloseq::distance(ps, method = "jaccard")
@@ -136,8 +172,9 @@ for (i in 4:4){
   
   sam <- data.frame(ps@sam_data)
   setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/beta diversity PCOA plots/Significant Combined")
-  try({create_pcoa_plot("Dewormingin1yr", jaccard, bray, jaccard_pcoa, bray_pcoa, sam)})
+  try({create_pcoa_plot(sig[i], jaccard, bray, jaccard_pcoa, bray_pcoa, sam)})
 }
 
+try({create_pcoa_plot(sig[4], jaccard, bray, jaccard_pcoa, bray_pcoa, sam)})
 
 

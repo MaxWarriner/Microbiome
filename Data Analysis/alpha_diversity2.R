@@ -136,3 +136,36 @@ create_a_diversity_plot(ps, "Frequency_of_Using_School_Latrine")
 
 create_a_diversity_plot(ps, "Frequency_of_Eating_Raw_or_Undercooked_Vegetables")
 
+
+#Create tables for alpha diversity
+
+sam <- ps@sam_data
+alpha_div <- estimate_richness(ps, measures = c("Chao1", "Shannon"))
+sam$Chao1 <- alpha_div$Chao1
+sam$Shannon <- alpha_div$Shannon
+
+sam <- data.frame(sam) |>
+  filter(Frequency_of_Using_Soap_After_Using_Toilet %in% c("sometimes", "always"))
+
+library(effectsize)
+
+kruskal_eta_sq <- function(formula, data) {
+  test <- kruskal.test(formula, data = data)
+  H <- test$statistic
+  k <- length(unique(data[[all.vars(formula)[2]]]))
+  n <- nrow(data)
+  eta_sq <- (H - k + 1) / (n - k)
+  list(statistic = H, p = test$p.value, eta_sq = eta_sq)
+}
+
+latrine_eta_shannon <- kruskal_eta_sq(Shannon ~ Frequency_of_Using_Soap_After_Using_Toilet, sam)
+latrine_eta_Chao1 <- kruskal_eta_sq(Chao1 ~ Frequency_of_Using_Soap_After_Using_Toilet, sam)
+
+
+latrine_table <- tibble("Diversity Measure" = c("Shannon", "Chao1"), 
+                        W = c(latrine_eta_shannon$statistic, latrine_eta_Chao1$statistic), 
+                        "p-value" = c(latrine_eta_shannon$p, latrine_eta_Chao1$p), 
+                        "Effect Size" = c(latrine_eta_shannon$eta_sq, latrine_eta_Chao1$eta_sq))
+
+latrine_table$Interpretation <- interpret_eta_squared(latrine_table$`Effect Size`)
+
