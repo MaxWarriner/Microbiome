@@ -22,7 +22,9 @@ library(pROC)
 
 setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
 ps <- read_rds('categorized_data.RDS')
-sam <- data.frame(ps@sam_data)
+sam <- data.frame(ps@sam_data) |>
+  rename("Frequency_of_Eating_Raw_or_Undercooked_Vegetables" = Frequency_of_Eating_Raw.Undercooked_Vegetables)
+sample_data(ps) <- sam
 
 create_a_diversity_plot <- function(ps, variable, alpha_level = 0.05) {
   library(phyloseq)
@@ -109,8 +111,8 @@ create_a_diversity_plot <- function(ps, variable, alpha_level = 0.05) {
       aes(x = x, y = y, label = label),
       inherit.aes = FALSE,
       size = 10
-    ) + 
-      scale_x_discrete(values = c("never", "sometimes", "always"))
+    ) 
+      # scale_x_discrete(values = c("never", "sometimes", "always"))
     
     # Save plot if directory specified
       ggsave(filename = paste0(variable, "_diversity_plot.png"),
@@ -131,4 +133,6 @@ for(factor in colnames(sam)){
 
 
 create_a_diversity_plot(ps, "Frequency_of_Using_School_Latrine")
+
+create_a_diversity_plot(ps, "Frequency_of_Eating_Raw_or_Undercooked_Vegetables")
 
