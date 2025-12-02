@@ -1,7 +1,7 @@
 
 #Socioeconomic, Environmental, and Demographic Factor Analysis on Gut Microbiome
 
-#Modified Code from Christine Bi by Max Warriner: 
+#Modified Code from Christine Bi by Max Warriner (mwarriner@colgate.edu): 
 #Script is designed to be able to run through a large amount of variables in a phyloseq object with efficiency
 
 # ## Part 0: data/phyloseq preprocessing -----------------------------------
@@ -1125,15 +1125,14 @@ cv_predict_clr_xgb <- function(
   if (length(nzv) > 0) X_full <- X_full[, -nzv, drop = FALSE]
   
   xgb_grid <- expand.grid(
-    nrounds = c(200, 400, 800),
-    max_depth = c(3, 5, 7, 9),
-    eta = c(0.01, 0.05, 0.1, 0.3),
-    gamma = c(0, 0.1, 0.5, 1),
-    colsample_bytree = c(0.6, 0.8, 1.0),
-    min_child_weight = c(1, 3, 5),
-    subsample = c(0.6, 0.8, 1.0)
+    nrounds = c(200, 400),
+    max_depth = c(3, 6),
+    eta = c(0.05, 0.1, 0.3),
+    gamma = c(0, 0.1),
+    colsample_bytree = c(0.6, 0.8),
+    min_child_weight = c(1, 3),
+    subsample = c(0.6, 0.8)
   )
-  
   fitControl <- caret::trainControl(
     method = "cv",
     number = nfolds,
@@ -1201,7 +1200,7 @@ plot_roc_curve_gg <- function(model_results, positive_class = NULL, factor) {
   roc <- ggroc(roc_obj, legacy.axes = TRUE, colour = "darkgreen", size = 1.3) +
     geom_abline(linetype = "dashed", color = "gray50") +
     labs(
-      title = paste(gsub(pattern = "_", replacement = "", x = factor), ": ROC Curve (AUC = ", round(auc_value, 3), ")", sep = ""),
+      title = paste(gsub(pattern = "_", replacement = " ", x = factor), ": ROC Curve (AUC = ", round(auc_value, 3), ")", sep = ""),
       x = "False Positive Rate (1 - Specificity)",
       y = "True Positive Rate (Sensitivity)"
     ) +
@@ -1354,12 +1353,12 @@ plot_top_importance(kitchen_material_results, n_top = 10, factor = "Kitchen_Mate
 # House Floor Material
 setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
 ps <- readRDS("categorized_data.RDS")
-setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
 ps <- subset_samples(ps, House_Floor_Material %in% c("Cement", "Dust"))
 house_material_results <- cv_predict_clr_xgb(ps, "House_Floor_Material", meta_cols = c("Age", "Sex"))
 house_material_results$confusion_matrix
 head(house_material_results$feature_importance, 50)
 
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
 plot_top_feature_heatmap_clr(ps_obj = ps, model_results = house_material_results,
                              n_top = 10, metadata_vars = c("Sex", "Age"), 
                              outcome_var = "House_Floor_Material", min_prevalence = 0.05)
@@ -1374,11 +1373,11 @@ plot_top_importance(house_material_results, n_top = 10, factor = "House_Floor_Ma
 # Use of School Latrine
 setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
 ps <- readRDS("categorized_data.RDS")
-setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
 ps <- subset_samples(ps, Frequency_of_Using_School_Latrine %in% c("always", "never", "sometimes"))
 ps@sam_data$Frequency_of_Using_School_Latrine <- ifelse(ps@sam_data$Frequency_of_Using_School_Latrine == "never", "never", "always/sometimes")
 
 school_latrine_results <- cv_predict_clr_xgb(ps, "Frequency_of_Using_School_Latrine", meta_cols = c("Age", "Sex"))
+save(school_latrine_results, file = "school_latrine_results.RData")
 school_latrine_results$confusion_matrix
 head(school_latrine_results$feature_importance, 50)
 

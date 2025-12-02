@@ -26,6 +26,8 @@ sam <- data.frame(ps@sam_data) |>
   rename("Frequency_of_Eating_Raw_or_Undercooked_Vegetables" = Frequency_of_Eating_Raw.Undercooked_Vegetables)
 sample_data(ps) <- sam
 
+ps@sam_data$Frequency_of_Using_School_Latrine <- factor(ps@sam_data$Frequency_of_Using_School_Latrine, levels = c("never", "sometimes", "always"))
+
 create_a_diversity_plot <- function(ps, variable, alpha_level = 0.05) {
   library(phyloseq)
   library(ggplot2)
@@ -97,7 +99,9 @@ create_a_diversity_plot <- function(ps, variable, alpha_level = 0.05) {
             axis.title = element_text(size = 18, face = "bold"),
             legend.position = "none",
             axis.text.x = element_text(size = 14)) +
-      labs(x = gsub("_", " ", variable))
+      labs(x = "Weight (kg)") 
+      # labs(x = gsub("_", " ", variable))
+      # scale_x_discrete(breaks = c("never", "sometimes", "always"), labels = c("never", "sometimes", "always"))
     
     # Automatically center based on numeric positions of factor levels
     annotations$x <- sapply(annotations$Measure, function(m) {
@@ -111,8 +115,7 @@ create_a_diversity_plot <- function(ps, variable, alpha_level = 0.05) {
       aes(x = x, y = y, label = label),
       inherit.aes = FALSE,
       size = 10
-    ) 
-      # scale_x_discrete(values = c("never", "sometimes", "always"))
+    )
     
     # Save plot if directory specified
       ggsave(filename = paste0(variable, "_diversity_plot.png"),
@@ -135,6 +138,8 @@ for(factor in colnames(sam)){
 create_a_diversity_plot(ps, "Frequency_of_Using_School_Latrine")
 
 create_a_diversity_plot(ps, "Frequency_of_Eating_Raw_or_Undercooked_Vegetables")
+
+create_a_diversity_plot(ps, "Weight (kg)")
 
 
 #Create tables for alpha diversity
