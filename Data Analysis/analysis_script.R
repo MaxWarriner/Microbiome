@@ -1125,13 +1125,13 @@ cv_predict_clr_xgb <- function(
   if (length(nzv) > 0) X_full <- X_full[, -nzv, drop = FALSE]
   
   xgb_grid <- expand.grid(
-    nrounds = c(200, 400),
-    max_depth = c(3, 6),
-    eta = c(0.05, 0.1, 0.3),
-    gamma = c(0, 0.1),
-    colsample_bytree = c(0.6, 0.8),
-    min_child_weight = c(1, 3),
-    subsample = c(0.6, 0.8)
+    nrounds = c(200, 400, 800),            # remove 1200 (longest runs)
+    max_depth = c(3, 6, 9, 12),            # keep almost all, drop 15
+    eta = c(0.01, 0.05, 0.1, 0.2),         # drop only the extremely slow 0.005
+    gamma = c(0, 0.1, 0.5, 1),             # keep full range
+    colsample_bytree = c(0.6, 0.8, 1.0),   # unchanged
+    min_child_weight = c(1, 3, 5),         # drop only 7
+    subsample = c(0.6, 0.8, 1.0)           # unchanged
   )
   fitControl <- caret::trainControl(
     method = "cv",
@@ -1458,6 +1458,33 @@ plot_roc_curve_gg(hand_washing_results, factor = "Frequency_of_Hand_Washing_Afte
 
 setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Feature Importance")
 plot_top_importance(hand_washing_results, n_top = 10, factor = "Frequency_of_Hand_Washing_After_Using_Toilet")
+
+
+for(variable in colnames(sam)){
+  
+  try({
+  setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
+  ps <- readRDS("categorized_data.RDS")
+  setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
+  results <- cv_predict_clr_xgb(ps, variable, meta_cols = c("Age", "Sex"))
+  results$confusion_matrix
+  
+  setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Heatmaps")
+  plot_top_feature_heatmap_clr(ps_obj = ps, model_results = results,
+                               n_top = 10, metadata_vars = c("Sex", "Age"), 
+                               outcome_var = variable, min_prevalence = 0.05)
+  
+  setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/ROC Curves")
+  plot_roc_curve_gg(results, factor = variable)
+  
+  setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Machine Learning/Feature Importance")
+  plot_top_importance(results, n_top = 10, factor = variable)
+  
+  })
+  
+}
+
+
 
 
 # ## Part VII: Maaslin2 Plots ----------------------------------------------------------
