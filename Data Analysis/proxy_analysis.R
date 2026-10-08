@@ -13,7 +13,7 @@ library(MicrobiotaProcess)
 library(vegan)
 library(dplyr)
 library(ALDEx2)
-library(microbiomeMarker)
+# library(microbiomeMarker)
 library(ggsci)
 library(ggpubr)
 library(patchwork)
@@ -53,10 +53,12 @@ combined_SES <- shannon_SES + chao1_SES
 
 ggsave(plot = combined_SES, filename = 'SES_alpha_boxplot.png', width = 7, height = 4)
 
-summary(lm(Shannon ~ SES_index, data = sam))
-summary(lm(chao1 ~ SES_index, data = sam))
+summary(glm(Shannon ~ SES_index, data = sam))
+summary(glm(chao1 ~ SES_index, data = sam)) # significant
 
-# Hygiene Index
+
+
+# Hygienemmeans# Hygiene Index
 shannon_hygiene <- ggplot(data = sam, aes(x = as.factor(hygiene_index))) + 
   geom_boxplot(aes(y = Shannon)) + 
   theme_bw() + 
@@ -73,8 +75,8 @@ combined_hygiene <- shannon_hygiene + chao1_hygiene
 
 ggsave(plot = combined_hygiene, filename = 'hygiene_alpha_boxplot.png', width = 7, height = 4)
 
-summary(lm(Shannon ~ hygiene_index, data = sam)) # significant model with Shannon index
-summary(lm(chao1 ~ hygiene_index, data = sam))
+summary(glm(Shannon ~ hygiene_index, data = sam))
+summary(glm(chao1 ~ hygiene_index, data = sam))
 
 # Household Infrastructure Quality Index
 shannon_HIQ <- ggplot(data = sam, aes(x = as.factor(HIQ_index))) + 
@@ -93,8 +95,8 @@ combined_HIQ <- shannon_HIQ + chao1_HIQ
 
 ggsave(plot = combined_HIQ, filename = 'HIQ_alpha_boxplot.png', width = 7, height = 4)
 
-summary(lm(Shannon ~ HIQ_index, data = sam))
-summary(lm(chao1 ~ HIQ_index, data = sam))
+summary(glm(Shannon ~ HIQ_index, data = sam))
+summary(glm(chao1 ~ HIQ_index, data = sam)) #significant
 
 
 #Household Sanitation Index
@@ -115,15 +117,15 @@ combined_HSI <- shannon_HSI + chao1_HSI
 
 ggsave(plot = combined_HSI, filename = 'HSI_alpha_boxplot.png', width = 7, height = 4)
 
-summary(lm(Shannon ~ HSI_index, data = sam))
-summary(lm(chao1 ~ HSI_index, data = sam))
+summary(glm(Shannon ~ HSI_index, data = sam))
+summary(glm(chao1 ~ HSI_index, data = sam)) # significant
 
 
 # Beta Diversity ----------------------------------------------------------
 
-pcoares <- get_pcoa(obj = ps, distmethod = "jaccard", method = "hellinger")
+pcoares <- get_pcoa(obj = ps, distmethod = "bray", method = "hellinger")
 
-physeq_dist <- phyloseq::distance(ps, method = "jaccard")
+physeq_dist <- phyloseq::distance(ps, method = "bray")
 
 create_pcoa_plot <- function(variable, pcoares, physeq_dist, ps, sam) {
   
@@ -152,10 +154,10 @@ create_pcoa_plot <- function(variable, pcoares, physeq_dist, ps, sam) {
   
   print(pcoaplot)
 
-  ggsave(pcoaplot,
-         filename = paste(variable, "_pcoa_jaccard.png", sep = ""),
-         device = "png",
-         height = 6, width = 8, units = "in")
+  # ggsave(pcoaplot,
+  #        filename = paste(variable, "_pcoa_jaccard.png", sep = ""),
+  #        device = "png",
+  #        height = 6, width = 8, units = "in")
   
   return(pcoaplot)
 }

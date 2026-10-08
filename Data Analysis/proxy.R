@@ -31,15 +31,15 @@ for (i in 1:138){
     sam$hygiene_index[i] = sam$hygiene_index[i] + 1
   }
   
-  if(sam$Frequency_of_Using_School_Latrine[i] == 'always' | sam$Frequency_of_Using_School_Latrine[i] == 'sometimes'){
+  if(!is.na(sam$Frequency_of_Using_School_Latrine[i]) && (sam$Frequency_of_Using_School_Latrine[i] == 'always' | sam$Frequency_of_Using_School_Latrine[i] == 'sometimes')){
     sam$hygiene_index[i] = sam$hygiene_index[i] + 1
   }
   
-  if(sam$Drink_Water_Directly_or_Treated.[i] == 'Treat'){
+  if(!is.na(sam$Drink_Water_Directly_or_Treated.[i]) && sam$Drink_Water_Directly_or_Treated.[i] == 'Treat'){
     sam$hygiene_index[i] = sam$hygiene_index[i] + 1
   }
   
-  if(sam$Defecating_in_Open_Field[i] == 'never'){
+  if(!is.na(sam$Defecating_in_Open_Field[i]) && sam$Defecating_in_Open_Field[i] == 'never'){
     sam$hygiene_index[i] = sam$hygiene_index[i] + 1
   }
   
@@ -47,27 +47,27 @@ for (i in 1:138){
     sam$hygiene_index[i] = sam$hygiene_index[i] + 1
   }
   
-  if(sam$Maternal_Education_Status[i] == 'Higher Education'){
+  if(!is.na(sam$Maternal_Education_Status[i]) && sam$Maternal_Education_Status[i] == 'Higher Education'){
     sam$SES_index[i] = sam$SES_index[i] + 3
-  }else if(sam$Maternal_Education_Status[i] == 'High School'){
+  }else if(!is.na(sam$Maternal_Education_Status[i]) && sam$Maternal_Education_Status[i] == 'High School'){
     sam$SES_index[i] = sam$SES_index[i] + 2
-  }else if(sam$Maternal_Education_Status[i] == 'Primary School'){
+  }else if(!is.na(sam$Maternal_Education_Status[i]) && sam$Maternal_Education_Status[i] == 'Primary School'){
     sam$SES_index[i] = sam$SES_index[i] + 1
   }
   
-  if(sam$Electricity_in_House[i] == 'yes'){
+  if(!is.na(sam$Electricity_in_House[i]) && sam$Electricity_in_House[i] == 'yes'){
     sam$SES_index[i] = sam$SES_index[i] + 1
   }
   
-  if(sam$Family_Owns_Radio[i] == 'yes'){
+  if(!is.na(sam$Family_Owns_Radio[i]) && sam$Family_Owns_Radio[i] == 'yes'){
     sam$SES_index[i] = sam$SES_index[i] + 1
   }
   
-  if(sam$Family_Owns_Television[i] == 'yes'){
+  if(!is.na(sam$Family_Owns_Television[i]) && sam$Family_Owns_Television[i] == 'yes'){
     sam$SES_index[i] = sam$SES_index[i] + 1
   }
   
-  if(sam$Family_Member_with_Phone[i] == 'yes'){
+  if(!is.na(sam$Family_Member_with_Phone[i]) && sam$Family_Member_with_Phone[i] == 'yes'){
     sam$SES_index[i] = sam$SES_index[i] + 1
   }
   
@@ -75,7 +75,7 @@ for (i in 1:138){
     sam$SES_index[i] = sam$SES_index[i] + 1
   }
   
-  if(sam$House_Floor_Material[i] == 'Cement' | sam$House_Floor_Material[i] == "Plastic Covered"){
+  if(!is.na(sam$House_Floor_Material[i]) && (sam$House_Floor_Material[i] == 'Cement' | sam$House_Floor_Material[i] == "Plastic Covered")){
     sam$HIQ_index[i] = sam$HIQ_index[i] + 2
   }
   
@@ -85,7 +85,7 @@ for (i in 1:138){
     sam$HIQ_index[i] = sam$HIQ_index[i] + 1
   }
   
-  if(sam$Potable_Water_in_House[i] == 'yes'){
+  if(!is.na(sam$Potable_Water_in_House[i]) && sam$Potable_Water_in_House[i] == 'yes'){
     sam$HIQ_index[i] = sam$HIQ_index[i] + 1
   }
   
@@ -97,25 +97,22 @@ for (i in 1:138){
     sam$HSI_index[i] = sam$HSI_index[i] + 1
   }
   
-  if(sam$Latrine_Distance_from_House[i] == '>20' | sam$Latrine_Distance_from_House[i] == '10-20'){
+  if(!is.na(sam$Latrine_Distance_from_House[i]) && (sam$Latrine_Distance_from_House[i] == '>20' | sam$Latrine_Distance_from_House[i] == '10-20')){
     sam$HSI_index[i] = sam$HSI_index[i] + 2
-  }else if(sam$Latrine_Distance_from_House[i] == '5-10'){
+  }else if(!is.na(sam$Latrine_Distance_from_House[i]) && sam$Latrine_Distance_from_House[i] == '5-10'){
     sam$HSI_index[i] = sam$HSI_index[i] + 1
   }
   
-  if(sam$Defecating_in_Open_Field[i] == 'never'){
-    sam$HSI_index[i] = sam$HSI_index[i] + 1
-  }
   
   
   
 }
 
 sam <- sam |>
-  mutate(hygiene_group = ifelse(hygiene_index <= 5, 'low', 'high'), 
-         SES_group = ifelse(SES_index <= 4, 'low', 'high'), 
-         HSI_group = ifelse(HSI_index <= 2, 'low', 'high'), 
-         HIQ_group = ifelse(HIQ_index <= 2, 'low', 'high'))
+  mutate(hygiene_group = ifelse(hygiene_index <= 15, 'low', 'high'), 
+         SES_group = ifelse(SES_index <= 12, 'low', 'high'), 
+         HSI_group = ifelse(HSI_index <= 6, 'low', 'high'), 
+         HIQ_group = ifelse(HIQ_index <= 6, 'low', 'high'))
 
 sample_data(ps) <- sam
 
