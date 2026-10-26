@@ -93,7 +93,7 @@ create_pcoa_plot <- function(variable, jaccard_dist, bray_dist, jaccard_pcoa, br
     ellipse_lty = 2
    ) +
   #   ggtitle(paste(gsub(pattern = "_", replacement = " ", variable), " (Jaccard)")) +
-    ggtitle("Deworming Pill in the Last Year (Jaccard)") + 
+    ggtitle("Kitchen Material (Jaccard)") + 
     guides(color = guide_legend(
       title = gsub("_", " ", variable),
       override.aes = list(size = 4)
@@ -114,7 +114,7 @@ create_pcoa_plot <- function(variable, jaccard_dist, bray_dist, jaccard_pcoa, br
     ellipse_lty = 2
   ) +
     # ggtitle(paste(gsub(pattern = "_", replacement = " ", variable), " (Bray-Curtis)")) +
-    ggtitle("Deworming Pill in the Last Year (Bray-Curtis)") + 
+    ggtitle("Kitchen Material (Bray-Curtis)") + 
     guides(color = guide_legend(
       title = gsub("_", " ", variable),
       override.aes = list(size = 4)
@@ -132,7 +132,8 @@ create_pcoa_plot <- function(variable, jaccard_dist, bray_dist, jaccard_pcoa, br
     device = "png",
     height = 6,
     width = 14,
-    units = "in"
+    units = "in", 
+    dpi = 2000
   )
   
   combined_plot
@@ -178,3 +179,14 @@ for (i in 1:5){
 try({create_pcoa_plot(sig[4], jaccard, bray, jaccard_pcoa, bray_pcoa, sam)})
 
 
+#Kitchen Material plot for manuscript
+ps <- prune_na_samples(ps, "Kitchen_Material")
+sam <- ps@sam_data
+
+bray <- phyloseq::distance(ps, method = "bray")
+jaccard <- phyloseq::distance(ps, method = "jaccard")
+
+jaccard_pcoa <- get_pcoa(obj = ps, distmethod = "jaccard", method = "hellinger")
+bray_pcoa <- get_pcoa(obj = ps, distmethod = "bray", method = "hellinger")
+
+create_pcoa_plot("Kitchen_Material", jaccard, bray, jaccard_pcoa, bray_pcoa, sam)

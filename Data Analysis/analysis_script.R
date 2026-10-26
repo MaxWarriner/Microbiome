@@ -45,7 +45,7 @@ sam$Shannon <- div$Shannon
 sam$chao1 <- div$Chao1
 
 
-create_a_diversity_plot <- function(ps, variable) {
+create_a_diversity_plot <- function(ps, variable, title = NULL, x_axis_title = NULL) {
   # Convert sample data to data frame
   sam_data <- as(sample_data(ps), "data.frame")
   
@@ -85,7 +85,6 @@ create_a_diversity_plot <- function(ps, variable) {
           axis.title = element_text(size = 18, face = "bold"), 
           legend.position = "none", 
           axis.text.x = element_text(size = 14)) + 
-    labs(x = gsub("_", " ", variable)) + 
     # Add p-values for each metric
     stat_compare_means(
       method = "kruskal.test",
@@ -95,8 +94,10 @@ create_a_diversity_plot <- function(ps, variable) {
       hjust = 0,      # Left-align text
       vjust = 1.5,    # Pushes it down slightly from top edge
       size = 10
-    )
-    # scale_x_discrete(limits = c("never", "sometimes", "always"))
+    ) + 
+    labs(title = title, 
+         x = ifelse(is.null(x_axis_title), gsub("_", " ", variable), x_axis_title)) + 
+    theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 30))
   
   print(a_diversity_factor)
   
@@ -109,7 +110,7 @@ create_a_diversity_plot <- function(ps, variable) {
 # }
 
 # Demographic Factors
-a_diversity_age <- create_a_diversity_plot(ps, "cluster")
+a_diversity_age <- create_a_diversity_plot(ps, "Age")
 a_diversity_weight <- create_a_diversity_plot(ps, "Weight")
 a_diversity_vaccine <- create_a_diversity_plot(ps, "Vaccinated")
 combined_demographic <-  a_diversity_age + a_diversity_weight + a_diversity_vaccine + 
@@ -172,6 +173,20 @@ ggsave(combined_household,
 
 a_diversity_SEI <- create_a_diversity_plot(ps, "SEI_proxy")
 
+#Combined Figure for Manuscript
+
+ps@sam_data$Frequency_of_Using_School_Latrine <- factor(ps@sam_data$Frequency_of_Using_School_Latrine, levels = c("never", "sometimes", "always"))
+
+using_soap <- create_a_diversity_plot(ps, "Frequency_of_Using_Soap_After_Using_Toilet", title = "(A)")
+latrine <- create_a_diversity_plot(ps, "Frequency_of_Using_School_Latrine", title = "(B)")
+age <- create_a_diversity_plot(ps, "Age", title = "(C)")
+weight <- create_a_diversity_plot(ps, "Weight", title = "(D)", x_axis_title = "Weight (kg)")
+
+alpha_panel <- using_soap + latrine + age + weight & 
+  theme(plot.margin = margin(15, 30, 15, 30))
+
+setwd("C:/Users/12697/Documents/Microbiome")
+ggsave(alpha_panel, width = 16, height = 10, dpi = 2000, filename = "Fig_alpha_diversity_panel.png")
 
 
 # ## Part II (a) Beta diversity (Jaccard and Bray Distance) ----------------------
@@ -276,10 +291,10 @@ create_pcoa_plot <- function(variable) {
   pcoaplot <- ggordpoint(obj = pcoares, biplot = FALSE, speciesannot = TRUE,
                          factorNames = c(variable), ellipse = TRUE)
   
-  ggsave(pcoaplot, 
-         filename = paste(variable, "_pcoa_jaccard.pdf", sep = ""),
-         device = "pdf",
-         height = 6, width = 8, units = "in")
+  # ggsave(pcoaplot, 
+  #        filename = paste(variable, "_pcoa_jaccard.pdf", sep = ""),
+  #        device = "pdf",
+  #        height = 6, width = 8, units = "in")
   
   print(pcoaplot)
   
@@ -481,7 +496,173 @@ write.csv(permanova_results, "PERMANOVA_results.csv")
 
 # ## Part III Overall microbial abundance "at the Phylum, Genus and Family Level --------
 
-phylumtaxa <- get_taxadf(obj = ps, taxlevel = 2)
+phylum_taxa <- get_taxadf(obj = ps, taxlevel = 2)
+genus_taxa <- get_taxadf(obj = ps, taxlevel = 3)
+family_taxa <- get_taxadf(obj = ps, taxlevel = 4)
+
+#Create Genus Summary Plot
+genus_dat <- data.frame(t(genus_taxa@otu_table@.Data))
+colnames(genus_dat) <- gsub(colnames(genus_dat), pattern = "c__un_d1__", replacement = "")
+colnames(genus_dat) <- gsub(colnames(genus_dat), pattern = "c__un_d2__", replacement = "")
+colnames(genus_dat) <- gsub(colnames(genus_dat), pattern = "d3__", replacement = "")
+genus_dat <- genus_dat / rowSums(genus_dat)
+genus_dat$id <- rownames(genus_dat)
+
+genus_dat <- genus_dat |>
+  pivot_longer(cols = -id, names_to = "Genus", values_to = "Abundance")
+
+top_genera <- genus_dat |>
+  group_by(Genus) |>
+  summarise(mean_ab = mean(Abundance), .groups = "drop") |>
+  slice_max(mean_ab, n = 8) |>
+  pull(Genus)
+
+genus_dat <- genus_dat |>
+  mutate(Genus = if_else(Genus %in% top_genera, Genus, "Other / unclassified")) |>
+  group_by(id, Genus) |>
+  summarise(Abundance = sum(Abundance), .groups = "drop")
+
+sample_order <- genus_dat |>
+  filter(Genus == "Bacteroidia") |>
+  arrange(desc(Abundance)) |>
+  pull(id)
+
+genus_dat <- genus_dat |>
+  mutate(
+    id    = factor(id, levels = sample_order),
+    Genus = factor(Genus, levels = c("Other / unclassified", rev(top_genera)))
+  )
+
+
+
+library(ggthemes)
+
+genus_plot <- ggplot(genus_dat, aes(x = id, y = Abundance * 100, fill = Genus)) +
+  geom_col(width = 1, color = "black") +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
+  scale_fill_brewer(palette = "Paired") +
+  labs(
+    title = "Bacteroidia is the Most Abundant Genus in Most Children",
+    x = paste0("Children (n = ", n_distinct(genus_dat$id), "), ordered by Bacteroidia abundance"),
+    y = "Relative abundance (%)"
+  ) +
+  theme_clean() +
+  theme(axis.text.x = element_blank())
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Genus Abundance Barplot")
+ggsave(genus_plot, filename = "samples_genus_abundance.png", dpi = 1000, 
+       width = 12, 
+       height = 6)
+
+
+
+#Create Phylum Summary Plot
+
+phylum_dat <- data.frame(t(phylum_taxa@otu_table@.Data))
+colnames(phylum_dat) <- gsub(colnames(phylum_dat), pattern = "d2__", replacement = "")
+colnames(phylum_dat) <- gsub(colnames(phylum_dat), pattern = "p__un_d1__", replacement = "")
+phylum_dat <- phylum_dat / rowSums(phylum_dat)
+phylum_dat$id <- rownames(phylum_dat)
+
+phylum_dat <- phylum_dat |>
+  pivot_longer(cols = -id, names_to = "Phylum", values_to = "Abundance")
+
+top_phyla <- phylum_dat |>
+  group_by(Phylum) |>
+  summarise(mean_ab = mean(Abundance), .groups = "drop") |>
+  slice_max(mean_ab, n = 8) |>
+  pull(Phylum)
+
+phylum_dat <- phylum_dat |>
+  mutate(Phylum = if_else(Phylum %in% top_phyla, Phylum, "Other / unclassified")) |>
+  group_by(id, Phylum) |>
+  summarise(Abundance = sum(Abundance), .groups = "drop")
+
+sample_order <- phylum_dat |>
+  filter(Phylum == "Bacteroidota") |>
+  arrange(desc(Abundance)) |>
+  pull(id)
+
+
+phylum_dat <- phylum_dat |>
+  mutate(
+    id    = factor(id, levels = sample_order),
+    Phylum = factor(Phylum, levels = c("Other / unclassified", rev(top_phyla)))
+  )
+
+
+phylum_plot <- ggplot(phylum_dat, aes(x = id, y = Abundance * 100, fill = Phylum)) +
+  geom_col(width = 1, color = "black") +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
+  scale_fill_brewer(palette = "Paired") +
+  labs(
+    title = "Bacteroidota is the Most Abundant Phylum in Most Children",
+    x = paste0("Children (n = ", n_distinct(phylum_dat$id), "), ordered by Bacteroidota abundance"),
+    y = "Relative abundance (%)"
+  ) +
+  theme_clean() +
+  theme(axis.text.x = element_blank())
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Phylum Abundance Barplot")
+ggsave(phylum_plot, filename = "samples_phylum_abundance.png", dpi = 1000, 
+       width = 12, 
+       height = 6)
+
+
+#Create Family Barplot
+
+family_dat <- data.frame(t(family_taxa@otu_table@.Data))
+colnames(family_dat) <- gsub(colnames(family_dat), pattern = "d4__", replacement = "")
+colnames(family_dat) <- gsub(colnames(family_dat), pattern = "o__un_d1__", replacement = "")
+colnames(family_dat) <- gsub(colnames(family_dat), pattern = "o__un_d2__", replacement = "")
+colnames(family_dat) <- gsub(colnames(family_dat), pattern = "o__un_d3__", replacement = "")
+family_dat <- family_dat / rowSums(family_dat)
+family_dat$id <- rownames(family_dat)
+
+family_dat <- family_dat |>
+  pivot_longer(cols = -id, names_to = "Family", values_to = "Abundance")
+
+top_families <- family_dat |>
+  group_by(Family) |>
+  summarise(mean_ab = mean(Abundance), .groups = "drop") |>
+  slice_max(mean_ab, n = 8) |>
+  pull(Family)
+
+family_dat <- family_dat |>
+  mutate(Family = if_else(Family %in% top_families, Family, "Other / unclassified")) |>
+  group_by(id, Family) |>
+  summarise(Abundance = sum(Abundance), .groups = "drop")
+
+sample_order <- family_dat |>
+  filter(Family == "Bacteroidales") |>
+  arrange(desc(Abundance)) |>
+  pull(id)
+
+
+family_dat <- family_dat |>
+  mutate(
+    id    = factor(id, levels = sample_order),
+    Family = factor(Family, levels = c("Other / unclassified", rev(top_families)))
+  )
+
+
+family_plot <- ggplot(family_dat, aes(x = id, y = Abundance * 100, fill = Family)) +
+  geom_col(width = 1, color = "black") +
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 100)) +
+  scale_fill_brewer(palette = "Paired") +
+  labs(
+    title = "Bacteroidales is the Most Abundant Family in Most Children",
+    x = paste0("Children (n = ", n_distinct(phylum_dat$id), "), ordered by Bacteroidales abundance"),
+    y = "Relative abundance (%)"
+  ) +
+  theme_clean() +
+  theme(axis.text.x = element_blank())
+
+setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Family Abundance Barplot")
+ggsave(family_plot, filename = "samples_family_abundance.png", dpi = 1000, 
+       width = 12, 
+       height = 6)
+
 
 # Define the function to create bar plots with titles
 create_phylum_barplot <- function(variable, phylumtaxa) {
