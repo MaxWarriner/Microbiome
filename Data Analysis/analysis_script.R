@@ -1800,12 +1800,13 @@ run_maaslin2_and_plot <- function(
     labs(
       x = "Effect Size (β coefficient)",
       y = "-log10(FDR)",
-      title = title_name
+      title = ""
     ) +
     theme_minimal() +
-    theme(legend.position = "none")
+    theme(legend.position = "none", 
+          plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
   
-  ggsave(filename = paste(variable, "_maslin_volcano.png", sep = ""), plot = p, width = 8, height = 6)
+  #ggsave(filename = paste(variable, "_maslin_volcano.png", sep = ""), plot = p, width = 8, height = 6)
   
   print(p)
   n_rare_sig <- sum(results_var_unique$sig == "Significant" & results_var_unique$prevalence < min_samples)
@@ -1905,15 +1906,15 @@ plot_all_significant_boxplots <- function(
   
   plot_patch <- wrap_plots(plot_list) &
     plot_annotation(
-      title = gsub(pattern = "_", replacement = " ", variable_name), 
       theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
     )
   
   print(plot_patch)
   
   if (length(plot_list) > 0) {
-    ggsave(filename = paste0(variable, "_maaslin_boxplots.png"), plot = plot_patch, width = 14, height = 8)
+    #ggsave(filename = paste0(variable, "_maaslin_boxplots.png"), plot = plot_patch, width = 14, height = 8)
   }
+  return(plot_patch)
 }
 
 
@@ -1935,6 +1936,12 @@ kitchen_floor_boxplots <- plot_all_significant_boxplots(
   variable = "Kitchen_Material",
   variable_name = "Kitchen_Material"
 )
+
+library(patchwork)
+
+kitchen <- kitchen_floor_boxplots + kitchen_floor_maaslin2$plot & 
+  plot_annotation(title = "(C) Kitchen Material")
+
 
 
 #House Floor Material (not significant)
@@ -1961,7 +1968,12 @@ school_latrine_boxplots <- plot_all_significant_boxplots(
   variable_name = "Frequency_of_Using_School_Latrine"
 )
 
-
+latrine <- (school_latrine_boxplots | school_latrine_maaslin2$plot) +
+  plot_layout(widths = c(2, 1)) +
+  plot_annotation(
+    title = "(B) Frequency of School Latrine Use",
+    theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+  )
 
 # Deworming pill (not significant)
 
@@ -1993,31 +2005,23 @@ soap_boxplots <- plot_all_significant_boxplots(
 )
 
 
-
-# animals in house (not significant)
-
-
-# pet in house
-
-setwd("C:/Users/12697/Documents/Microbiome/Data Analysis")
-ps <- readRDS("categorized_data.RDS")
-ps <- subset_samples(ps, Pet_in_House.Compound %in% c("yes", "no"))
-
-# Extract sample data, OTU table, taxonomy
-metadata <- as.data.frame(sample_data(ps))
-SVs <- as.data.frame(otu_table(ps))
-
-setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Volcano Plots")
-animals_maaslin2 <- run_maaslin2_and_plot(ps, "Pet_in_House.Compound", qval_sig_max = 0.2)
-setwd("C:/Users/12697/Documents/Microbiome/Data Analysis/Figures/Maaslin Plots/Boxplots")
-soap_boxplots <- plot_all_significant_boxplots(
-  ps_obj = ps,
-  maaslin2_table = soap_maaslin2$table,
-  variable = "Frequency_of_Using_Soap_After_Using_Toilet",
-  variable_name = "Frequency_of_Using_Soap_After_Using_Toilet"
-)
+soap <- (soap_boxplots | soap_maaslin2$plot) + 
+  plot_layout(widths = c(2, 1)) +
+  plot_annotation(
+    title = "(A) Frequency of Soap Use After the Toilet",
+    theme = theme(plot.title = element_text(hjust = 0.5, size = 20, face = "bold"))
+  )
 
 
 
+#Big panel
 
+kitchen <- wrap_elements(kitchen)
+latrine <- wrap_elements(latrine)
+soap <- wrap_elements(soap)
+
+panel <- soap / latrine / kitchen
+
+setwd("C:/Users/12697/Documents/Microbiome")
+ggsave(panel, width = 20, height = 14, filename = "fig_diff_abundance.png", dpi = 900)
 
